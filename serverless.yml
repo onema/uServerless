@@ -70,7 +70,7 @@ functions:
           path: handle-error
           method: get
   error:
-    handler: onema.function.function.ErrorFunction::handleRequest
+    handler: onema.function.ErrorFunction::handleRequest
     events:
       - http:
           path: error

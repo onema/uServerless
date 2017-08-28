@@ -8,24 +8,28 @@ import onema.serverlessbase.core.json.Implicits.AnyClassToJsonString
 import onema.serverlessbase.exception.HandleRequestException
 import onema.serverlessbase.model.ErrorMessage
 import org.apache.http.HttpStatus
+import com.typesafe.scalalogging.Logger
 
 import scala.util.{Failure, Success, Try}
 
 trait ApiGatewayHandler {
+
+  // --- Fields ---
+  val log = Logger("serverless")
 
   def handle(request: AwsProxyRequest): AwsProxyResponse
 
   def handleRequest(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     Try(handle(request)) match {
       case Success(response) =>
-        Console.println("Success Case")
+        log.info(s"Success Case")
         response
       case Failure(e) => e match {
         case ex: HandleRequestException =>
-          Console.println("Handle Error")
+          log.info("Handle Error")
           ex.httpResponse
         case _ =>
-          Console.println("Internal Server Error")
+          log.info("Internal Server Error")
           new AwsProxyResponse(
             HttpStatus.SC_INTERNAL_SERVER_ERROR,
             new util.HashMap[String, String](),
