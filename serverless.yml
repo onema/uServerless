@@ -1,0 +1,89 @@
+#
+# This file is part of the ONEMA onema Package.
+# For the full copyright and license information,
+# please view the LICENSE file that was distributed
+# with this source code.
+#
+# copyright (c) 2017, Juan Manuel Torres (http://onema.io)
+#
+# @author Juan Manuel Torres <kinojman@gmail.com>
+#
+service: ServerlessBase
+
+provider:
+  name: aws
+  runtime: java8
+  profile: default
+  timeout: 300
+  versionFunctions: false
+
+# you can overwrite defaults here
+  stage: dev
+  region: us-east-1
+
+# Usage plan and API keys
+#  apiKeys:
+#    - ${opt:stage}-cloud-platform-user-key
+#  usagePlan:
+#    quota:
+#
+#      # There isn't an option to give this a custom name
+#      limit: 100000
+#      period: MONTH
+
+# Custom values. These can be referenced in the Cloud Formation template
+custom:
+  environmentName: ${opt:stage, self:provider.stage}
+# you can add statements to the Lambda function's IAM Role here
+#  iamRoleStatements:
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:ListBucket"
+#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:PutObject"
+#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" }, "/*" ] ]  }
+
+# you can define service wide environment variables here
+  environment:
+    variable1:
+      Ref: ServerlessDeploymentBucket
+
+# you can add packaging information here
+# Make sure to run "sbt assembly" to create a jar file
+# with all your dependencies and put that jar file name here.
+package:
+  artifact: target/scala-2.12/serverlessbase.jar
+
+functions:
+  success:
+    handler: onema.function.SuccessFunction::handleRequest
+    events:
+      - http:
+          path: success
+          method: get
+  handler-error:
+    handler: onema.function.HandlerErrorFunction::handleRequest
+    events:
+      - http:
+          path: handle-error
+          method: get
+  error:
+    handler: onema.function.function.ErrorFunction::handleRequest
+    events:
+      - http:
+          path: error
+          method: get
+
+# you can add CloudFormation resource templates here
+#resources:
+#  Resources:
+#    NewResource:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: ${self:custom.environmentName}-my-new-bucket
+#  Outputs:
+#     NewOutput:
+#       Description: "Description for the output"
+#       Value: "Some output value"
