@@ -2,9 +2,8 @@ import sbt.Keys._
 import sbt._
 import sbtrelease.Version
 
-name := "onema"
+name := "ServerlessBase"
 
-resolvers += Resolver.sonatypeRepo("public")
 scalaVersion := "2.12.2"
 releaseNextVersion := { ver => Version(ver).map(_.bumpMinor.string).getOrElse("Error") }
 assemblyJarName in assembly := "serverlessbase.jar"
@@ -19,11 +18,13 @@ libraryDependencies ++= Seq(
   "com.amazonaws.serverless"  %   "aws-serverless-java-container-core"  % "0.7",
 
   // Logging
-  "com.typesafe.scala-logging" % "scala-logging_2.12"       % "3.7.2",
+  "com.typesafe.scala-logging" % "scala-logging_2.11"       % "3.5.0",
   "ch.qos.logback"             % "logback-classic"          % "1.1.7",
 
   // Testing
-  "org.scalatest"             %   "scalatest_2.12"          % "3.0.4"   % "test"
+  "org.scalatest"             %   "scalatest_2.12"          % "3.0.4"   % "test",
+  "org.scalamock"      % "scalamock-scalatest-support_2.12" % "3.6.0"   % "test"
+
 )
 
 scalacOptions ++= Seq(
