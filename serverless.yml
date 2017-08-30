@@ -58,19 +58,19 @@ package:
 
 functions:
   success:
-    handler: onema.function.SuccessFunction::handleRequest
+    handler: onema.function.SuccessFunction::handle
     events:
       - http:
           path: success
           method: get
   handler-error:
-    handler: onema.function.HandlerErrorFunction::handleRequest
+    handler: onema.function.HandlerErrorFunction::handle
     events:
       - http:
           path: handle-error
           method: get
   error:
-    handler: onema.function.ErrorFunction::handleRequest
+    handler: onema.function.ErrorFunction::handle
     events:
       - http:
           path: error
