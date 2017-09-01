@@ -11,15 +11,26 @@
 
 package onema.serverlessbase.core.function
 
+import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.typesafe.scalalogging.Logger
 
-trait SnsHandler extends ServerlessHandler[SNSEvent, Unit] {
+import scala.util.{Failure, Success, Try}
+
+trait SnsHandler {
 
   //--- Fields ---
   val log = Logger("sns-handler")
 
   //--- Methods ---
+  def handleRequest(request: SNSEvent): Unit
+
+  def handle(request: SNSEvent, context: Context): Unit = {
+    Try(handleRequest(request)) match {
+      case Success(response) => response
+      case Failure(e: Throwable) => handleFailure(e)
+    }
+  }
   def handleFailure(exception: Throwable): Unit = {
     log.error(exception.getStackTrace.mkString)
     log.error(exception.getMessage)
