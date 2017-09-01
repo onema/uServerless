@@ -15,7 +15,7 @@ import com.amazonaws.serverless.proxy.internal.model.AwsProxyRequest
 import onema.serverlessbase.core.function.ApiGatewayHandler
 
 class ErrorFunction extends ApiGatewayHandler {
-  override def handle(request: AwsProxyRequest) = {
+  override def handleRequest(request: AwsProxyRequest): Nothing = {
     throw new NotImplementedError("FooBar")
   }
 }

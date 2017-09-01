@@ -16,7 +16,7 @@ import onema.serverlessbase.core.function.ApiGatewayHandler
 import onema.serverlessbase.exception.HandleRequestException
 
 class HandlerErrorFunction extends ApiGatewayHandler {
-  override def handle(request: AwsProxyRequest) = {
+  override def handleRequest(request: AwsProxyRequest): Nothing = {
     throw new HandleRequestException(400, "FooBar")
   }
 }

@@ -15,7 +15,9 @@ import com.amazonaws.serverless.proxy.internal.model.{AwsProxyRequest, AwsProxyR
 import onema.serverlessbase.core.function.ApiGatewayHandler
 
 class SuccessFunction extends ApiGatewayHandler {
-  override def handle(request: AwsProxyRequest): AwsProxyResponse = {
+
+  //--- Methods ---
+  def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
     val response = new AwsProxyResponse(200)
     response.setBody("{\"message\": \"success\"}")
     response
