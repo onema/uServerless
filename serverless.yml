@@ -17,10 +17,17 @@ provider:
   timeout: 300
   versionFunctions: false
 
+
 # you can overwrite defaults here
   stage: dev
   region: us-east-1
 
+# you can add statements to the Lambda function's IAM Role here
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - sns:Publish
+      Resource: "arn:aws:sns:*:*:${self:custom.environmentName}-processing-function"
 # Usage plan and API keys
 #  apiKeys:
 #    - ${opt:stage}-cloud-platform-user-key
@@ -30,25 +37,15 @@ provider:
 #      # There isn't an option to give this a custom name
 #      limit: 100000
 #      period: MONTH
+# you can define service wide environment variables here
+  environment:
+    ACCOUNT_ID:
+      Ref: AWS::AccountId
+    ENVIRONMENT_NAME: ${self:custom.environmentName}
 
 # Custom values. These can be referenced in the Cloud Formation template
 custom:
   environmentName: ${opt:stage, self:provider.stage}
-# you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:ListBucket"
-#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:PutObject"
-#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" }, "/*" ] ]  }
-
-# you can define service wide environment variables here
-  environment:
-    variable1:
-      Ref: ServerlessDeploymentBucket
 
 # you can add packaging information here
 # Make sure to run "sbt assembly" to create a jar file
@@ -57,18 +54,21 @@ package:
   artifact: target/scala-2.12/serverlessbase.jar
 
 functions:
+  # API Gateway functions
   success:
     handler: onema.function.SuccessFunction::handle
     events:
       - http:
           path: success
           method: get
+
   handler-error:
     handler: onema.function.HandlerErrorFunction::handle
     events:
       - http:
           path: handle-error
           method: get
+
   error:
     handler: onema.function.ErrorFunction::handle
     events:
@@ -76,9 +76,23 @@ functions:
           path: error
           method: get
 
+  validation:
+    handler: onema.function.ValidationFunction::handle
+    events:
+      - http:
+          path: validation
+          method: get
+    environment:
+      SNS_TOPIC: ${self:custom.environmentName}-processing-function
+
+  # SNS Processing functions
+  process:
+    handler: onema.function.ProcessFunction::handle
+    events:
+      - sns: ${self:custom.environmentName}-processing-function
+
 # you can add CloudFormation resource templates here
 #resources:
-#  Resources:
 #    NewResource:
 #      Type: AWS::S3::Bucket
 #      Properties:
