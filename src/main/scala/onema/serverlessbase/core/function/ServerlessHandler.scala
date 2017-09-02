@@ -18,7 +18,7 @@ import scala.util.{Failure, Success, Try}
 abstract class ServerlessHandler[TRequest, TResponse] {
 
   //--- Fields ---
-  protected var lambdaContext: Context
+  protected var lambdaContext: Context = _
 
   protected lazy val accountId: String = lambdaContext.getInvokedFunctionArn.split(':')(4)
 

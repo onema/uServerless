@@ -17,7 +17,7 @@ trait ApiGatewayHandler {
   //--- Fields ---
   val log = Logger("apigateway-handler")
 
-  protected var lambdaContext: Context
+  protected var lambdaContext: Context = _
 
   protected lazy val accountId: String = lambdaContext.getInvokedFunctionArn.split(':')(4)
 
