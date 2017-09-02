@@ -39,8 +39,6 @@ provider:
 #      period: MONTH
 # you can define service wide environment variables here
   environment:
-    ACCOUNT_ID:
-      Ref: AWS::AccountId
     ENVIRONMENT_NAME: ${self:custom.environmentName}
 
 # Custom values. These can be referenced in the Cloud Formation template
