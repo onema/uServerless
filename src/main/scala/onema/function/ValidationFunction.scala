@@ -20,12 +20,13 @@ class ValidationFunction extends ApiGatewayHandler {
 
   //--- Fields ---
   private val snsTopicName = System.getenv("SNS_TOPIC")
+
   private val region = System.getenv("AWS_REGION")
-  private val accountId = System.getenv("ACCOUNT_ID")
+
   val snsClient = new AmazonSNSClient()
 
   //--- Methods ---
-  def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
+  protected def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
     snsClient.publish(
       new PublishRequest(s"arn:aws:sns:$region:$accountId:$snsTopicName", "Message from Success Function")
     )
