@@ -17,6 +17,10 @@ trait ApiGatewayHandler {
   //--- Fields ---
   val log = Logger("apigateway-handler")
 
+  protected var lambdaContext: Context
+
+  protected lazy val accountId: String = lambdaContext.getInvokedFunctionArn.split(':')(4)
+
   //--- Methods ---
   def handleRequest(request: AwsProxyRequest): AwsProxyResponse
 

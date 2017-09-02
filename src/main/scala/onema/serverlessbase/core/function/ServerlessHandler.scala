@@ -17,6 +17,11 @@ import scala.util.{Failure, Success, Try}
 
 abstract class ServerlessHandler[TRequest, TResponse] {
 
+  //--- Fields ---
+  protected var lambdaContext: Context
+
+  protected lazy val accountId: String = lambdaContext.getInvokedFunctionArn.split(':')(4)
+
   //--- Methods ---
   def handleRequest(request: TRequest): TResponse
 
@@ -24,6 +29,7 @@ abstract class ServerlessHandler[TRequest, TResponse] {
 
   def handle(request: TRequest, context: Context): TResponse = {
     Console.println(s"Java Version: ${System.getProperty("java.version")}")
+    lambdaContext = context
     Try(handleRequest(request)) match {
       case Success(response) => response
       case Failure(e: Throwable) => handleFailure(e)
