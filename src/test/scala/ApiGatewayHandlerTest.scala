@@ -18,7 +18,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 
 class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory {
-  "A concrete implementation of a generic class" should "not raise any exceptions" in {
+  "A concrete implementation" should "not throw any exceptions" in {
 
     // Arrange
     val request = new AwsProxyRequest
