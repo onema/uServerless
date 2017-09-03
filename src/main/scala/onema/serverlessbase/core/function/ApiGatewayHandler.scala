@@ -22,7 +22,7 @@ trait ApiGatewayHandler {
   protected lazy val accountId: String = lambdaContext.getInvokedFunctionArn.split(':')(4)
 
   //--- Methods ---
-  def handleRequest(request: AwsProxyRequest): AwsProxyResponse
+  protected def handleRequest(request: AwsProxyRequest): AwsProxyResponse
 
   def handle(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     Try(handleRequest(request)) match {
@@ -31,7 +31,7 @@ trait ApiGatewayHandler {
     }
   }
 
-  def handleFailure(exception: Throwable): AwsProxyResponse = {
+  private def handleFailure(exception: Throwable): AwsProxyResponse = {
     log.error(exception.getStackTrace.mkString)
     log.error(exception.getMessage)
     exception match {
