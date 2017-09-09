@@ -11,7 +11,7 @@
 import com.amazonaws.serverless.proxy.internal.model.AwsProxyRequest
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
 import onema.function.SuccessFunction
-import onema.serverlessbase.core.json.Implicits.JsonStringToCaseClass
+import onema.core.json.Implicits.JsonStringToCaseClass
 import onema.serverlessbase.model.ErrorMessage
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
@@ -31,5 +31,17 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory {
 
     // Assert
     body.message should be ("success")
+  }
+
+  "An Exception" should "generate a valid response" in {
+
+    // Arrange
+    val message = "{\"message\": \"foo bar\"}"
+
+    // Act
+    val errorMessage = message.jsonParse[ErrorMessage]
+
+    // Assert
+    errorMessage.message should be ("foo bar")
   }
 }
