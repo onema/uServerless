@@ -15,7 +15,7 @@ import java.util
 
 import com.amazonaws.serverless.proxy.internal.model.AwsProxyResponse
 import onema.serverlessbase.model.ErrorMessage
-import onema.serverlessbase.core.json.Implicits.AnyClassToJsonString
+import onema.core.json.Implicits.AnyClassToJsonString
 
 class HandleRequestException(val code: Int, message: String) extends Exception(message) {
   def httpResponse: AwsProxyResponse = {

@@ -8,7 +8,7 @@ import com.typesafe.scalalogging.Logger
 import org.apache.http.HttpStatus
 import onema.serverlessbase.exception.HandleRequestException
 import onema.serverlessbase.model.ErrorMessage
-import onema.serverlessbase.core.json.Implicits._
+import onema.core.json.Implicits._
 
 import scala.util.{Failure, Success, Try}
 
@@ -22,18 +22,16 @@ trait ApiGatewayHandler {
   protected lazy val accountId: String = lambdaContext.getInvokedFunctionArn.split(':')(4)
 
   //--- Methods ---
-  protected def handleRequest(request: AwsProxyRequest): AwsProxyResponse
-
-  def handle(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    Try(handleRequest(request)) match {
+  protected def handle(function: () => AwsProxyResponse): AwsProxyResponse = {
+    Try(function()) match {
       case Success(response) => response
       case Failure(e: Throwable) => handleFailure(e)
     }
   }
 
   private def handleFailure(exception: Throwable): AwsProxyResponse = {
-    log.error(exception.getStackTrace.mkString)
     log.error(exception.getMessage)
+    log.error(exception.getStackTrace.mkString)
     exception match {
       case ex: HandleRequestException =>
         ex.httpResponse

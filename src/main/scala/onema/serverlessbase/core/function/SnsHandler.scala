@@ -19,19 +19,17 @@ import scala.util.{Failure, Success, Try}
 
 trait SnsHandler {
 
-  //--- Fields ---
-  val log = Logger("sns-handler")
-
   //--- Methods ---
-  def handleRequest(request: SNSEvent): Unit
+  protected def log = Logger("sns-handler")
 
-  def handle(request: SNSEvent, context: Context): Unit = {
-    Try(handleRequest(request)) match {
+  protected def handle(function: () => Unit): Unit = {
+    Try(function()) match {
       case Success(response) => response
       case Failure(e: Throwable) => handleFailure(e)
     }
   }
-  def handleFailure(exception: Throwable): Unit = {
+
+  protected def handleFailure(exception: Throwable): Unit = {
     log.error(exception.getStackTrace.mkString)
     log.error(exception.getMessage)
     throw exception
