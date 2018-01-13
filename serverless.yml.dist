@@ -54,28 +54,28 @@ package:
 functions:
   # API Gateway functions
   success:
-    handler: onema.function.SuccessFunction::handle
+    handler: functions.success.Function::lambdaHandler
     events:
       - http:
           path: success
           method: get
 
   handler-error:
-    handler: onema.function.HandlerErrorFunction::handle
+    handler: functions.handler.error.Function::lambdaHandler
     events:
       - http:
           path: handle-error
           method: get
 
   error:
-    handler: onema.function.ErrorFunction::handle
+    handler: functions.error.Function::lambdaHandler
     events:
       - http:
           path: error
           method: get
 
   validation:
-    handler: onema.function.ValidationFunction::handle
+    handler: functions.validation.Function::lambdaHandler
     events:
       - http:
           path: validation
@@ -85,7 +85,7 @@ functions:
 
   # SNS Processing functions
   process:
-    handler: onema.function.ProcessFunction::handle
+    handler: functions.process.Function::lambdaHandler
     events:
       - sns: ${self:custom.environmentName}-processing-function
 
