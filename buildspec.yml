@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing pip
+      - apt-get install -y python-pip
+      - pip install awscli
+  pre_build:
+    commands:
+      - ls -la
+  build:
+    commands:
+      - echo Build started on `date`
+      - sbt compile
+
+      - echo Testing Core on `date`
+      - sbt clean test
+
+      - echo Publishing on `date`
+      - sbt publish
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
