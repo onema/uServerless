@@ -9,7 +9,7 @@
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
 
-import com.google.gson.Gson
+import onema.core.json.Implicits.JsonStringToCaseClass
 import onema.serverlessbase.exception.HandleRequestException
 import onema.serverlessbase.model.ErrorMessage
 import org.scalatest.{FlatSpec, Matchers}
@@ -21,11 +21,10 @@ class HandleRequestExceptionTest extends FlatSpec with Matchers {
 
     // Arrange
     val exception = new HandleRequestException(code = 400, message = "there was an error")
-    val gson = new Gson()
 
     // Act
     val errorResponse = exception.httpResponse
-    val parsedMessage = gson.fromJson(errorResponse.getBody, classOf[ErrorMessage])
+    val parsedMessage = errorResponse.getBody.jsonParse[ErrorMessage]
 
     // Assert
     errorResponse.getBody should be ("{\"message\":\"there was an error\"}")

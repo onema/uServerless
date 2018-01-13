@@ -9,14 +9,20 @@
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
 
-package onema.function
+package functions.handle.error
 
-import com.amazonaws.serverless.proxy.internal.model.AwsProxyRequest
+import com.amazonaws.serverless.proxy.internal.model.{AwsProxyRequest, AwsProxyResponse}
+import com.amazonaws.services.lambda.runtime.Context
 import onema.serverlessbase.core.function.ApiGatewayHandler
 import onema.serverlessbase.exception.HandleRequestException
 
-class HandlerErrorFunction extends ApiGatewayHandler {
-  override def handleRequest(request: AwsProxyRequest): Nothing = {
-    throw new HandleRequestException(400, "FooBar")
+object Logic {
+  def handleRequest: Nothing = throw new HandleRequestException(400, "FooBar")
+}
+
+class Function extends ApiGatewayHandler {
+  def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
+    handle(() => Logic.handleRequest)
   }
 }
+

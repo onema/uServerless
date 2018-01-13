@@ -10,7 +10,7 @@
   */
 import com.amazonaws.serverless.proxy.internal.model.AwsProxyRequest
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
-import onema.function.SuccessFunction
+import functions.success.Function
 import onema.core.json.Implicits.JsonStringToCaseClass
 import onema.serverlessbase.model.ErrorMessage
 import org.scalamock.scalatest.MockFactory
@@ -23,10 +23,10 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory {
     // Arrange
     val request = new AwsProxyRequest
     val context = new MockLambdaContext
-    val lambdaFunction = new SuccessFunction
+    val lambdaFunction = new Function
 
     // Act
-    val response = lambdaFunction.handle(request, context)
+    val response = lambdaFunction.lambdaHandler(request, context)
     val body = response.getBody.jsonParse[ErrorMessage]
 
     // Assert

@@ -9,17 +9,24 @@
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
 
-package onema.function
+package functions.success
 
 import com.amazonaws.serverless.proxy.internal.model.{AwsProxyRequest, AwsProxyResponse}
+import com.amazonaws.services.lambda.runtime.Context
 import onema.serverlessbase.core.function.ApiGatewayHandler
 
-class SuccessFunction extends ApiGatewayHandler {
-
-  //--- Methods ---
+object Logic {
   def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
     val response = new AwsProxyResponse(200)
     response.setBody("{\"message\": \"success\"}")
     response
+  }
+}
+
+class Function extends ApiGatewayHandler {
+
+  //--- Methods ---
+  def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
+    handle(() => Logic.handleRequest(request))
   }
 }

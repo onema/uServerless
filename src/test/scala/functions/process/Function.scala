@@ -9,15 +9,24 @@
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
 
-package onema.function
+package functions.process
 
+import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
+import com.typesafe.scalalogging.Logger
 import onema.serverlessbase.core.function.SnsHandler
+
 import scala.collection.JavaConverters._
 
-class ProcessFunction extends SnsHandler {
-  override def handleRequest(request: SNSEvent): Unit = {
-    val records = request.getRecords.asScala
+object Logic {
+  def handleEvent(event: SNSEvent, log: Logger): Unit = {
+    val records = event.getRecords.asScala
     records.foreach(x => log.info(x.getSNS.getMessage))
+  }
+}
+
+class Function extends SnsHandler {
+  def lambdaHandler(event: SNSEvent, context: Context): Unit = {
+    handle(() => Logic.handleEvent(event, log))
   }
 }
