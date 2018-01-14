@@ -14,7 +14,7 @@ package functions.process
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.typesafe.scalalogging.Logger
-import onema.serverlessbase.core.function.SnsHandler
+import onema.serverlessbase.function.SnsHandler
 
 import scala.collection.JavaConverters._
 

@@ -9,10 +9,8 @@
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
 
-package onema.serverlessbase.core.function
+package onema.serverlessbase.function
 
-import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.typesafe.scalalogging.Logger
 
 import scala.util.{Failure, Success, Try}

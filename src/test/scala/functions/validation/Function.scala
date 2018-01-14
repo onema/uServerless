@@ -15,7 +15,7 @@ import com.amazonaws.serverless.proxy.internal.model.{AwsProxyRequest, AwsProxyR
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.model.PublishRequest
 import com.amazonaws.services.sns.{AmazonSNS, AmazonSNSClient}
-import onema.serverlessbase.core.function.ApiGatewayHandler
+import onema.serverlessbase.function.ApiGatewayHandler
 
 class Logic(val snsClient: AmazonSNS, val topic: String) {
 

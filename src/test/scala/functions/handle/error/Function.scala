@@ -13,8 +13,8 @@ package functions.handle.error
 
 import com.amazonaws.serverless.proxy.internal.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
-import onema.serverlessbase.core.function.ApiGatewayHandler
 import onema.serverlessbase.exception.HandleRequestException
+import onema.serverlessbase.function.ApiGatewayHandler
 
 object Logic {
   def handleRequest: Nothing = throw new HandleRequestException(400, "FooBar")
