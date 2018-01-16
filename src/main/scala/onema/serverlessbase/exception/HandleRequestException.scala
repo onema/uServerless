@@ -11,19 +11,12 @@
 
 package onema.serverlessbase.exception
 
-import java.util
-
 import com.amazonaws.serverless.proxy.internal.model.AwsProxyResponse
-import onema.serverlessbase.model.ErrorMessage
-import onema.core.json.Implicits.AnyClassToJsonString
+import onema.serverlessbase.function.ApiGatewayResponse
 
-class HandleRequestException(val code: Int, message: String) extends Exception(message) {
+class HandleRequestException(val code: Int, message: String) extends Exception(message) with ApiGatewayResponse {
   def httpResponse: AwsProxyResponse = {
-    new AwsProxyResponse(
-      code,
-      new util.HashMap[String, String](),
-      ErrorMessage(getMessage).toJson
-    )
+    buildError(code, getMessage)
   }
 }
 
