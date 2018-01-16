@@ -18,7 +18,7 @@ lazy val serverlessBaseRoot = (project in file("."))
        "onema"                      % "json-core_2.12"                % coreVersion,
 
       // AWS libraries
-      "com.amazonaws" % "aws-lambda-java-events" % "1.3.0",
+      "com.amazonaws" % "aws-lambda-java-events" % "2.0.2",
       "com.amazonaws" % "aws-lambda-java-core" % "1.2.0",
       "com.amazonaws" % "aws-java-sdk-sns" % "1.11.263",
       "com.amazonaws.serverless" % "aws-serverless-java-container-core" % "0.8",
