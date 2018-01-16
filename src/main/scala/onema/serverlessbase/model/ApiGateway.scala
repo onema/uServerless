@@ -98,8 +98,8 @@ case class RequestContext(
 
 case class ApiGatewayProxyResponse(
   statusCode: Int,
-  body: String = "",
   headers: Map[String, String] = Map(),
+  body: String = "",
   isBase64Encoded: Boolean = false
 )
 
