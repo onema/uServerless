@@ -1,9 +1,8 @@
 resolvers += "Onema Snapshots" at "s3://s3-us-east-1.amazonaws.com/ones-deployment-bucket/snapshots"
 
-val akkaVersion = "2.4.12"
 val coreVersion = "1.0.0"
 
-lazy val root = (project in file("."))
+lazy val serverlessBaseRoot = (project in file("."))
 .settings(
   organization := "onema",
 
@@ -21,7 +20,11 @@ lazy val root = (project in file("."))
       // AWS libraries
       "com.amazonaws" % "aws-lambda-java-events" % "1.3.0",
       "com.amazonaws" % "aws-lambda-java-core" % "1.2.0",
+      "com.amazonaws" % "aws-java-sdk-sns" % "1.11.263",
       "com.amazonaws.serverless" % "aws-serverless-java-container-core" % "0.8",
+
+      // Http
+      "org.apache.httpcomponents" % "httpcore" % "4.4.8",
 
       // Logging
       "com.typesafe.scala-logging" %% "scala-logging"           % "3.7.2",
@@ -33,7 +36,7 @@ lazy val root = (project in file("."))
     )
   }
 )
-//  .dependsOn(jsonCore)
+//.dependsOn(jsonCore)
 
 // Sub-projects
 //lazy val jsonCore = RootProject(file("../JsonCore"))
