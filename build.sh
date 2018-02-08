@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Use this for local deployment
-# ./deploy.sh --aws-profile dev
+# ./deploy.sh --profile default --stage dev
 COMMAND=$1
 echo $COMMAND
 STAGE_NAME=${STAGE_NAME:-dev}
