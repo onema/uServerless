@@ -15,7 +15,7 @@ import java.io.{PrintWriter, StringWriter}
 
 object ThrowableExtensions {
 
-  implicit class AnyClassToJsonString(throwable: Throwable) {
+  implicit class ExceptionMessage(throwable: Throwable) {
 
     // --- Methods ---
     /**
