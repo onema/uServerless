@@ -38,7 +38,8 @@ function cleanup() {
 }
 
 function remove() {
-    serverless remove --stage "${STAGE_NAME}"
+    echo $@
+    serverless remove --stage "${STAGE_NAME}" $@
     checkExitCode $?
 }
 
@@ -52,7 +53,8 @@ case "$COMMAND" in
         cleanup ;;
 
     'remove')
-        remove  ;;
+        remove  $@
+        ;;
 
     'cleanup')
         cleanup ;;
