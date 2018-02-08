@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Use this for local deployment
-# ./deploy.sh --profile default --stage dev
+# ./build.sh --profile staging
 COMMAND=$1
 echo $COMMAND
+STAGE_NAME=$2
+shift 2
 STAGE_NAME=${STAGE_NAME:-dev}
 
 function checkExitCode() {
@@ -25,8 +27,8 @@ function install() {
 }
 
 function deploy() {
-    $PROFILE=$1
-    serverless deploy --stage "${STAGE_NAME}" $PROFILE
+    echo $@
+    serverless deploy --stage "${STAGE_NAME}" $@
     checkExitCode $?
 }
 
@@ -35,8 +37,9 @@ function cleanup() {
     rm package.zip
 }
 
-function uninstall() {
+function remove() {
     serverless remove --stage "${STAGE_NAME}"
+    checkExitCode $?
 }
 
 case "$COMMAND" in
@@ -44,16 +47,18 @@ case "$COMMAND" in
          install ;;
 
     'deploy')
-        $PROFILE=$@
-        install
-        deploy $PROFILE
+#        install
+        deploy $@
         cleanup ;;
+
+    'remove')
+        remove  ;;
 
     'cleanup')
         cleanup ;;
 
     *)
-        echo """usage: deploy.sh [COMMAND]
+        echo """usage: deploy.sh [COMMAND] [STATE_NAME]
             install         Installs all packages and moves source code to a package directory.
             deploy          Installs, deploys and cleans up package. Deployment uses serverless framework.
             cleanup         Removes the package directory.
