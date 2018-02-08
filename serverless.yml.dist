@@ -13,7 +13,7 @@ service: ServerlessBase
 provider:
   name: aws
   runtime: java8
-  profile: default
+  profile: ${opt:aws-profile, default}
   timeout: 300
   versionFunctions: false
 
