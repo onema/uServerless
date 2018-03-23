@@ -14,7 +14,7 @@ package functions.process
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.typesafe.scalalogging.Logger
-import onema.serverlessbase.function.SnsHandler
+import onema.serverlessbase.function.LambdaHandler
 
 import scala.collection.JavaConverters._
 
@@ -25,7 +25,7 @@ object Logic {
   }
 }
 
-class Function extends SnsHandler {
+class Function extends LambdaHandler {
   def lambdaHandler(event: SNSEvent, context: Context): Unit = {
     handle(() => Logic.handleEvent(event, log))
   }

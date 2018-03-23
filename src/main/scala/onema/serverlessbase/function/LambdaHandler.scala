@@ -17,7 +17,7 @@ import onema.serverlessbase.exception.ThrowableExtensions._
 
 import scala.util.{Failure, Success, Try}
 
-trait SnsHandler {
+trait LambdaHandler {
 
   //--- Methods ---
   protected def log = Logger("sns-handler")
@@ -39,6 +39,7 @@ trait SnsHandler {
     val message = exception.message
     log.error(message)
     if(snsErrorTopic.isDefined) {
+
       // report error to SNS Topic
       snsClient.publish(snsErrorTopic.get, message)
     }
