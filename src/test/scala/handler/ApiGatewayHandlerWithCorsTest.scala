@@ -25,6 +25,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with BeforeAndAfter with Ma
 
   before {
     deleteEnv("CORS_SITES")
+    deleteEnv("ENVIRONMENT_NAME")
   }
 
   "A function with CORS enabled using env vars" should "return response with access-control-allow-origin header" in {
