@@ -8,11 +8,12 @@ lazy val serverlessBaseRoot = (project in file("."))
 
   name := "serverless-base",
 
-  version := "0.4.0",
+  version := "0.5.0",
 
   scalaVersion := "2.12.5",
 
   libraryDependencies ++= {
+    val awsSdkVersion = "1.11.301"
     Seq(
       // CORE!
        "onema"                      % "json-core_2.12"                      % coreVersion,
@@ -20,7 +21,9 @@ lazy val serverlessBaseRoot = (project in file("."))
       // AWS libraries
       "com.amazonaws"               % "aws-lambda-java-events"              % "2.0.2",
       "com.amazonaws"               % "aws-lambda-java-core"                % "1.2.0",
-      "com.amazonaws"               % "aws-java-sdk-sns"                    % "1.11.263",
+      "com.amazonaws"               % "aws-java-sdk-sns"                    % awsSdkVersion,
+      "com.amazonaws"               % "aws-java-sdk-ssm"                    % awsSdkVersion,
+      "com.amazonaws"               % "aws-java-sdk-dynamodb"               % awsSdkVersion,
       "com.amazonaws.serverless"    % "aws-serverless-java-container-core"  % "0.8",
 
       // Http
