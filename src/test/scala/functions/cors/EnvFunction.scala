@@ -36,6 +36,4 @@ class EnvFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
     val origin = request.getHeaders.get("origin")
     handle(() => EnvLogic.handleRequest(request)).withCors(new EnvCorsConfiguration(origin))
   }
-
 }
-
