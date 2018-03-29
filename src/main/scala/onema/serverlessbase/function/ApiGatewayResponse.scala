@@ -15,17 +15,14 @@ import com.amazonaws.serverless.proxy.internal.model.AwsProxyResponse
 import onema.core.json.Implicits._
 import onema.serverlessbase.model.ErrorMessage
 
-import scala.collection.JavaConverters._
 
 trait ApiGatewayResponse {
 
   //--- Methods ---
   protected def buildResponse(code: Int, payload: AnyRef): AwsProxyResponse = {
-    new AwsProxyResponse(
-      code,
-      Map("Access-Control-Allow-Origin" -> "*").asJava,
-      payload.toJson
-    )
+    val response = new AwsProxyResponse(code)
+    response.setBody(payload.toJson)
+    response
   }
 
   protected def buildError(code: Int, message: String): AwsProxyResponse = {
