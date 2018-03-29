@@ -9,29 +9,33 @@
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
 
-package functions.error
+package functions.cors
 
 import com.amazonaws.serverless.proxy.internal.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import onema.serverlessbase.configuration.cors.EnvCorsConfiguration
-import onema.serverlessbase.configuration.cors.Extensions._
+import onema.serverlessbase.configuration.cors.Extensions.AwsProxyResponseExtension
 import onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
 import onema.serverlessbase.function.ApiGatewayHandler
+import org.apache.http.HttpStatus
 
-object Logic {
-  def handleRequest(request: AwsProxyRequest): Nothing = {
-    throw new NotImplementedError("FooBar")
+object EnvLogic {
+  def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
+    new AwsProxyResponse(HttpStatus.SC_OK)
   }
 }
 
-class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
+class EnvFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Fields ---
   override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
 
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    handle(() => Logic.handleRequest(request)).withCors(new EnvCorsConfiguration(request.getHeaders.get("origin")))
+    val origin = request.getHeaders.get("origin")
+    handle(() => EnvLogic.handleRequest(request)).withCors(new EnvCorsConfiguration(origin))
   }
+
 }
+

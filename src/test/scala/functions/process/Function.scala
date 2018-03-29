@@ -4,7 +4,7 @@
   * please view the LICENSE file that was distributed
   * with this source code.
   *
-  * copyright (c) 2017, Juan Manuel Torres (http://onema.io)
+  * copyright (c) 2018, Juan Manuel Torres (http://onema.io)
   *
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
@@ -13,7 +13,9 @@ package functions.process
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
+import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import com.typesafe.scalalogging.Logger
+import onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
 import onema.serverlessbase.function.LambdaHandler
 
 import scala.collection.JavaConverters._
@@ -25,8 +27,14 @@ object Logic {
   }
 }
 
-class Function extends LambdaHandler {
+class Function extends LambdaHandler with NoopLambdaConfiguration {
+  //--- Fields ---
+  override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
+
+  //--- Methods ---
   def lambdaHandler(event: SNSEvent, context: Context): Unit = {
     handle(() => Logic.handleEvent(event, log))
   }
+
+
 }
