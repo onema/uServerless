@@ -1,6 +1,6 @@
 Serverless Base for Scala
 =========================
-![Build Status](https://codebuild.us-east-1.amazon.com/badges?uuid=95007942-9a19-4beb-917b-4d35775f97b8&branch=master)
+![Build Status](https://codebuild.us-east-1.amazon.com/badges?uuid=ServerlessBase:95007942-9a19-4beb-917b-4d35775f97b8&branch=master)
 
 The serverless base package is a small collection of base classes to
 build AWS Lambda functions using scala. The base classes have the following
