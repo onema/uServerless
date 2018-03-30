@@ -34,7 +34,7 @@ trait SsmLambdaConfiguration extends LambdaConfiguration {
   //--- Fields ---
   protected val ssmClient: AWSSimpleSystemsManagementAsync
 
-  protected val environment: String = sys.env.getOrElse("ENVIRONMENT_NAME", "")
+  protected val stageName: String = sys.env.getOrElse("STAGE_NAME", "")
 
   //--- Methods ---
   /**
@@ -45,7 +45,7 @@ trait SsmLambdaConfiguration extends LambdaConfiguration {
     * @return
     */
   def getValue(path: String): Option[String] = {
-    val name = s"/$environment/$path".stripDoubleSlashes
+    val name = s"/$stageName/$path".stripDoubleSlashes
     tryParameter(name)
   }
 
@@ -60,14 +60,14 @@ trait SsmLambdaConfiguration extends LambdaConfiguration {
   def getValues(path: String): Map[String, String] = {
     @tailrec
     def getParameters(path: String, params: Map[String, String] = Map(), nextToken: String = ""): Map[String, String]  = {
-      val name = s"/$environment/$path".stripDoubleSlashes
+      val name = s"/$stageName/$path".stripDoubleSlashes
       val request = new GetParametersByPathRequest()
         .withPath(name)
         .withRecursive(true)
         .withWithDecryption(true)
       if (nextToken.nonEmpty) request.withNextToken(nextToken)
       val response = ssmClient.getParametersByPath(request)
-      val current = response.getParameters.asScala.map(x => x.getName.replaceAll(s"/$environment", "") -> x.getValue).toMap
+      val current = response.getParameters.asScala.map(x => x.getName.replaceAll(s"/$stageName", "") -> x.getValue).toMap
 
       // Return params, otherwise continue with the recursion
       if (response.getNextToken == null) {

@@ -1,5 +1,7 @@
 Serverless Base for Scala
 =========================
+![Build Status](https://codebuild.us-east-1.amazon.com/badges?uuid=95007942-9a19-4beb-917b-4d35775f97b8&branch=master)
+
 The serverless base package is a small collection of base classes to
 build AWS Lambda functions using scala. The base classes have the following
 properties:
@@ -146,7 +148,7 @@ SSM Parameter Store could do a lookup of value names prepending an "environment 
 them in the function using a consistent name. For example the value `/database/username` for the environment name `prod` will result in a lookup of the parameter `/prod/database/username`.
 The environment name is set as the environment variable `ENVIRONMENT_NAME`.
 
-To use the SSM environemnt variable in  your function simply extend from the `SsmLambdaConfiguration` trait like such
+To use the SSM environment variable in  your function simply extend from the `SsmLambdaConfiguration` trait like such
 
 ```scala
 class TestFunction(snsClientMock: AmazonSNSAsync) extends LambdaHandler with SsmLambdaConfiguration {
@@ -166,7 +168,7 @@ There are four strategies implemented:
 * `DynamodbCorsConfiguration`: Sites are stored in a DynamoDB table as items in the table. Each site should be Under the `Origin` column
 * `EnvCorsConfiguration`: Sites are stored in an environment variable called `CORS_SITES` as a comma separated list of origins
 * `NoopCorsConfiguration`: Always returns empty values
-* `SsmCorsConfiguration`: Sites are stored in a SSM parameter store value called `/cors/sites`. Please note that the environment name will be prepended if one has been set in the `ENVIRONMENT_NAME` environment variable
+* `SsmCorsConfiguration`: Sites are stored in a SSM parameter store value called `/cors/sites`. Please note that the stage name will be prepended if one has been set in the `STAGE_NAME` environment variable
 
 ```scala
 import com.amazonaws.serverless.proxy.internal.model.{AwsProxyRequest, AwsProxyResponse}
