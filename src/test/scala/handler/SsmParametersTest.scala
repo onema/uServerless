@@ -26,13 +26,13 @@ object SsmParametersTest {
 class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with MockFactory with EnvironmentHelper {
 
   before {
-    deleteEnv("ENVIRONMENT_NAME")
+    deleteEnv("STAGE_NAME")
   }
 
   "A function with ssm parameter store" should "return single parameters" in {
 
     // Arrange
-    setEnv("ENVIRONMENT_NAME", "test")
+    setEnv("STAGE_NAME", "test")
     val request = new GetParameterRequest().withName("/test/foo").withWithDecryption(true)
     val result = new GetParameterResult().withParameter(new Parameter().withName("/test/foo").withValue("test value"))
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
@@ -49,7 +49,7 @@ class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with 
   "A function with ssm parameter store" should "return multiple parameters" in {
 
     // Arrange
-    setEnv("ENVIRONMENT_NAME", "test")
+    setEnv("STAGE_NAME", "test")
     val request = new GetParametersByPathRequest().withPath("/test/foo").withRecursive(true).withWithDecryption(true)
     val result = new GetParametersByPathResult().withParameters(
       new Parameter().withName("/test/foo").withValue("test foo value"),
@@ -113,7 +113,7 @@ class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with 
   "A function with ssm parameter store" should "return multiple parameters using recursion" in {
 
     // Arrange
-    setEnv("ENVIRONMENT_NAME", "test")
+    setEnv("STAGE_NAME", "test")
     val request = new GetParametersByPathRequest().withPath("/test/foo").withRecursive(true).withWithDecryption(true)
     val requestWithNextToken = new GetParametersByPathRequest().withPath("/test/foo")
       .withRecursive(true)
