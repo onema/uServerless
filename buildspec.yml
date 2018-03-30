@@ -1,11 +1,6 @@
 version: 0.2
 
 phases:
-  install:
-    commands:
-      - echo Installing pip
-      - apt-get install -y python-pip
-      - pip install awscli
   pre_build:
     commands:
       - ls -la
