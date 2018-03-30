@@ -1,0 +1,17 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - ls -la
+  build:
+    commands:
+      - echo Build started on `date`
+      - sbt compile
+
+      - echo Testing Core on `date`
+      - sbt clean test
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
