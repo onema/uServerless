@@ -19,10 +19,11 @@ object Extensions {
   implicit class AwsProxyResponseExtension(response: AwsProxyResponse) {
     def withCors(corsConfiguration: CorsConfiguration): AwsProxyResponse = {
       if(corsConfiguration.isOriginValid) {
+        val existingHeaders = Option(response.getHeaders.asScala).getOrElse(Map())
         val headers = Map(
           "Access-Control-Allow-Origin" -> corsConfiguration.origin,
           "Access-Control-Allow-Credentials" -> "true"
-        ) ++ response.getHeaders.asScala
+        ) ++ existingHeaders
         response.setHeaders(headers.asJava)
       }
       response
