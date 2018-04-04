@@ -12,7 +12,7 @@ package handler
 
 import java.io.{ByteArrayInputStream, InputStream}
 
-import com.amazonaws.serverless.proxy.internal.model.{AwsProxyRequest, AwsProxyResponse}
+import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
 import com.amazonaws.services.sns.AmazonSNSAsync
 import functions.success.Function

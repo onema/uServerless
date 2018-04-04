@@ -10,16 +10,20 @@
   */
 package handler
 
-import com.amazonaws.serverless.proxy.internal.model.AwsProxyRequest
+import com.amazonaws.serverless.proxy.model.AwsProxyRequest
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
+import com.amazonaws.services.dynamodbv2.{AmazonDynamoDBAsync, AmazonDynamoDBAsyncClientBuilder}
+import com.amazonaws.services.dynamodbv2.document.{DynamoDB, Item, Table}
+import com.amazonaws.services.dynamodbv2.model.{AttributeValue, GetItemRequest, GetItemResult}
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
 import com.amazonaws.services.simplesystemsmanagement.model.{GetParameterRequest, GetParameterResult, Parameter}
 import functions.cors.{EnvFunction, NoopFunction, SsmFunction}
+import onema.serverlessbase.configuration.cors.DynamodbCorsConfiguration
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
+import onema.serverlessbase.configuration.cors.Extensions._
 
 import scala.collection.JavaConverters._
-
 
 class ApiGatewayHandlerWithCorsTest extends FlatSpec with BeforeAndAfter with Matchers with MockFactory with EnvironmentHelper {
 
@@ -56,6 +60,25 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with BeforeAndAfter with Ma
 
     // Act
     val response = lambdaFunction.lambdaHandler(request, context)
+
+    // Assert
+    response.getHeaders.containsKey("Access-Control-Allow-Origin") should be (true)
+    response.getHeaders.get("Access-Control-Allow-Origin") should be ("bar.com")
+  }
+
+  "A function with CORS enabled using DynamoDB" should "return response with access-control-allow-origin header" in {
+    // Arrange
+    val originSite = "bar.com"
+    val lambdaFunction = new EnvFunction()
+    val request = new AwsProxyRequest()
+    val getItemResult = new GetItemResult().withItem(Map("Origin" -> new AttributeValue(originSite)).asJava)
+    val clientMock = mock[AmazonDynamoDBAsync]
+    (clientMock.getItem(_: GetItemRequest)).expects(*).returning(getItemResult)
+    request.setHeaders(Map("origin" -> originSite).asJava)
+    val context = new MockLambdaContext
+
+    // Act
+    val response = lambdaFunction.lambdaHandler(request, context).withCors(new DynamodbCorsConfiguration("bar.com", "Origin", clientMock))
 
     // Assert
     response.getHeaders.containsKey("Access-Control-Allow-Origin") should be (true)
