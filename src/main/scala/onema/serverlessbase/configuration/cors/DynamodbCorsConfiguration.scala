@@ -46,7 +46,7 @@ class DynamodbCorsConfiguration(origin: Option[String], val tableName: String, d
         Try(findOrigin) match {
           case Success(response) =>
             // If it does find any items in the table, find out if the site is enabled
-            response.getOrElse("") == originValue
+            response.contains(originValue)
           case Failure(ex) =>
             throw ex
         }

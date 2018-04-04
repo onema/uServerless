@@ -22,8 +22,8 @@ abstract class CorsConfiguration(val origin: Option[String]) {
       false
     } else if(sites.isDefined && sites.getOrElse("") == "*") {
       true
-    } else if(sites.isDefined && origin.isDefined) {
-      sites.get.split(',').contains(origin.get)
+    } else if(sites.isDefined && origin.getOrElse("").nonEmpty) {
+      sites.exists(_.split(',').contains(origin.getOrElse("")))
     } else {
       false
     }

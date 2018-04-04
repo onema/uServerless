@@ -49,6 +49,73 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with BeforeAndAfter with Ma
     response.getHeaders.get("Access-Control-Allow-Origin") should be (originSite)
   }
 
+  "A function with CORS enabled using env vars with multiple values" should "return response with access-control-allow-origin header" in {
+    // Arrange
+    val originSite = "https://foo.com,https://bar.com,http://baz.com"
+    val site = "http://baz.com"
+    setEnv("CORS_SITES", originSite)
+    val lambdaFunction = new EnvFunction()
+    val request = new AwsProxyRequest()
+    request.setHeaders(Map("origin" -> site).asJava)
+    val context = new MockLambdaContext
+
+    // Act
+    val response = lambdaFunction.lambdaHandler(request, context)
+
+    // Assert
+    response.getHeaders.containsKey("Access-Control-Allow-Origin") should be (true)
+    response.getHeaders.get("Access-Control-Allow-Origin") should be (site)
+  }
+
+  "A function with CORS enabled using empty env vars " should "NOT return response with access-control-allow-origin header" in {
+    // Arrange
+    val originSite = ""
+    val site = "http://baz.com"
+    setEnv("CORS_SITES", originSite)
+    val lambdaFunction = new EnvFunction()
+    val request = new AwsProxyRequest()
+    request.setHeaders(Map("origin" -> site).asJava)
+    val context = new MockLambdaContext
+
+    // Act
+    val response = lambdaFunction.lambdaHandler(request, context)
+
+    // Assert
+    Option(response.getHeaders) should be (None)
+  }
+
+  "A function with CORS enabled using empty env vars " should "NOT return response with access-control-allow-origin header if site is not set" in {
+    // Arrange
+    val originSite = ""
+    setEnv("CORS_SITES", originSite)
+    val lambdaFunction = new EnvFunction()
+    val request = new AwsProxyRequest()
+    val context = new MockLambdaContext
+
+    // Act
+    val response = lambdaFunction.lambdaHandler(request, context)
+
+    // Assert
+    Option(response.getHeaders) should be (None)
+  }
+
+  "A function with CORS enabled using empty env vars " should "NOT return response with access-control-allow-origin header if site is an empty string" in {
+    // Arrange
+    val originSite = ""
+    val site = ""
+    setEnv("CORS_SITES", originSite)
+    val lambdaFunction = new EnvFunction()
+    val request = new AwsProxyRequest()
+    //    request.setHeaders(Map("origin" -> site).asJava)
+    val context = new MockLambdaContext
+
+    // Act
+    val response = lambdaFunction.lambdaHandler(request, context)
+
+    // Assert
+    Option(response.getHeaders) should be (None)
+  }
+
   "A function with CORS enabled using env vars and CORS_SITE set to '*' " should "return response with access-control-allow-origin:* header" in {
     // Arrange
     val originSite = "bar.com"
