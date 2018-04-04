@@ -15,7 +15,7 @@ import java.io.{InputStream, OutputStream}
 import java.nio.charset.Charset
 
 import com.amazonaws.regions.Regions
-import com.amazonaws.serverless.proxy.internal.model.AwsProxyResponse
+import com.amazonaws.serverless.proxy.model.AwsProxyResponse
 import com.amazonaws.services.sns.AmazonSNSAsync
 import com.typesafe.scalalogging.Logger
 import onema.core.json.Implicits._
