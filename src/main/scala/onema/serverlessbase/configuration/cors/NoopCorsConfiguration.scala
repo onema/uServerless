@@ -11,7 +11,7 @@
 
 package onema.serverlessbase.configuration.cors
 
-class NoopCorsConfiguration extends CorsConfiguration("noop") {
+class NoopCorsConfiguration extends CorsConfiguration(None) {
 
   //--- Methods ---
   override def isEnabled: Boolean = false

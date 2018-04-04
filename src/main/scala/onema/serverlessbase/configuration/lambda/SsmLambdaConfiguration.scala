@@ -59,21 +59,21 @@ trait SsmLambdaConfiguration extends LambdaConfiguration {
     */
   def getValues(path: String): Map[String, String] = {
     @tailrec
-    def getParameters(path: String, params: Map[String, String] = Map(), nextToken: String = ""): Map[String, String]  = {
+    def getParameters(path: String, params: Map[String, String] = Map(), nextToken: Option[String] = None): Map[String, String]  = {
       val name = s"/$stageName/$path".stripDoubleSlashes
       val request = new GetParametersByPathRequest()
         .withPath(name)
         .withRecursive(true)
         .withWithDecryption(true)
-      if (nextToken.nonEmpty) request.withNextToken(nextToken)
+      if (nextToken.isDefined) request.withNextToken(nextToken.get)
       val response = ssmClient.getParametersByPath(request)
       val current = response.getParameters.asScala.map(x => x.getName.replaceAll(s"/$stageName", "") -> x.getValue).toMap
 
       // Return params, otherwise continue with the recursion
-      if (response.getNextToken == null) {
+      if (Option(response.getNextToken).isEmpty) {
         params ++ current
       } else {
-        getParameters(path, params ++ current, response.getNextToken)
+        getParameters(path, params ++ current, Option(response.getNextToken))
       }
     }
     getParameters(path)

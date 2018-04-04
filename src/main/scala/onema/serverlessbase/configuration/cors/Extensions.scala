@@ -21,7 +21,7 @@ object Extensions {
       if(corsConfiguration.isOriginValid) {
         val existingHeaders = Option(response.getHeaders.asScala).getOrElse(Map())
         val headers = Map(
-          "Access-Control-Allow-Origin" -> corsConfiguration.origin,
+          "Access-Control-Allow-Origin" -> corsConfiguration.origin.get,
           "Access-Control-Allow-Credentials" -> "true"
         ) ++ existingHeaders
         response.setHeaders(headers.asJava)

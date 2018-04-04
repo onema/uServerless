@@ -78,7 +78,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with BeforeAndAfter with Ma
     val context = new MockLambdaContext
 
     // Act
-    val response = lambdaFunction.lambdaHandler(request, context).withCors(new DynamodbCorsConfiguration("bar.com", "Origin", clientMock))
+    val response = lambdaFunction.lambdaHandler(request, context).withCors(new DynamodbCorsConfiguration(Some("bar.com"), "Origin", clientMock))
 
     // Assert
     response.getHeaders.containsKey("Access-Control-Allow-Origin") should be (true)

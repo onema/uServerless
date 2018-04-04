@@ -32,6 +32,6 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    handle(() => Logic.handleRequest(request)).withCors(new EnvCorsConfiguration(request.getHeaders.get("origin")))
+    handle(() => Logic.handleRequest(request)).withCors(new EnvCorsConfiguration(Option(request.getHeaders.get("origin"))))
   }
 }

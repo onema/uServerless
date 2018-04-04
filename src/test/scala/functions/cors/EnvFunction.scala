@@ -33,7 +33,7 @@ class EnvFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    val origin = request.getHeaders.get("origin")
+    val origin = Option(request.getHeaders.get("origin"))
     handle(() => EnvLogic.handleRequest(request)).withCors(new EnvCorsConfiguration(origin))
   }
 }

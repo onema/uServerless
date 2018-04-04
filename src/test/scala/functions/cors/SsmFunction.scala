@@ -34,7 +34,7 @@ class SsmFunction(val ssmClient: AWSSimpleSystemsManagementAsync) extends ApiGat
 
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    handle(() => SsmLogic.handleRequest(request)).withCors(new SsmCorsConfiguration("https://foo.com", ssmClient))
+    handle(() => SsmLogic.handleRequest(request)).withCors(new SsmCorsConfiguration(Some("https://foo.com"), ssmClient))
   }
 
 }
