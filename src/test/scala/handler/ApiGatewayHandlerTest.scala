@@ -26,6 +26,7 @@ import onema.serverlessbase.model.{ApiGatewayProxyRequest, ErrorMessage}
 import org.apache.http.HttpStatus
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
+import com.fasterxml.jackson.databind.ObjectMapper
 
 
 object ApiGatewayHandlerTest {
@@ -81,7 +82,6 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
   "A response" should "be properly serialized to json" in {
 
     // Arrange
-    import com.fasterxml.jackson.databind.ObjectMapper
     val mapper = new ObjectMapper
     class Foo extends ApiGatewayResponse {
       def test(): AwsProxyResponse = {
