@@ -11,14 +11,19 @@
 
 package onema.serverlessbase.configuration.cors
 
-import com.amazonaws.serverless.proxy.internal.model.AwsProxyResponse
+import com.amazonaws.serverless.proxy.model.AwsProxyResponse
+import scala.collection.JavaConverters._
 
 
 object Extensions {
   implicit class AwsProxyResponseExtension(response: AwsProxyResponse) {
     def withCors(corsConfiguration: CorsConfiguration): AwsProxyResponse = {
       if(corsConfiguration.isOriginValid) {
-        response.addHeader("Access-Control-Allow-Origin", corsConfiguration.origin)
+        val headers = Map(
+          "Access-Control-Allow-Origin" -> corsConfiguration.origin,
+          "Access-Control-Allow-Credentials" -> "true"
+        ) ++ response.getHeaders.asScala
+        response.setHeaders(headers.asJava)
       }
       response
     }
