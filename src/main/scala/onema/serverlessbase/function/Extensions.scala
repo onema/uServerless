@@ -17,11 +17,9 @@ import scala.util.matching.Regex
 
 object Extensions {
   implicit class ContextExtension(context: Context) {
-    def accountId: String = {
+    def accountId: Option[String] = {
       context.getInvokedFunctionArn
-      .split(':')
-      .filter(x => "[\\d]{12}".r matches x)
-      .head
+        .split(':').find(x => "[\\d]{12}".r matches x)
     }
   }
 
