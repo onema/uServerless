@@ -10,7 +10,7 @@
   */
 package handler
 
-import onema.core.json.Implicits.JsonStringToCaseClass
+import onema.core.json.Implicits._
 import onema.serverlessbase.exception.HandleRequestException
 import onema.serverlessbase.model.ErrorMessage
 import org.scalatest.{FlatSpec, Matchers}

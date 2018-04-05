@@ -1,7 +1,5 @@
 resolvers += "Onema Snapshots" at "s3://s3-us-east-1.amazonaws.com/ones-deployment-bucket/snapshots"
 
-val coreVersion = "1.0.0"
-
 lazy val serverlessBaseRoot = (project in file("."))
 .settings(
   organization := "onema",
@@ -16,7 +14,7 @@ lazy val serverlessBaseRoot = (project in file("."))
     val awsSdkVersion = "1.11.301"
     Seq(
       // CORE!
-       "onema"                      % "json-core_2.12"                      % coreVersion,
+       "onema"                      % "json-core_2.12"                      % "1.1.0",
 
       // AWS libraries
       "com.amazonaws"               % "aws-lambda-java-events"              % "2.1.0",

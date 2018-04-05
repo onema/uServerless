@@ -15,7 +15,7 @@ import java.io.{InputStream, OutputStream}
 import java.nio.charset.Charset
 
 import com.amazonaws.regions.Regions
-import com.amazonaws.serverless.proxy.model.AwsProxyResponse
+import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.sns.AmazonSNSAsync
 import com.typesafe.scalalogging.Logger
 import onema.core.json.Implicits._
@@ -41,10 +41,11 @@ trait ApiGatewayHandler extends ApiGatewayResponse with LambdaConfiguration {
   protected val snsClient: AmazonSNSAsync
 
   //--- Methods ---
-  protected def getRequest(inputStream: InputStream): ApiGatewayProxyRequest = {
+  protected def getRequest(inputStream: InputStream): AwsProxyRequest = {
     val json = Source.fromInputStream(inputStream).mkString
-    log.info(json)
-    json.jsonParse[ApiGatewayProxyRequest]
+    val request = json.jsonParseToJavaClass[AwsProxyRequest]
+    log.info(request.javaClassToJson)
+    request
   }
 
   protected def writeResponse(outputStream: OutputStream, value: AnyRef): Unit = {

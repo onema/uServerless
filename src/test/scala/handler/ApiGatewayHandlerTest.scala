@@ -17,7 +17,7 @@ import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
 import com.amazonaws.services.sns.AmazonSNSAsync
 import functions.success.Function
 import handler.ApiGatewayHandlerTest.TestFunction
-import onema.core.json.Implicits.{JsonStringToCaseClass, _}
+import onema.core.json.Implicits._
 import onema.serverlessbase.configuration.lambda.EnvLambdaConfiguration
 import onema.serverlessbase.exception.{HandleRequestException, RuntimeException}
 import onema.serverlessbase.function.Extensions.RichRegex
@@ -33,7 +33,7 @@ object ApiGatewayHandlerTest {
   class TestFunction(val snsClient: AmazonSNSAsync) extends ApiGatewayHandler with EnvLambdaConfiguration{
 
     //--- Methods ---
-    def invokeGetRequest(inputStream: InputStream): ApiGatewayProxyRequest = {
+    def invokeGetRequest(inputStream: InputStream): AwsProxyRequest = {
       getRequest(inputStream)
     }
 
@@ -110,8 +110,8 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
     val result = function.invokeGetRequest(inputStream)
 
     // Assert
-    result.body should be ("{\"test\":\"body\"}")
-    result.httpMethod should be ("POST")
+    result.getBody should be ("{\"test\":\"body\"}")
+    result.getHttpMethod should be ("POST")
   }
 
   "An exception" should "generate the proper response" in {
