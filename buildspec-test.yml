@@ -4,13 +4,21 @@ phases:
   pre_build:
     commands:
       - ls -la
+
   build:
     commands:
       - echo Build started on `date`
       - sbt compile
 
       - echo Testing Core on `date`
-      - sbt clean test
+      - sbt clean coverage test
+
+      - echo Generating coverage report
+      - sbt coverageReport
+      - sbt coverageAggregate
+
+      - echo Submit coverage report to Codacy
+      - sbt codacyCoverage
 
   post_build:
     commands:

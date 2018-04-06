@@ -11,7 +11,7 @@
 
 package functions.cors
 
-import com.amazonaws.serverless.proxy.internal.model.{AwsProxyRequest, AwsProxyResponse}
+import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import onema.serverlessbase.configuration.cors.EnvCorsConfiguration
@@ -20,12 +20,6 @@ import onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
 import onema.serverlessbase.function.ApiGatewayHandler
 import org.apache.http.HttpStatus
 
-object EnvLogic {
-  def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
-    new AwsProxyResponse(HttpStatus.SC_OK)
-  }
-}
-
 class EnvFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Fields ---
@@ -33,7 +27,7 @@ class EnvFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    val origin = request.getHeaders.get("origin")
-    handle(() => EnvLogic.handleRequest(request)).withCors(new EnvCorsConfiguration(origin))
+    val origin = Option(request.getHeaders.get("origin"))
+    handle(new AwsProxyResponse(HttpStatus.SC_OK)).withCors(new EnvCorsConfiguration(origin))
   }
 }

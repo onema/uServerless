@@ -31,8 +31,8 @@ trait LambdaHandler extends LambdaConfiguration {
   protected val snsClient: AmazonSNSAsync
 
   //--- Methods ---
-  protected def handle(function: () => Unit): Unit = {
-    Try(function()) match {
+  protected def handle(function: => Unit): Unit = {
+    Try(function) match {
       case Success(_) =>
       case Failure(e: Throwable) => handleFailure(e)
     }

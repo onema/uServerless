@@ -33,7 +33,7 @@ class Function extends LambdaHandler with NoopLambdaConfiguration {
 
   //--- Methods ---
   def lambdaHandler(event: SNSEvent, context: Context): Unit = {
-    handle(() => Logic.handleEvent(event, log))
+    handle(Logic.handleEvent(event, log))
   }
 
 

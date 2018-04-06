@@ -12,30 +12,29 @@
 package functions.cors
 
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync
 import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
+import onema.serverlessbase.configuration.cors.DynamodbCorsConfiguration
 import onema.serverlessbase.configuration.cors.Extensions.AwsProxyResponseExtension
-import onema.serverlessbase.configuration.cors.SsmCorsConfiguration
 import onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
 import onema.serverlessbase.function.ApiGatewayHandler
 import org.apache.http.HttpStatus
 
-object SsmLogic {
+object EnvLogic {
   def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
     new AwsProxyResponse(HttpStatus.SC_OK)
   }
 }
 
-class SsmFunction(val ssmClient: AWSSimpleSystemsManagementAsync) extends ApiGatewayHandler with NoopLambdaConfiguration {
+class DynamodbFunction(tableName: String, client: AmazonDynamoDBAsync) extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Fields ---
   override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
 
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    handle(SsmLogic.handleRequest(request)).withCors(new SsmCorsConfiguration(Some("https://foo.com"), ssmClient))
+    val origin = Option(request.getHeaders.get("origin"))
+    handle(EnvLogic.handleRequest(request)).withCors(new DynamodbCorsConfiguration(origin, tableName, client))
   }
-
 }
-

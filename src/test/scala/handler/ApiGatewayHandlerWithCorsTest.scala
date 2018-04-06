@@ -10,22 +10,26 @@
   */
 package handler
 
-import com.amazonaws.serverless.proxy.internal.model.AwsProxyRequest
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
+import com.amazonaws.serverless.proxy.model.AwsProxyRequest
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync
+import com.amazonaws.services.dynamodbv2.model.{AttributeValue, GetItemRequest, GetItemResult}
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
 import com.amazonaws.services.simplesystemsmanagement.model.{GetParameterRequest, GetParameterResult, Parameter}
-import functions.cors.{EnvFunction, NoopFunction, SsmFunction}
+import functions.cors.{DynamodbFunction, EnvFunction, NoopFunction, SsmFunction}
+import onema.serverlessbase.configuration.cors.DynamodbCorsConfiguration
+import onema.serverlessbase.configuration.cors.Extensions._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
 
 import scala.collection.JavaConverters._
-
 
 class ApiGatewayHandlerWithCorsTest extends FlatSpec with BeforeAndAfter with Matchers with MockFactory with EnvironmentHelper {
 
   before {
     deleteEnv("CORS_SITES")
     deleteEnv("STAGE_NAME")
+    setEnv("STAGE_NAME", "")
   }
 
   "A function with CORS enabled using env vars" should "return response with access-control-allow-origin header" in {
@@ -45,6 +49,73 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with BeforeAndAfter with Ma
     response.getHeaders.get("Access-Control-Allow-Origin") should be (originSite)
   }
 
+  "A function with CORS enabled using env vars with multiple values" should "return response with access-control-allow-origin header" in {
+    // Arrange
+    val originSite = "https://foo.com,https://bar.com,http://baz.com"
+    val site = "http://baz.com"
+    setEnv("CORS_SITES", originSite)
+    val lambdaFunction = new EnvFunction()
+    val request = new AwsProxyRequest()
+    request.setHeaders(Map("origin" -> site).asJava)
+    val context = new MockLambdaContext
+
+    // Act
+    val response = lambdaFunction.lambdaHandler(request, context)
+
+    // Assert
+    response.getHeaders.containsKey("Access-Control-Allow-Origin") should be (true)
+    response.getHeaders.get("Access-Control-Allow-Origin") should be (site)
+  }
+
+  "A function with CORS enabled using empty env vars " should "NOT return response with access-control-allow-origin header" in {
+    // Arrange
+    val originSite = ""
+    val site = "http://baz.com"
+    setEnv("CORS_SITES", originSite)
+    val lambdaFunction = new EnvFunction()
+    val request = new AwsProxyRequest()
+    request.setHeaders(Map("origin" -> site).asJava)
+    val context = new MockLambdaContext
+
+    // Act
+    val response = lambdaFunction.lambdaHandler(request, context)
+
+    // Assert
+    Option(response.getHeaders) should be (None)
+  }
+
+  "A function with CORS enabled using empty env vars " should "NOT return response with access-control-allow-origin header if site is not set" in {
+    // Arrange
+    val originSite = ""
+    setEnv("CORS_SITES", originSite)
+    val lambdaFunction = new EnvFunction()
+    val request = new AwsProxyRequest()
+    val context = new MockLambdaContext
+
+    // Act
+    val response = lambdaFunction.lambdaHandler(request, context)
+
+    // Assert
+    Option(response.getHeaders) should be (None)
+  }
+
+  "A function with CORS enabled using empty env vars " should "NOT return response with access-control-allow-origin header if site is an empty string" in {
+    // Arrange
+    val originSite = ""
+    val site = ""
+    setEnv("CORS_SITES", originSite)
+    val lambdaFunction = new EnvFunction()
+    val request = new AwsProxyRequest()
+    //    request.setHeaders(Map("origin" -> site).asJava)
+    val context = new MockLambdaContext
+
+    // Act
+    val response = lambdaFunction.lambdaHandler(request, context)
+
+    // Assert
+    Option(response.getHeaders) should be (None)
+  }
+
   "A function with CORS enabled using env vars and CORS_SITE set to '*' " should "return response with access-control-allow-origin:* header" in {
     // Arrange
     val originSite = "bar.com"
@@ -60,6 +131,43 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with BeforeAndAfter with Ma
     // Assert
     response.getHeaders.containsKey("Access-Control-Allow-Origin") should be (true)
     response.getHeaders.get("Access-Control-Allow-Origin") should be ("bar.com")
+  }
+
+  "A function with CORS enabled using DynamoDB" should "return response with access-control-allow-origin header" in {
+    // Arrange
+    val originSite = "bar.com"
+    val lambdaFunction = new EnvFunction()
+    val request = new AwsProxyRequest()
+    val getItemResult = new GetItemResult().withItem(Map("Origin" -> new AttributeValue(originSite)).asJava)
+    val clientMock = mock[AmazonDynamoDBAsync]
+    (clientMock.getItem(_: GetItemRequest)).expects(*).returning(getItemResult)
+    request.setHeaders(Map("origin" -> originSite).asJava)
+    val context = new MockLambdaContext
+
+    // Act
+    val response = lambdaFunction.lambdaHandler(request, context).withCors(new DynamodbCorsConfiguration(Some("bar.com"), "Origin", clientMock))
+
+    // Assert
+    response.getHeaders.containsKey("Access-Control-Allow-Origin") should be (true)
+    response.getHeaders.get("Access-Control-Allow-Origin") should be ("bar.com")
+  }
+
+  "A function with CORS enabled using DynamoDB" should "not return response with access-control-allow-origin header if origin is *" in {
+    // Arrange
+    val originSite = "*"
+    val request = new AwsProxyRequest()
+    val getItemResult = new GetItemResult()
+    val clientMock = mock[AmazonDynamoDBAsync]
+    (clientMock.getItem(_: GetItemRequest)).expects(*).returning(getItemResult)
+    val lambdaFunction = new DynamodbFunction("foo", clientMock)
+    request.setHeaders(Map("origin" -> originSite).asJava)
+    val context = new MockLambdaContext
+
+    // Act
+    val response = lambdaFunction.lambdaHandler(request, context)
+
+    // Assert
+    Option(response.getHeaders).isDefined should be (false)
   }
 
   "A function with Noop CORS configuration" should " not return response with access-control-allow-origin header" in {

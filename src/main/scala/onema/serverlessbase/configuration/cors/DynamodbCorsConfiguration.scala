@@ -11,14 +11,28 @@
 
 package onema.serverlessbase.configuration.cors
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync
-import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec
-import com.amazonaws.services.dynamodbv2.document.utils.ValueMap
-import com.amazonaws.services.dynamodbv2.document.{DynamoDB, ItemCollection, QueryOutcome}
+import com.amazonaws.services.dynamodbv2.document.DynamoDB
+import com.amazonaws.services.dynamodbv2.{AmazonDynamoDBAsync, AmazonDynamoDBAsyncClientBuilder}
 
 import scala.util.{Failure, Success, Try}
 
-class DynamodbCorsConfiguration(origin: String, val tableName: String, dynamodbClient: AmazonDynamoDBAsync) extends CorsConfiguration(origin) {
+object DynamodbCorsConfiguration {
+  def apply(origin: String): DynamodbCorsConfiguration = DynamodbCorsConfiguration(Option(origin))
+
+  def apply(origin: String, tableName: String): DynamodbCorsConfiguration = DynamodbCorsConfiguration(Option(origin), tableName)
+
+  def apply(origin: Option[String]): DynamodbCorsConfiguration = DynamodbCorsConfiguration(origin, "CorsOrigins")
+
+  def apply(origin: Option[String], tableName: String): DynamodbCorsConfiguration = {
+    DynamodbCorsConfiguration(origin, tableName, AmazonDynamoDBAsyncClientBuilder.defaultClient())
+  }
+
+  def apply(origin: Option[String], tableName: String, dynamodbClient: AmazonDynamoDBAsync): DynamodbCorsConfiguration = {
+    new DynamodbCorsConfiguration(origin, tableName, AmazonDynamoDBAsyncClientBuilder.defaultClient())
+  }
+}
+
+class DynamodbCorsConfiguration(origin: Option[String], val tableName: String, dynamodbClient: AmazonDynamoDBAsync) extends CorsConfiguration(origin) {
 
   //--- Fields ---
   private val dynamoDb = new DynamoDB(dynamodbClient)
@@ -30,25 +44,23 @@ class DynamodbCorsConfiguration(origin: String, val tableName: String, dynamodbC
   }
 
   override def isOriginValid: Boolean = {
-    Try(findOrigin(origin)) match {
-      case Success(response) =>
-        // If it does find any items in the table, find out if the site is enabled
-        if(response.iterator().hasNext) {
-          val item = response.iterator().next()
-          item.getBOOL("enabled")
-        } else {
-          false
+    origin match {
+      case Some(originValue) =>
+        Try(findOrigin) match {
+          case Success(response) =>
+            // If it does find any items in the table, find out if the site is enabled
+            response.contains(originValue)
+          case Failure(ex) =>
+            throw ex
         }
-      case Failure(ex) =>
-        throw ex
+      case None => false
     }
   }
 
-  private def findOrigin(origin: String): ItemCollection[QueryOutcome]  = {
-    val index = table.getIndex("Origin")
-    val query = new QuerySpec()
-      .withKeyConditionExpression("Origin = :v_origin")
-      .withValueMap(new ValueMap().withString(":v_origin", origin))
-    index.query(query)
+  private def findOrigin: Option[String]  = {
+    Option(table.getItem("Origin", origin.getOrElse(""))) match {
+      case Some(item) => Some(item.getString("Origin"))
+      case None => None
+    }
   }
 }

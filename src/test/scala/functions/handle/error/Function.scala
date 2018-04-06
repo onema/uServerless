@@ -11,7 +11,7 @@
 
 package functions.handle.error
 
-import com.amazonaws.serverless.proxy.internal.model.{AwsProxyRequest, AwsProxyResponse}
+import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
@@ -29,6 +29,6 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    handle(() => Logic.handleRequest)
+    handle(Logic.handleRequest)
   }
 }

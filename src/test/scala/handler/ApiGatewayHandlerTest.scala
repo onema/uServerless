@@ -12,12 +12,12 @@ package handler
 
 import java.io.{ByteArrayInputStream, InputStream}
 
-import com.amazonaws.serverless.proxy.internal.model.{AwsProxyRequest, AwsProxyResponse}
+import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
 import com.amazonaws.services.sns.AmazonSNSAsync
 import functions.success.Function
 import handler.ApiGatewayHandlerTest.TestFunction
-import onema.core.json.Implicits.{JsonStringToCaseClass, _}
+import onema.core.json.Implicits._
 import onema.serverlessbase.configuration.lambda.EnvLambdaConfiguration
 import onema.serverlessbase.exception.{HandleRequestException, RuntimeException}
 import onema.serverlessbase.function.Extensions.RichRegex
@@ -26,26 +26,27 @@ import onema.serverlessbase.model.{ApiGatewayProxyRequest, ErrorMessage}
 import org.apache.http.HttpStatus
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
+import com.fasterxml.jackson.databind.ObjectMapper
 
 
 object ApiGatewayHandlerTest {
   class TestFunction(val snsClient: AmazonSNSAsync) extends ApiGatewayHandler with EnvLambdaConfiguration{
 
     //--- Methods ---
-    def invokeGetRequest(inputStream: InputStream): ApiGatewayProxyRequest = {
+    def invokeGetRequest(inputStream: InputStream): AwsProxyRequest = {
       getRequest(inputStream)
     }
 
     def throwException(): AwsProxyResponse = {
-      handle(() => throw new Exception("Test exception"))
+      handle(throw new Exception("Test exception"))
     }
 
     def throwHandleRequestException(): AwsProxyResponse = {
-      handle(() => throw new HandleRequestException(HttpStatus.SC_BAD_REQUEST, "Bad request exception"))
+      handle(throw new HandleRequestException(HttpStatus.SC_BAD_REQUEST, "Bad request exception"))
     }
 
     def throwRuntimeException(): AwsProxyResponse = {
-      handle(() => throw new RuntimeException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Runtime exception"))
+      handle(throw new RuntimeException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Runtime exception"))
     }
   }
 }
@@ -81,7 +82,6 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
   "A response" should "be properly serialized to json" in {
 
     // Arrange
-    import com.fasterxml.jackson.databind.ObjectMapper
     val mapper = new ObjectMapper
     class Foo extends ApiGatewayResponse {
       def test(): AwsProxyResponse = {
@@ -110,8 +110,8 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
     val result = function.invokeGetRequest(inputStream)
 
     // Assert
-    result.body should be ("{\"test\":\"body\"}")
-    result.httpMethod should be ("POST")
+    result.getBody should be ("{\"test\":\"body\"}")
+    result.getHttpMethod should be ("POST")
   }
 
   "An exception" should "generate the proper response" in {

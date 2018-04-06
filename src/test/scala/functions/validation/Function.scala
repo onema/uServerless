@@ -11,7 +11,7 @@
 
 package functions.validation
 
-import com.amazonaws.serverless.proxy.internal.model.{AwsProxyRequest, AwsProxyResponse}
+import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.model.PublishRequest
 import com.amazonaws.services.sns.{AmazonSNS, AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
@@ -42,6 +42,6 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     val topic = s"arn:aws:sns:$region:${context.accountId}:$snsTopicName"
     val logic = new Logic(snsClient, topic)
-    handle(() => logic.handleRequest(request))
+    handle(logic.handleRequest(request))
   }
 }

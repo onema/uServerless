@@ -1,6 +1,8 @@
 Serverless Base for Scala
 =========================
-![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiRUFKZHBsOFFGREZGSi9jNzU1NUNzV2orUFlEZkM2d29DemtGYUxOVi96V1QwZmZUTnM3OHAvRXZOZjBhbXpoN0N2Skt5L3k5eWRESFJzZk5GSUd5LzZRPSIsIml2UGFyYW1ldGVyU3BlYyI6IlVkMm1tS20xOUY2TU1rUWgiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
+![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiaDJnMmJ0a2M5R1k3OWM0UVg2NnQwV2RsNEg5YUlFWmpxQmlxMXRtY3R4L2J4eW81aG1IMWxVWWhabG92L1lseVVJR0hGUWxxUkZFWVkveHdDazRuSmxFPSIsIml2UGFyYW1ldGVyU3BlYyI6ImRBWm0xOFFIMkxkaFNaL3QiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8f01afd33edf45779f742520e58a44e7)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=onema/ServerlessBase&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/8f01afd33edf45779f742520e58a44e7)](https://www.codacy.com?utm_source=github.com&utm_medium=referral&utm_content=onema/ServerlessBase&utm_campaign=Badge_Coverage)
 
 The serverless base package is a small collection of base classes to
 build AWS Lambda functions using scala. The base classes have the following
@@ -53,7 +55,7 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    val result = handle(() => Logic.handleRequest(request))
+    val result = handle(Logic.handleRequest(request))
     result.getStatusCode should be (HttpStatus.SC_OK)
     result.getBody should be ("{\"message\": \"success\"}")
     result
@@ -82,7 +84,7 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    val result = handle(() => Logic.handleRequest(request))
+    val result = handle(Logic.handleRequest(request))
     result.getBody should be ("{\"message\":\"Internal Server Error: check the logs for more information.\"}")
     result.getStatusCode should be (HttpStatus.SC_INTERNAL_SERVER_ERROR)
     result
@@ -114,7 +116,7 @@ class Function extends ApiGatewayHandler {
   // ...
   
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    val result = handle(() => Logic.handleRequest)
+    val result = handle(Logic.handleRequest)
     result.getBody should be ("{\"message\":\"FooBar\"}")
     result.getStatusCode should be (HttpStatus.SC_BAD_REQUEST)
     result 
@@ -194,7 +196,7 @@ class EnvFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     val origin = request.getHeaders.get("origin")
-    val result = handle(() => EnvLogic.handleRequest(request)).withCors(new EnvCorsConfiguration(origin))
+    val result = handle(EnvLogic.handleRequest(request)).withCors(new EnvCorsConfiguration(origin))
     result.getHeaders.get("Access-Control-Allow-Origin") should be ("https://bar.com")
     result
   }

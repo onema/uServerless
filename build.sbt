@@ -1,14 +1,12 @@
 resolvers += "Onema Snapshots" at "s3://s3-us-east-1.amazonaws.com/ones-deployment-bucket/snapshots"
 
-val coreVersion = "1.0.0"
-
 lazy val serverlessBaseRoot = (project in file("."))
 .settings(
   organization := "onema",
 
   name := "serverless-base",
 
-  version := "0.5.0",
+  version := "0.6.0-SNAPSHOT",
 
   scalaVersion := "2.12.5",
 
@@ -16,15 +14,16 @@ lazy val serverlessBaseRoot = (project in file("."))
     val awsSdkVersion = "1.11.301"
     Seq(
       // CORE!
-       "onema"                      % "json-core_2.12"                      % coreVersion,
+       "onema"                      % "json-core_2.12"                      % "1.1.0",
 
       // AWS libraries
-      "com.amazonaws"               % "aws-lambda-java-events"              % "2.0.2",
+      "com.amazonaws"               % "aws-lambda-java-events"              % "2.1.0",
       "com.amazonaws"               % "aws-lambda-java-core"                % "1.2.0",
       "com.amazonaws"               % "aws-java-sdk-sns"                    % awsSdkVersion,
       "com.amazonaws"               % "aws-java-sdk-ssm"                    % awsSdkVersion,
       "com.amazonaws"               % "aws-java-sdk-dynamodb"               % awsSdkVersion,
-      "com.amazonaws.serverless"    % "aws-serverless-java-container-core"  % "0.8",
+      // The serverless java-container supports request context authorizer claims that are currently not available in the lambda-java-events
+      "com.amazonaws.serverless"    % "aws-serverless-java-container-core"  % "0.9.1",
 
       // Http
       "org.apache.httpcomponents"   % "httpcore"                            % "4.4.8",
@@ -34,8 +33,8 @@ lazy val serverlessBaseRoot = (project in file("."))
       "ch.qos.logback"              % "logback-classic"                     % "1.1.7",
 
       // Testing
-      "org.scalatest"               % "scalatest_2.12"                      % "3.0.4"   % "test",
-      "org.scalamock"               % "scalamock-scalatest-support_2.12"    % "3.6.0"   % "test"
+      "org.scalatest"               % "scalatest_2.12"                      % "3.0.5"   % "test",
+      "org.scalamock"               %% "scalamock"                          % "4.1.0"   % Test
     )
   }
 )

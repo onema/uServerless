@@ -11,7 +11,7 @@
 
 package functions.cors
 
-import com.amazonaws.serverless.proxy.internal.model.{AwsProxyRequest, AwsProxyResponse}
+import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import onema.serverlessbase.configuration.cors.Extensions.AwsProxyResponseExtension
@@ -34,7 +34,7 @@ class NoopFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     val origin = request.getHeaders.get("origin")
-    handle(() => NoopLogic.handleRequest(request)).withCors(new NoopCorsConfiguration())
+    handle(NoopLogic.handleRequest(request)).withCors(new NoopCorsConfiguration())
   }
 
 }

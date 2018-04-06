@@ -14,7 +14,7 @@ package onema.serverlessbase.configuration.cors
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
 import onema.serverlessbase.configuration.lambda.SsmLambdaConfiguration
 
-class SsmCorsConfiguration(origin: String, val ssmClient: AWSSimpleSystemsManagementAsync) extends CorsConfiguration(origin) with SsmLambdaConfiguration {
+class SsmCorsConfiguration(origin: Option[String], val ssmClient: AWSSimpleSystemsManagementAsync) extends CorsConfiguration(origin) with SsmLambdaConfiguration {
 
   //--- Methods ---
   override def isEnabled: Boolean = getValue("/cors/sites").isDefined

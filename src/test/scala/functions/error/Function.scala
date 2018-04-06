@@ -11,7 +11,7 @@
 
 package functions.error
 
-import com.amazonaws.serverless.proxy.internal.model.{AwsProxyRequest, AwsProxyResponse}
+import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import onema.serverlessbase.configuration.cors.EnvCorsConfiguration
@@ -32,6 +32,6 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    handle(() => Logic.handleRequest(request)).withCors(new EnvCorsConfiguration(request.getHeaders.get("origin")))
+    handle(Logic.handleRequest(request)).withCors(new EnvCorsConfiguration(Option(request.getHeaders.get("origin"))))
   }
 }

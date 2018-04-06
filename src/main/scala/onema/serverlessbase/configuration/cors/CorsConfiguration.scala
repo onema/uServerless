@@ -11,7 +11,7 @@
 
 package onema.serverlessbase.configuration.cors
 
-abstract class CorsConfiguration(val origin: String) {
+abstract class CorsConfiguration(val origin: Option[String]) {
 
   def isEnabled: Boolean
 
@@ -22,8 +22,8 @@ abstract class CorsConfiguration(val origin: String) {
       false
     } else if(sites.isDefined && sites.getOrElse("") == "*") {
       true
-    } else if(sites.isDefined) {
-      sites.getOrElse("").split(',').contains(origin)
+    } else if(sites.isDefined && origin.getOrElse("").nonEmpty) {
+      sites.exists(_.split(',').contains(origin.getOrElse("")))
     } else {
       false
     }
