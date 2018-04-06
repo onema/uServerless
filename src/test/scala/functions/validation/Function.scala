@@ -42,6 +42,6 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     val topic = s"arn:aws:sns:$region:${context.accountId}:$snsTopicName"
     val logic = new Logic(snsClient, topic)
-    handle(() => logic.handleRequest(request))
+    handle(logic.handleRequest(request))
   }
 }

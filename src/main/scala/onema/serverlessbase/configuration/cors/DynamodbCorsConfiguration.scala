@@ -17,6 +17,9 @@ import com.amazonaws.services.dynamodbv2.{AmazonDynamoDBAsync, AmazonDynamoDBAsy
 import scala.util.{Failure, Success, Try}
 
 object DynamodbCorsConfiguration {
+  def apply(origin: String): DynamodbCorsConfiguration = DynamodbCorsConfiguration(Option(origin))
+
+  def apply(origin: String, tableName: String): DynamodbCorsConfiguration = DynamodbCorsConfiguration(Option(origin), tableName)
 
   def apply(origin: Option[String]): DynamodbCorsConfiguration = DynamodbCorsConfiguration(origin, "CorsOrigins")
 

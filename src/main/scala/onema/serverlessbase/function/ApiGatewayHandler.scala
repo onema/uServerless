@@ -53,8 +53,8 @@ trait ApiGatewayHandler extends ApiGatewayResponse with LambdaConfiguration {
     outputStream.close()
   }
 
-  protected def handle(function: () => AwsProxyResponse): AwsProxyResponse = {
-    Try(function()) match {
+  protected def handle(function: => AwsProxyResponse): AwsProxyResponse = {
+    Try(function) match {
       case Success(response) => response
       case Failure(e: Throwable) => handleFailure(e)
     }
