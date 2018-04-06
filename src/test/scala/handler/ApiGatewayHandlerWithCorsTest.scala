@@ -170,6 +170,31 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with BeforeAndAfter with Ma
     Option(response.getHeaders).isDefined should be (false)
   }
 
+  "A function with CORS enabled using DynamoDB" should "not return response with access-control-allow-origin header if origin is None" in {
+    // Arrange
+    val originSite: String = null
+    val dynamoConfig = DynamodbCorsConfiguration(originSite)
+
+    // Act
+    val response = dynamoConfig.isOriginValid
+
+    // Assert
+    response should be (false)
+  }
+
+  "Create a simple Cors Config using DynamoDB and origin" should "return an object with the valid origin" in {
+    // Arrange
+    val originSite = "https://foo.com"
+    val corsConfig = DynamodbCorsConfiguration(originSite)
+
+    // Act
+    val originOption = corsConfig.origin
+
+    // Assert
+    originOption.isDefined should be (true)
+    originOption.getOrElse("") should be (originSite)
+  }
+
   "A function with Noop CORS configuration" should " not return response with access-control-allow-origin header" in {
     // Arrange
     val originSite = "https://baz.com"
