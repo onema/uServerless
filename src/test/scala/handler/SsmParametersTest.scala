@@ -29,7 +29,7 @@ class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with 
     deleteEnv("STAGE_NAME")
   }
 
-  "A function with ssm parameter store" should "return single parameters" in {
+  "A function with ssm parameter store value and stage name" should "return single parameter" in {
 
     // Arrange
     setEnv("STAGE_NAME", "test")
@@ -46,7 +46,7 @@ class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with 
     response.get should be ("test value")
   }
 
-  "A function with ssm parameter store" should "return multiple parameters" in {
+  "A function with ssm parameter store value and stage name" should "return multiple parameters" in {
 
     // Arrange
     setEnv("STAGE_NAME", "test")
@@ -67,7 +67,7 @@ class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with 
     response("/foo/bar") should be ("test bar value")
   }
 
-  "A function with ssm parameter store and no environment name" should "return single parameters" in {
+  "A function with ssm parameter store and no stage name" should "return single parameters" in {
 
     // Arrange
     val request = new GetParameterRequest().withName("/foo").withWithDecryption(true)
