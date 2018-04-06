@@ -20,7 +20,7 @@ phases:
       - sbt codacyCoverage
 
       - echo Publishing on `date`
-      - sbt publish
+      - sbt coverageOff publish
 
   post_build:
     commands:

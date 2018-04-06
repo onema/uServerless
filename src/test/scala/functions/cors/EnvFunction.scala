@@ -20,12 +20,6 @@ import onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
 import onema.serverlessbase.function.ApiGatewayHandler
 import org.apache.http.HttpStatus
 
-object EnvLogic {
-  def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
-    new AwsProxyResponse(HttpStatus.SC_OK)
-  }
-}
-
 class EnvFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Fields ---
@@ -34,6 +28,6 @@ class EnvFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     val origin = Option(request.getHeaders.get("origin"))
-    handle(EnvLogic.handleRequest(request)).withCors(new EnvCorsConfiguration(origin))
+    handle(new AwsProxyResponse(HttpStatus.SC_OK)).withCors(new EnvCorsConfiguration(origin))
   }
 }
