@@ -54,7 +54,7 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    val result = handle(() => Logic.handleRequest(request))
+    val result = handle(Logic.handleRequest(request))
     result.getStatusCode should be (HttpStatus.SC_OK)
     result.getBody should be ("{\"message\": \"success\"}")
     result
@@ -83,7 +83,7 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    val result = handle(() => Logic.handleRequest(request))
+    val result = handle(Logic.handleRequest(request))
     result.getBody should be ("{\"message\":\"Internal Server Error: check the logs for more information.\"}")
     result.getStatusCode should be (HttpStatus.SC_INTERNAL_SERVER_ERROR)
     result
@@ -115,7 +115,7 @@ class Function extends ApiGatewayHandler {
   // ...
   
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    val result = handle(() => Logic.handleRequest)
+    val result = handle(Logic.handleRequest)
     result.getBody should be ("{\"message\":\"FooBar\"}")
     result.getStatusCode should be (HttpStatus.SC_BAD_REQUEST)
     result 
@@ -195,7 +195,7 @@ class EnvFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     val origin = request.getHeaders.get("origin")
-    val result = handle(() => EnvLogic.handleRequest(request)).withCors(new EnvCorsConfiguration(origin))
+    val result = handle(EnvLogic.handleRequest(request)).withCors(new EnvCorsConfiguration(origin))
     result.getHeaders.get("Access-Control-Allow-Origin") should be ("https://bar.com")
     result
   }
