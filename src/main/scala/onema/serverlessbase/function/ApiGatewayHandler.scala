@@ -22,7 +22,7 @@ import onema.core.json.Implicits._
 import onema.serverlessbase.configuration.lambda.LambdaConfiguration
 import onema.serverlessbase.exception.HandleRequestException
 import onema.serverlessbase.exception.ThrowableExtensions._
-import onema.serverlessbase.model.{ApiGatewayProxyRequest, ErrorMessage}
+import onema.serverlessbase.model.ErrorMessage
 import org.apache.http.HttpStatus
 
 import scala.io.Source

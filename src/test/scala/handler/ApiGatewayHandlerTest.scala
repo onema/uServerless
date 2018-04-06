@@ -12,9 +12,10 @@ package handler
 
 import java.io.{ByteArrayInputStream, InputStream}
 
-import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
+import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.sns.AmazonSNSAsync
+import com.fasterxml.jackson.databind.ObjectMapper
 import functions.success.Function
 import handler.ApiGatewayHandlerTest.TestFunction
 import onema.core.json.Implicits._
@@ -22,11 +23,10 @@ import onema.serverlessbase.configuration.lambda.EnvLambdaConfiguration
 import onema.serverlessbase.exception.{HandleRequestException, RuntimeException}
 import onema.serverlessbase.function.Extensions.RichRegex
 import onema.serverlessbase.function.{ApiGatewayHandler, ApiGatewayResponse}
-import onema.serverlessbase.model.{ApiGatewayProxyRequest, ErrorMessage}
+import onema.serverlessbase.model.ErrorMessage
 import org.apache.http.HttpStatus
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
-import com.fasterxml.jackson.databind.ObjectMapper
 
 
 object ApiGatewayHandlerTest {
