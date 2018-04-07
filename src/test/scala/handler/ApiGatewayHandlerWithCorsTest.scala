@@ -24,13 +24,8 @@ import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
 
 import scala.collection.JavaConverters._
 
-class ApiGatewayHandlerWithCorsTest extends FlatSpec with BeforeAndAfter with Matchers with MockFactory with EnvironmentHelper {
+class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFactory with EnvironmentHelper {
 
-  before {
-    deleteEnv("CORS_SITES")
-    deleteEnv("STAGE_NAME")
-    setEnv("STAGE_NAME", "")
-  }
 
   "A function with CORS enabled using env vars" should "return response with access-control-allow-origin header" in {
     // Arrange
@@ -219,6 +214,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with BeforeAndAfter with Ma
   "A function with CORS enabled using ssm parameter store" should "return response with access-control-allow-origin header" in {
 
     // Arrange
+    deleteEnv("STAGE_NAME")
     val originSite = "https://foo.com"
     val request = new AwsProxyRequest()
     request.setHeaders(Map("origin" -> originSite).asJava)
