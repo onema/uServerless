@@ -27,7 +27,6 @@ import scala.collection.JavaConverters._
 
 class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFactory with EnvironmentHelper {
 
-
   "A function with CORS enabled using env vars" should "return response with access-control-allow-origin header" in {
     // Arrange
     val originSite = "https://foo.com"
@@ -39,10 +38,10 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
 
     // Act
     val response = lambdaFunction.lambdaHandler(request, context)
+    val headers = Option(response.getHeaders).getOrElse(Map().asJava)
 
     // Assert
-    response.getHeaders.containsKey("Access-Control-Allow-Origin") should be (true)
-    response.getHeaders.get("Access-Control-Allow-Origin") should be (originSite)
+    headers.get("Access-Control-Allow-Origin") should be (originSite)
   }
 
   "A function with CORS enabled using env vars with multiple values" should "return response with access-control-allow-origin header" in {
@@ -209,7 +208,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     val response = lambdaFunction.lambdaHandler(request, context)
 
     // Assert
-    response.getHeaders should be (null)
+    Option(response.getHeaders) should be (None)
   }
 
   "A function with CORS enabled using ssm parameter store" should "return response with access-control-allow-origin header" in {

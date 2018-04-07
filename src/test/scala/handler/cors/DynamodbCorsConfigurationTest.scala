@@ -12,14 +12,13 @@ package handler.cors
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync
 import com.amazonaws.services.dynamodbv2.model.{AttributeValue, DescribeTableResult, GetItemRequest, GetItemResult}
-import handler.EnvironmentHelper
 import onema.serverlessbase.configuration.cors.DynamodbCorsConfiguration
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 
 import scala.collection.JavaConverters._
 
-class DynamodbCorsConfigurationTest extends FlatSpec with Matchers with MockFactory with EnvironmentHelper {
+class DynamodbCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
 
   "DynamoDB CORS configuration" should "return true when cors config is enabled" in {
 

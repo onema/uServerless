@@ -12,23 +12,38 @@ package handler.cors
 
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
 import com.amazonaws.services.simplesystemsmanagement.model._
-import handler.EnvironmentHelper
 import onema.serverlessbase.configuration.cors.SsmCorsConfiguration
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 
-class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory with EnvironmentHelper {
+class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
 
   "Ssm CORS configuration" should "return true when cors config is enabled" in {
 
     // Arrange
     val originSite = Option("https://foo.com")
-    setEnv("STAGE_NAME", "test")
     val request = new GetParameterRequest().withName("/test/cors/sites").withWithDecryption(true)
     val result = new GetParameterResult().withParameter(new Parameter().withName("/test/cors/sites").withValue("test.com"))
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
     (ssmClientMock.getParameter _).expects(request).returning(result)
-    val ssmConfig = new SsmCorsConfiguration(originSite, ssmClientMock)
+    val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "test")
+
+    // Act
+    val isEnabled = ssmConfig.isEnabled
+
+    // Assert
+    isEnabled should be (true)
+  }
+
+  "Ssm CORS configuration with no stage name" should "return true when cors config is enabled" in {
+
+    // Arrange
+    val originSite = Option("https://foo.com")
+    val request = new GetParameterRequest().withName("/cors/sites").withWithDecryption(true)
+    val result = new GetParameterResult().withParameter(new Parameter().withName("/cors/sites").withValue("https://foo.com"))
+    val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
+    (ssmClientMock.getParameter _).expects(request).returning(result)
+    val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "")
 
     // Act
     val isEnabled = ssmConfig.isEnabled
@@ -41,11 +56,10 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory w
 
     // Arrange
     val originSite = Option("https://foo.com")
-    setEnv("STAGE_NAME", "test")
     val request = new GetParameterRequest().withName("/test/cors/sites").withWithDecryption(true)
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
     (ssmClientMock.getParameter _).expects(request).throws(new ParameterNotFoundException("Parameter does not exist")).anyNumberOfTimes()
-    val ssmConfig = new SsmCorsConfiguration(originSite, ssmClientMock)
+    val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "test")
 
     // Act
     val isEnabled = ssmConfig.isEnabled
@@ -60,12 +74,11 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory w
 
     // Arrange
     val originSite = Option("https://foo.com")
-    setEnv("STAGE_NAME", "test")
     val request = new GetParameterRequest().withName("/test/cors/sites").withWithDecryption(true)
     val result = new GetParameterResult().withParameter(new Parameter().withName("/test/cors/sites").withValue(originSite.get))
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
     (ssmClientMock.getParameter _).expects(request).returning(result).noMoreThanTwice()
-    val ssmConfig = new SsmCorsConfiguration(originSite, ssmClientMock)
+    val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "test")
 
     // Act
     val isOriginValid = ssmConfig.isOriginValid
@@ -78,12 +91,11 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory w
 
     // Arrange
     val originSite = Option("https://foo.com")
-    setEnv("STAGE_NAME", "test")
     val request = new GetParameterRequest().withName("/test/cors/sites").withWithDecryption(true)
     val result = new GetParameterResult().withParameter(new Parameter().withName("/test/cors/sites").withValue("*"))
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
     (ssmClientMock.getParameter _).expects(request).returning(result).noMoreThanTwice()
-    val ssmConfig = new SsmCorsConfiguration(originSite, ssmClientMock)
+    val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "test")
 
     // Act
     val isOriginValid = ssmConfig.isOriginValid
@@ -97,12 +109,11 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory w
     // Arrange
     val configuredOriginValues = "https://foo.com,https://bar.com,http://baz.com"
     val originSite = Option("https://foo.com")
-    setEnv("STAGE_NAME", "test")
     val request = new GetParameterRequest().withName("/test/cors/sites").withWithDecryption(true)
     val result = new GetParameterResult().withParameter(new Parameter().withName("/test/cors/sites").withValue(configuredOriginValues))
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
     (ssmClientMock.getParameter _).expects(request).returning(result).anyNumberOfTimes()
-    val ssmConfig = new SsmCorsConfiguration(originSite, ssmClientMock)
+    val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "test")
 
     // Act
     val isEnabled = ssmConfig.isEnabled
@@ -118,12 +129,11 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory w
     // Arrange
     val configuredOriginValues = "https://foo.com,https://bar.com,http://baz.com"
     val originSite = Option("http://blah.com")
-    setEnv("STAGE_NAME", "test")
     val request = new GetParameterRequest().withName("/test/cors/sites").withWithDecryption(true)
     val result = new GetParameterResult().withParameter(new Parameter().withName("/test/cors/sites").withValue(configuredOriginValues))
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
     (ssmClientMock.getParameter _).expects(request).returning(result).atLeastTwice()
-    val ssmConfig = new SsmCorsConfiguration(originSite, ssmClientMock)
+    val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "test")
 
     // Act
     val isOriginValid = ssmConfig.isOriginValid
@@ -137,12 +147,11 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory w
     // Arrange
     val configuredOriginValues = ""
     val originSite = Option("http://blah.com")
-    setEnv("STAGE_NAME", "test")
     val request = new GetParameterRequest().withName("/test/cors/sites").withWithDecryption(true)
     val result = new GetParameterResult().withParameter(new Parameter().withName("/test/cors/sites").withValue(configuredOriginValues))
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
     (ssmClientMock.getParameter _).expects(request).returning(result).atLeastTwice()
-    val ssmConfig = new SsmCorsConfiguration(originSite, ssmClientMock)
+    val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "test")
 
     // Act
     val isOriginValid = ssmConfig.isOriginValid
@@ -156,12 +165,11 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory w
     // Arrange
     val configuredOriginValues = ""
     val originSite = Option("")
-    setEnv("STAGE_NAME", "test")
     val request = new GetParameterRequest().withName("/test/cors/sites").withWithDecryption(true)
     val result = new GetParameterResult().withParameter(new Parameter().withName("/test/cors/sites").withValue(configuredOriginValues))
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
     (ssmClientMock.getParameter _).expects(request).returning(result).atLeastTwice()
-    val ssmConfig = new SsmCorsConfiguration(originSite, ssmClientMock)
+    val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "test")
 
     // Act
     val isOriginValid = ssmConfig.isOriginValid

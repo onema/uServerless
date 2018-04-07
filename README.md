@@ -148,7 +148,7 @@ You can satisfy this requirement by simply extending your function with one of t
 
 SSM Parameter Store could do a lookup of value names prepending an "environment name" e.g. prod, staging, dev. This is use to be able to create parameters with unique names and reference
 them in the function using a consistent name. For example the value `/database/username` for the environment name `prod` will result in a lookup of the parameter `/prod/database/username`.
-The environment name is set as the environment variable `ENVIRONMENT_NAME`.
+The environment name is set as the environment variable `STAGE_NAME`.
 
 To use the SSM environment variable in  your function simply extend from the `SsmLambdaConfiguration` trait like such
 

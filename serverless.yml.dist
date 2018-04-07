@@ -27,7 +27,7 @@ provider:
     - Effect: "Allow"
       Action:
         - sns:Publish
-      Resource: "arn:aws:sns:*:*:${self:custom.environmentName}-processing-function"
+      Resource: "arn:aws:sns:*:*:${self:custom.stageName}-processing-function"
 # Usage plan and API keys
 #  apiKeys:
 #    - ${opt:stage}-cloud-platform-user-key
@@ -39,11 +39,11 @@ provider:
 #      period: MONTH
 # you can define service wide environment variables here
   environment:
-    ENVIRONMENT_NAME: ${self:custom.environmentName}
+    STAGE_NAME: ${self:custom.stageName}
 
 # Custom values. These can be referenced in the Cloud Formation template
 custom:
-  environmentName: ${opt:stage, self:provider.stage}
+  stageName: ${opt:stage, self:provider.stage}
 
 # you can add packaging information here
 # Make sure to run "sbt assembly" to create a jar file
@@ -81,20 +81,20 @@ functions:
           path: validation
           method: get
     environment:
-      SNS_TOPIC: ${self:custom.environmentName}-processing-function
+      SNS_TOPIC: ${self:custom.stageName}-processing-function
 
   # SNS Processing functions
   process:
     handler: functions.process.Function::lambdaHandler
     events:
-      - sns: ${self:custom.environmentName}-processing-function
+      - sns: ${self:custom.stageName}-processing-function
 
 # you can add CloudFormation resource templates here
 #resources:
 #    NewResource:
 #      Type: AWS::S3::Bucket
 #      Properties:
-#        BucketName: ${self:custom.environmentName}-my-new-bucket
+#        BucketName: ${self:custom.stageName}-my-new-bucket
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"

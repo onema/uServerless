@@ -56,6 +56,7 @@ object ApiGatewayHandlerTest {
 }
 
 class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with EnvironmentHelper {
+
   "A concrete implementation" should "not throw any exceptions" in {
 
     // Arrange

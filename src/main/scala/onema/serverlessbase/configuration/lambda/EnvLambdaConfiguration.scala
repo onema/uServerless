@@ -17,7 +17,7 @@ import scala.collection.JavaConverters._
 trait EnvLambdaConfiguration extends LambdaConfiguration {
 
   //--- Fields ---
-  protected val environment: String = sys.env.getOrElse("ENVIRONMENT_NAME", "")
+  protected val stageName: String = sys.env.getOrElse("STAGE_NAME", "")
 
   //--- Methods ---
   /**
