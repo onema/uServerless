@@ -10,113 +10,90 @@
   */
 package handler.cors
 
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync
+import com.amazonaws.services.dynamodbv2.model.{AttributeValue, DescribeTableResult, GetItemRequest, GetItemResult}
 import handler.EnvironmentHelper
-import onema.serverlessbase.configuration.cors.EnvCorsConfiguration
+import onema.serverlessbase.configuration.cors.DynamodbCorsConfiguration
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 
+import scala.collection.JavaConverters._
+
 class DynamodbCorsConfigurationTest extends FlatSpec with Matchers with MockFactory with EnvironmentHelper {
 
-
-  "Env CORS configuration" should "return true when cors config is enabled" in {
+  "DynamoDB CORS configuration" should "return true when cors config is enabled" in {
 
     // Arrange
     val originSite = Option("https://foo.com")
-    setEnv("CORS_SITES", "*")
-    val envConfig = new EnvCorsConfiguration(originSite)
+    val tableResults = new DescribeTableResult()
+    val clientMock = mock[AmazonDynamoDBAsync]
+    (clientMock.describeTable(_: String)).expects(*).returning(tableResults)
+    val dynamoConfig = DynamodbCorsConfiguration(originSite, "TableName", clientMock)
 
     // Act
-    val isEnabled = envConfig.isEnabled
+    val isEnabled = dynamoConfig.isEnabled
 
     // Assert
     isEnabled should be (true)
   }
 
-  "Env CORS configuration" should "return true when origin is valid" in {
+  "DynamoDB CORS configuration" should "return true when origin is valid" in {
 
     // Arrange
     val originSite = Option("https://foo.com")
-    setEnv("CORS_SITES", originSite.get)
-    val envConfig = new EnvCorsConfiguration(originSite)
+    val getItemResult = new GetItemResult().withItem(Map("Origin" -> new AttributeValue(originSite.get)).asJava)
+    val clientMock = mock[AmazonDynamoDBAsync]
+    (clientMock.getItem(_: GetItemRequest)).expects(*).returning(getItemResult)
+    val dynamoConfig = DynamodbCorsConfiguration(originSite, "TableName", clientMock)
 
     // Act
-    val isOriginValid = envConfig.isOriginValid
+    val isOriginValid = dynamoConfig.isOriginValid
 
     // Assert
     isOriginValid should be (true)
   }
 
-  "Env CORS configuration" should "return true when configured origin is *" in {
+  /**
+    * Dynamo db is not designed to be used as a generic * strategy.  Use EnvCorsConfiguration instead.
+    */
+  "DynamoDB CORS configuration" should "return FALSE when configured origin is *" in {
 
     // Arrange
     val originSite = Option("https://foo.com")
-    setEnv("CORS_SITES", "*")
-    val envConfig = new EnvCorsConfiguration(originSite)
+    val getItemResult = new GetItemResult().withItem(Map("Origin" -> new AttributeValue("*")).asJava)
+    val clientMock = mock[AmazonDynamoDBAsync]
+    (clientMock.getItem(_: GetItemRequest)).expects(*).returning(getItemResult)
+    val dynamoConfig = DynamodbCorsConfiguration(originSite, "TableName", clientMock)
 
     // Act
-    val isOriginValid = envConfig.isOriginValid
-
-    // Assert
-    isOriginValid should be (true)
-  }
-
-  "Env CORS configuration with multiple values" should "return true when origin is in configured values" in {
-
-    // Arrange
-    val configuredOriginValues = "https://foo.com,https://bar.com,http://baz.com"
-    setEnv("CORS_SITES", configuredOriginValues)
-    val originSite = Option("http://baz.com")
-    val envConfig = new EnvCorsConfiguration(originSite)
-
-    // Act
-    val isEnabled = envConfig.isEnabled
-    val isOriginValid = envConfig.isOriginValid
-
-    // Assert
-    isEnabled should be (true)
-    isOriginValid should be (true)
-  }
-
-  "Env CORS configuration with multiple values" should "return false when origin is not in configured values" in {
-
-    // Arrange
-    val configuredOriginValues = "https://foo.com,https://bar.com,http://baz.com"
-    setEnv("CORS_SITES", configuredOriginValues)
-    val originSite = Option("http://blah.com")
-    val envConfig = new EnvCorsConfiguration(originSite)
-
-    // Act
-    val isOriginValid = envConfig.isOriginValid
+    val isOriginValid = dynamoConfig.isOriginValid
 
     // Assert
     isOriginValid should be (false)
   }
 
-  "Env CORS configuration with no values" should "return false for an origin" in {
+  "DynamoDB CORS configuration that generates an exception" should "re-throw exception" in {
 
     // Arrange
-    val configuredOriginValues = ""
-    setEnv("CORS_SITES", configuredOriginValues)
     val originSite = Option("http://blah.com")
-    val envConfig = new EnvCorsConfiguration(originSite)
+    val clientMock = mock[AmazonDynamoDBAsync]
+    (clientMock.getItem(_: GetItemRequest)).expects(*).throws(new RuntimeException("test"))
+    val dynamoConfig = DynamodbCorsConfiguration(originSite, "TableName", clientMock)
 
-    // Act
-    val isOriginValid = envConfig.isOriginValid
-
-    // Assert
-    isOriginValid should be (false)
+    // Act - Assert
+    intercept[RuntimeException] { dynamoConfig.isOriginValid }
   }
 
-  "Env CORS configuration with no values" should "return false for no origin" in {
+  "DynamoDB CORS configuration with no values" should "return false for no origin" in {
 
     // Arrange
-    val configuredOriginValues = ""
-    setEnv("CORS_SITES", configuredOriginValues)
-    val originSite = Option("")
-    val envConfig = new EnvCorsConfiguration(originSite)
+    val originSite = Option("http://blah.com")
+    val clientMock = mock[AmazonDynamoDBAsync]
+    (clientMock.getItem(_: GetItemRequest)).expects(*).returns(new GetItemResult())
+    val dynamoConfig = DynamodbCorsConfiguration(originSite, "TableName", clientMock)
 
     // Act
-    val isOriginValid = envConfig.isOriginValid
+    val isOriginValid = dynamoConfig.isOriginValid
 
     // Assert
     isOriginValid should be (false)
