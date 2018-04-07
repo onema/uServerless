@@ -7,15 +7,11 @@ phases:
 
   build:
     commands:
-      - echo Build started on `date`
-      - sbt compile
-
       - echo Testing Core on `date`
       - sbt clean coverage test
 
       - echo Generating coverage report
       - sbt coverageReport
-      - sbt coverageAggregate
 
       - echo Submit coverage report to Codacy
       - sbt codacyCoverage
