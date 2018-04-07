@@ -8,7 +8,7 @@
   *
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
-package handler
+package handler.function
 
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
 import com.amazonaws.serverless.proxy.model.AwsProxyRequest
@@ -17,10 +17,11 @@ import com.amazonaws.services.dynamodbv2.model.{AttributeValue, DescribeTableRes
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
 import com.amazonaws.services.simplesystemsmanagement.model.{GetParameterRequest, GetParameterResult, Parameter}
 import functions.cors.{DynamodbFunction, EnvFunction, NoopFunction, SsmFunction}
+import handler.EnvironmentHelper
 import onema.serverlessbase.configuration.cors.DynamodbCorsConfiguration
 import onema.serverlessbase.configuration.cors.Extensions._
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
+import org.scalatest.{FlatSpec, Matchers}
 
 import scala.collection.JavaConverters._
 

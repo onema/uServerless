@@ -8,14 +8,15 @@
   *
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
-package handler
+package handler.configuration
 
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
 import com.amazonaws.services.simplesystemsmanagement.model._
+import handler.EnvironmentHelper
+import handler.configuration.SsmParametersTest.TestFunction
+import onema.serverlessbase.configuration.lambda.SsmLambdaConfiguration
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
-import SsmParametersTest.TestFunction
-import onema.serverlessbase.configuration.lambda.SsmLambdaConfiguration
 
 object SsmParametersTest {
   class TestFunction(ssmClientMock: AWSSimpleSystemsManagementAsync) extends SsmLambdaConfiguration {

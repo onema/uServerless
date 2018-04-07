@@ -8,7 +8,7 @@
   *
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
-package handler
+package handler.function
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, InputStream, OutputStream}
 
@@ -17,7 +17,7 @@ import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.sns.AmazonSNSAsync
 import com.fasterxml.jackson.databind.ObjectMapper
 import functions.success.Function
-import handler.ApiGatewayHandlerTest.TestFunction
+import handler.EnvironmentHelper
 import onema.core.json.Implicits._
 import onema.serverlessbase.configuration.lambda.EnvLambdaConfiguration
 import onema.serverlessbase.exception.{HandleRequestException, RuntimeException}
@@ -27,7 +27,7 @@ import onema.serverlessbase.model.ErrorMessage
 import org.apache.http.HttpStatus
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
-
+import ApiGatewayHandlerTest.TestFunction
 
 object ApiGatewayHandlerTest {
   class TestFunction(val snsClient: AmazonSNSAsync) extends ApiGatewayHandler with EnvLambdaConfiguration{
