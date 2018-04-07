@@ -13,7 +13,7 @@ package handler
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
 import com.amazonaws.serverless.proxy.model.AwsProxyRequest
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync
-import com.amazonaws.services.dynamodbv2.model.{AttributeValue, GetItemRequest, GetItemResult}
+import com.amazonaws.services.dynamodbv2.model.{AttributeValue, DescribeTableResult, GetItemRequest, GetItemResult}
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
 import com.amazonaws.services.simplesystemsmanagement.model.{GetParameterRequest, GetParameterResult, Parameter}
 import functions.cors.{DynamodbFunction, EnvFunction, NoopFunction, SsmFunction}
@@ -136,18 +136,24 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with BeforeAndAfter with Ma
   "A function with CORS enabled using DynamoDB" should "return response with access-control-allow-origin header" in {
     // Arrange
     val originSite = "bar.com"
+    val tableName = "Origins"
     val lambdaFunction = new EnvFunction()
     val request = new AwsProxyRequest()
     val getItemResult = new GetItemResult().withItem(Map("Origin" -> new AttributeValue(originSite)).asJava)
+    val tableResults = new DescribeTableResult()
     val clientMock = mock[AmazonDynamoDBAsync]
     (clientMock.getItem(_: GetItemRequest)).expects(*).returning(getItemResult)
+    (clientMock.describeTable(_: String)).expects(tableName).returning(tableResults)
     request.setHeaders(Map("origin" -> originSite).asJava)
     val context = new MockLambdaContext
+    val corsConfiguration = new DynamodbCorsConfiguration(Some("bar.com"), tableName, clientMock)
 
     // Act
-    val response = lambdaFunction.lambdaHandler(request, context).withCors(new DynamodbCorsConfiguration(Some("bar.com"), "Origin", clientMock))
+    val isEnabled = corsConfiguration.isEnabled
+    val response = lambdaFunction.lambdaHandler(request, context).withCors(corsConfiguration)
 
     // Assert
+    isEnabled should be (true)
     response.getHeaders.containsKey("Access-Control-Allow-Origin") should be (true)
     response.getHeaders.get("Access-Control-Allow-Origin") should be ("bar.com")
   }

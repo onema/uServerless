@@ -10,7 +10,7 @@
   */
 package handler
 
-import java.io.{ByteArrayInputStream, InputStream}
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream, InputStream, OutputStream}
 
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
@@ -35,6 +35,10 @@ object ApiGatewayHandlerTest {
     //--- Methods ---
     def invokeGetRequest(inputStream: InputStream): AwsProxyRequest = {
       getRequest(inputStream)
+    }
+
+    def invokeWriteResponse(outputStream: OutputStream, value: AnyRef): Unit = {
+      writeResponse(outputStream, value)
     }
 
     def throwException(): AwsProxyResponse = {
@@ -112,6 +116,23 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
     // Assert
     result.getBody should be ("{\"test\":\"body\"}")
     result.getHttpMethod should be ("POST")
+  }
+
+  "An write to an output stream" should "should correctly serialize and write json" in {
+
+    // Arrange
+    case class TestClass(foo: String, bar: String, baz: Int)
+    val outputStream = new ByteArrayOutputStream()
+    val snsMock = mock[AmazonSNSAsync]
+    val function = new TestFunction(snsMock)
+    val response = new AwsProxyResponse()
+
+    // Act
+    function.invokeWriteResponse(outputStream, response)
+    val result = new String(outputStream.toByteArray, java.nio.charset.StandardCharsets.US_ASCII)
+
+    // Assert
+    result should be ("{\"statusCode\":0,\"headers\":null,\"body\":null,\"base64Encoded\":false}")
   }
 
   "An exception" should "generate the proper response" in {
