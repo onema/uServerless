@@ -42,15 +42,21 @@ object ApiGatewayHandlerTest {
     }
 
     def throwException(): AwsProxyResponse = {
-      handle(throw new Exception("Test exception"))
+      handle {
+        throw new Exception("Test exception")
+      }
     }
 
     def throwHandleRequestException(): AwsProxyResponse = {
-      handle(throw new HandleRequestException(HttpStatus.SC_BAD_REQUEST, "Bad request exception"))
+      handle {
+        throw new HandleRequestException(HttpStatus.SC_BAD_REQUEST, "Bad request exception")
+      }
     }
 
     def throwRuntimeException(): AwsProxyResponse = {
-      handle(throw new RuntimeException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Runtime exception"))
+      handle {
+        throw new RuntimeException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Runtime exception")
+      }
     }
   }
 }
