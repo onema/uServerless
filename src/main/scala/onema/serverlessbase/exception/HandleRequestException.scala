@@ -11,13 +11,6 @@
 
 package onema.serverlessbase.exception
 
-import com.amazonaws.serverless.proxy.model.AwsProxyResponse
-import onema.serverlessbase.function.ApiGatewayResponse
-
-class HandleRequestException(val code: Int, message: String) extends Exception(message) with ApiGatewayResponse {
-  def httpResponse: AwsProxyResponse = {
-    buildError(code, getMessage)
-  }
-}
+class HandleRequestException(val code: Int, message: String) extends Exception(message)
 
 class RuntimeException(code: Int, message: String) extends HandleRequestException(code, message)
