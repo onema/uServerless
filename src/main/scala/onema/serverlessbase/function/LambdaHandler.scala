@@ -19,7 +19,7 @@ import onema.serverlessbase.exception.ThrowableExtensions._
 
 import scala.util.{Failure, Success, Try}
 
-trait LambdaHandler extends LambdaConfiguration {
+trait LambdaHandler[TResponse] extends LambdaConfiguration {
 
   //--- Fields ---
   protected val log: Logger = Logger("lambda-handler")
@@ -31,14 +31,14 @@ trait LambdaHandler extends LambdaConfiguration {
   protected val snsClient: AmazonSNSAsync
 
   //--- Methods ---
-  protected def handle(function: => Unit): Unit = {
+  protected def handle(function: => TResponse): TResponse = {
     Try(function) match {
-      case Success(_) =>
+      case Success(response) => response
       case Failure(e: Throwable) => handleFailure(e)
     }
   }
 
-  protected def handleFailure(exception: Throwable): Unit = {
+  protected def handleFailure(exception: Throwable): TResponse = {
     val message = exception.message
     log.error(message)
     if(snsErrorTopic.isDefined) {

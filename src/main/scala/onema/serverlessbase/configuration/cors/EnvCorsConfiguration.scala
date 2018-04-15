@@ -13,11 +13,13 @@ package onema.serverlessbase.configuration.cors
 
 class EnvCorsConfiguration(origin: Option[String]) extends CorsConfiguration(origin) {
 
+  //--- Fields ---
+  protected val corsSites: Option[String] = sys.env.get("CORS_SITES")
+
   //--- Methods ---
-  override def isEnabled: Boolean = sys.env.get("CORS_SITES").isDefined
+  override def isEnabled: Boolean = corsSites.isDefined
 
   override def isOriginValid: Boolean = {
-    val sites = sys.env.get("CORS_SITES")
-    isSiteEnabled(sites)
+    isSiteEnabled(corsSites)
   }
 }

@@ -27,13 +27,15 @@ object Logic {
   }
 }
 
-class Function extends LambdaHandler with NoopLambdaConfiguration {
+class Function extends LambdaHandler[Unit] with NoopLambdaConfiguration {
   //--- Fields ---
   override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
 
   //--- Methods ---
   def lambdaHandler(event: SNSEvent, context: Context): Unit = {
-    handle(Logic.handleEvent(event, log))
+    handle {
+      Logic.handleEvent(event, log)
+    }
   }
 
 

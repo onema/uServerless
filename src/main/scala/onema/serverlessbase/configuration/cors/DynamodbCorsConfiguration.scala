@@ -28,7 +28,7 @@ object DynamodbCorsConfiguration {
   }
 
   def apply(origin: Option[String], tableName: String, dynamodbClient: AmazonDynamoDBAsync): DynamodbCorsConfiguration = {
-    new DynamodbCorsConfiguration(origin, tableName, AmazonDynamoDBAsyncClientBuilder.defaultClient())
+    new DynamodbCorsConfiguration(origin, tableName, dynamodbClient)
   }
 }
 

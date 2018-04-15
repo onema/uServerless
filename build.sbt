@@ -11,7 +11,7 @@ lazy val serverlessBaseRoot = (project in file("."))
   scalaVersion := "2.12.5",
 
   libraryDependencies ++= {
-    val awsSdkVersion = "1.11.301"
+    val awsSdkVersion = "1.11.313"
     Seq(
       // CORE!
        "onema"                      % "json-core_2.12"                      % "1.1.0",

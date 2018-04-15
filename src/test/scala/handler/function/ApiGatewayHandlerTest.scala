@@ -8,26 +8,26 @@
   *
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
-package handler
+package handler.function
 
-import java.io.{ByteArrayInputStream, InputStream}
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream, InputStream, OutputStream}
 
-import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
+import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.sns.AmazonSNSAsync
+import com.fasterxml.jackson.databind.ObjectMapper
 import functions.success.Function
-import handler.ApiGatewayHandlerTest.TestFunction
+import handler.EnvironmentHelper
 import onema.core.json.Implicits._
 import onema.serverlessbase.configuration.lambda.EnvLambdaConfiguration
 import onema.serverlessbase.exception.{HandleRequestException, RuntimeException}
 import onema.serverlessbase.function.Extensions.RichRegex
 import onema.serverlessbase.function.{ApiGatewayHandler, ApiGatewayResponse}
-import onema.serverlessbase.model.{ApiGatewayProxyRequest, ErrorMessage}
+import onema.serverlessbase.model.ErrorMessage
 import org.apache.http.HttpStatus
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
-import com.fasterxml.jackson.databind.ObjectMapper
-
+import ApiGatewayHandlerTest.TestFunction
 
 object ApiGatewayHandlerTest {
   class TestFunction(val snsClient: AmazonSNSAsync) extends ApiGatewayHandler with EnvLambdaConfiguration{
@@ -37,21 +37,32 @@ object ApiGatewayHandlerTest {
       getRequest(inputStream)
     }
 
+    def invokeWriteResponse(outputStream: OutputStream, value: AnyRef): Unit = {
+      writeResponse(outputStream, value)
+    }
+
     def throwException(): AwsProxyResponse = {
-      handle(throw new Exception("Test exception"))
+      handle {
+        throw new Exception("Test exception")
+      }
     }
 
     def throwHandleRequestException(): AwsProxyResponse = {
-      handle(throw new HandleRequestException(HttpStatus.SC_BAD_REQUEST, "Bad request exception"))
+      handle {
+        throw new HandleRequestException(HttpStatus.SC_BAD_REQUEST, "Bad request exception")
+      }
     }
 
     def throwRuntimeException(): AwsProxyResponse = {
-      handle(throw new RuntimeException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Runtime exception"))
+      handle {
+        throw new RuntimeException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Runtime exception")
+      }
     }
   }
 }
 
 class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with EnvironmentHelper {
+
   "A concrete implementation" should "not throw any exceptions" in {
 
     // Arrange
@@ -112,6 +123,23 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
     // Assert
     result.getBody should be ("{\"test\":\"body\"}")
     result.getHttpMethod should be ("POST")
+  }
+
+  "An write to an output stream" should "should correctly serialize and write json" in {
+
+    // Arrange
+    case class TestClass(foo: String, bar: String, baz: Int)
+    val outputStream = new ByteArrayOutputStream()
+    val snsMock = mock[AmazonSNSAsync]
+    val function = new TestFunction(snsMock)
+    val response = new AwsProxyResponse()
+
+    // Act
+    function.invokeWriteResponse(outputStream, response)
+    val result = new String(outputStream.toByteArray, java.nio.charset.StandardCharsets.US_ASCII)
+
+    // Assert
+    result should be ("{\"statusCode\":0,\"headers\":null,\"body\":null,\"base64Encoded\":false}")
   }
 
   "An exception" should "generate the proper response" in {

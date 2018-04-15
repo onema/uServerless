@@ -8,14 +8,15 @@
   *
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
-package handler
+package handler.configuration
 
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
 import com.amazonaws.services.simplesystemsmanagement.model._
+import handler.EnvironmentHelper
+import handler.configuration.SsmParametersTest.TestFunction
+import onema.serverlessbase.configuration.lambda.SsmLambdaConfiguration
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
-import SsmParametersTest.TestFunction
-import onema.serverlessbase.configuration.lambda.SsmLambdaConfiguration
 
 object SsmParametersTest {
   class TestFunction(ssmClientMock: AWSSimpleSystemsManagementAsync) extends SsmLambdaConfiguration {
@@ -32,6 +33,7 @@ class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with 
   "A function with ssm parameter store value and stage name" should "return single parameter" in {
 
     // Arrange
+    deleteEnv("STAGE_NAME")
     setEnv("STAGE_NAME", "test")
     val request = new GetParameterRequest().withName("/test/foo").withWithDecryption(true)
     val result = new GetParameterResult().withParameter(new Parameter().withName("/test/foo").withValue("test value"))
@@ -49,6 +51,7 @@ class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with 
   "A function with ssm parameter store value and stage name" should "return multiple parameters" in {
 
     // Arrange
+    deleteEnv("STAGE_NAME")
     setEnv("STAGE_NAME", "test")
     val request = new GetParametersByPathRequest().withPath("/test/foo").withRecursive(true).withWithDecryption(true)
     val result = new GetParametersByPathResult().withParameters(
@@ -99,7 +102,7 @@ class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with 
     response should be (None)
   }
 
-  "A function that throws an exception" should "throw re-throw exception" in {
+  "A function that throws an exception when getting a parameter value" should "throw re-throw the exception" in {
 
     // Arrange
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
