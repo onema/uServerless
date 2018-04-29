@@ -20,11 +20,6 @@ import onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
 import onema.serverlessbase.function.ApiGatewayHandler
 import org.apache.http.HttpStatus
 
-object NoopLogic {
-  def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
-    new AwsProxyResponse(HttpStatus.SC_OK)
-  }
-}
 
 class NoopFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
 
@@ -34,7 +29,9 @@ class NoopFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     val origin = request.getHeaders.get("origin")
-    handle(NoopLogic.handleRequest(request)).withCors(new NoopCorsConfiguration())
+    handle{
+      new AwsProxyResponse(HttpStatus.SC_OK)
+    }.withCors(new NoopCorsConfiguration())
   }
 
 }
