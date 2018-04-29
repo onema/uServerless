@@ -21,11 +21,6 @@ import onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
 import onema.serverlessbase.function.ApiGatewayHandler
 import org.apache.http.HttpStatus
 
-object EnvLogic {
-  def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
-    new AwsProxyResponse(HttpStatus.SC_OK)
-  }
-}
 
 class DynamodbFunction(tableName: String, client: AmazonDynamoDBAsync) extends ApiGatewayHandler with NoopLambdaConfiguration {
 
@@ -35,6 +30,8 @@ class DynamodbFunction(tableName: String, client: AmazonDynamoDBAsync) extends A
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     val origin = Option(request.getHeaders.get("origin"))
-    handle(EnvLogic.handleRequest(request)).withCors(new DynamodbCorsConfiguration(origin, tableName, client))
+    handle {
+      new AwsProxyResponse(HttpStatus.SC_OK)
+    }.withCors(new DynamodbCorsConfiguration(origin, tableName, client))
   }
 }

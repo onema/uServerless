@@ -21,11 +21,6 @@ import onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
 import onema.serverlessbase.function.ApiGatewayHandler
 import org.apache.http.HttpStatus
 
-object SsmLogic {
-  def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
-    new AwsProxyResponse(HttpStatus.SC_OK)
-  }
-}
 
 class SsmFunction(val ssmClient: AWSSimpleSystemsManagementAsync) extends ApiGatewayHandler with NoopLambdaConfiguration {
 
@@ -34,7 +29,9 @@ class SsmFunction(val ssmClient: AWSSimpleSystemsManagementAsync) extends ApiGat
 
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    handle(SsmLogic.handleRequest(request)).withCors(SsmCorsConfiguration(Some("https://foo.com"), ssmClient))
+    handle{
+      new AwsProxyResponse(HttpStatus.SC_OK)
+    }.withCors(SsmCorsConfiguration(Some("https://foo.com"), ssmClient))
   }
 
 }
