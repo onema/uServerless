@@ -9,13 +9,14 @@
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
 
-package onema.serverlessbase.function
+package io.onema.serverlessbase.function
 
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.sns.AmazonSNSAsync
 import com.typesafe.scalalogging.Logger
-import onema.serverlessbase.configuration.lambda.LambdaConfiguration
-import onema.serverlessbase.exception.ThrowableExtensions._
+import io.onema.serverlessbase.configuration.lambda.LambdaConfiguration
+import io.onema.serverlessbase.configuration.lambda.LambdaConfiguration
+import io.onema.serverlessbase.exception.ThrowableExtensions._
 
 import scala.util.{Failure, Success, Try}
 

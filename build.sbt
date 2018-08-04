@@ -2,7 +2,7 @@ resolvers += "Onema Snapshots" at "s3://s3-us-east-1.amazonaws.com/ones-deployme
 
 lazy val serverlessBaseRoot = (project in file("."))
 .settings(
-  organization := "onema",
+  organization := "io.onema",
 
   name := "serverless-base",
 

@@ -9,8 +9,7 @@
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
 
-package onema.serverlessbase.function
-
+package io.onema.serverlessbase.function
 
 import java.io.{InputStream, OutputStream}
 import java.nio.charset.Charset
@@ -18,10 +17,11 @@ import java.nio.charset.Charset
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.sns.AmazonSNSAsync
 import com.typesafe.scalalogging.Logger
-import onema.serverlessbase.configuration.lambda.LambdaConfiguration
-import onema.serverlessbase.exception.HandleRequestException
-import onema.serverlessbase.exception.ThrowableExtensions._
+import io.onema.serverlessbase.configuration.lambda.LambdaConfiguration
+import io.onema.serverlessbase.exception.HandleRequestException
+import io.onema.serverlessbase.exception.ThrowableExtensions._
 import io.onema.json.JavaExtensions._
+import io.onema.serverlessbase.configuration.lambda.LambdaConfiguration
 import org.apache.http.HttpStatus
 
 import scala.io.Source

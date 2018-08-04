@@ -1,5 +1,5 @@
 /**
-  * This file is part of the ONEMA onema.serverlessbase Package.
+  * This file is part of the ONEMA io.onema.serverlessbase Package.
   * For the full copyright and license information,
   * please view the LICENSE file that was distributed
   * with this source code.
@@ -18,11 +18,11 @@ import com.amazonaws.services.sns.AmazonSNSAsync
 import com.fasterxml.jackson.databind.ObjectMapper
 import functions.success.Function
 import handler.EnvironmentHelper
-import onema.serverlessbase.configuration.lambda.EnvLambdaConfiguration
-import onema.serverlessbase.exception.{HandleRequestException, RuntimeException}
-import onema.serverlessbase.function.Extensions.RichRegex
-import onema.serverlessbase.function.{ApiGatewayHandler, ApiGatewayResponse}
-import onema.serverlessbase.model.ErrorMessage
+import io.onema.serverlessbase.configuration.lambda.EnvLambdaConfiguration
+import io.onema.serverlessbase.exception.{HandleRequestException, RuntimeException}
+import io.onema.serverlessbase.function.Extensions.RichRegex
+import io.onema.serverlessbase.function.{ApiGatewayHandler, ApiGatewayResponse}
+import io.onema.serverlessbase.model.ErrorMessage
 import org.apache.http.HttpStatus
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}

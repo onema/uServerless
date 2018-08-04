@@ -1,5 +1,5 @@
 /**
-  * This file is part of the ONEMA onema.serverlessbase Package.
+  * This file is part of the ONEMA io.onema.serverlessbase Package.
   * For the full copyright and license information,
   * please view the LICENSE file that was distributed
   * with this source code.
@@ -14,8 +14,8 @@ package functions.success
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
-import onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
-import onema.serverlessbase.function.ApiGatewayHandler
+import io.onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
+import io.onema.serverlessbase.function.ApiGatewayHandler
 
 object Logic {
   def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {

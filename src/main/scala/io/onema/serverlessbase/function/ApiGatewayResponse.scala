@@ -9,10 +9,10 @@
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
 
-package onema.serverlessbase.function
+package io.onema.serverlessbase.function
 
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse
-import onema.serverlessbase.model.ErrorMessage
+import io.onema.serverlessbase.model.ErrorMessage
 import io.onema.json.Extensions._
 import scala.collection.JavaConverters._
 

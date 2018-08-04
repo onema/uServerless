@@ -9,6 +9,8 @@
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
 
-package onema.serverlessbase.model
+package io.onema.serverlessbase.exception
 
-case class ErrorMessage(message: String)
+class HandleRequestException(val code: Int, message: String) extends Exception(message)
+
+class RuntimeException(code: Int, message: String) extends HandleRequestException(code, message)

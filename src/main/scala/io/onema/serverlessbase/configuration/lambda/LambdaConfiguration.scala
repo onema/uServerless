@@ -9,22 +9,21 @@
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
 
-package onema.serverlessbase.configuration.lambda
+package io.onema.serverlessbase.configuration.lambda
 
-trait NoopLambdaConfiguration extends LambdaConfiguration {
+trait LambdaConfiguration {
   /**
-    * Always return None
-    *
+    * Get configuration values by name. This assumes that the name uses a path notation
     * @param path name of the configuration value
     * @return
     */
-  def getValue(path: String): Option[String] = None
+  def getValue(path: String): Option[String]
 
   /**
-    * Always get empty map
-    *
+    * Get multiple values using a prefix.
+    * e.g. the path "/database" would return /database/username, /database/password, /database/port, /database/host, etc.
     * @param path name of the path to search for
     * @return
     */
-  def getValues(path: String): Map[String, String] = Map()
+  def getValues(path: String): Map[String, String]
 }
