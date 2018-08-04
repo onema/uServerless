@@ -17,11 +17,10 @@ import java.nio.charset.Charset
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.sns.AmazonSNSAsync
 import com.typesafe.scalalogging.Logger
+import io.onema.json.JavaExtensions._
 import io.onema.serverlessbase.configuration.lambda.LambdaConfiguration
 import io.onema.serverlessbase.exception.HandleRequestException
 import io.onema.serverlessbase.exception.ThrowableExtensions._
-import io.onema.json.JavaExtensions._
-import io.onema.serverlessbase.configuration.lambda.LambdaConfiguration
 import org.apache.http.HttpStatus
 
 import scala.io.Source

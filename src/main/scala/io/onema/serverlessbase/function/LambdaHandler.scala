@@ -15,7 +15,6 @@ import com.amazonaws.regions.Regions
 import com.amazonaws.services.sns.AmazonSNSAsync
 import com.typesafe.scalalogging.Logger
 import io.onema.serverlessbase.configuration.lambda.LambdaConfiguration
-import io.onema.serverlessbase.configuration.lambda.LambdaConfiguration
 import io.onema.serverlessbase.exception.ThrowableExtensions._
 
 import scala.util.{Failure, Success, Try}
