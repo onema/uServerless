@@ -1,5 +1,5 @@
 /**
-  * This file is part of the ONEMA onema.serverlessbase Package.
+  * This file is part of the ONEMA io.onema.serverlessbase Package.
   * For the full copyright and license information,
   * please view the LICENSE file that was distributed
   * with this source code.
@@ -18,8 +18,8 @@ import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement
 import com.amazonaws.services.simplesystemsmanagement.model.{GetParameterRequest, GetParameterResult, Parameter}
 import functions.cors.{DynamodbFunction, EnvFunction, NoopFunction, SsmFunction}
 import handler.EnvironmentHelper
-import onema.serverlessbase.configuration.cors.DynamodbCorsConfiguration
-import onema.serverlessbase.configuration.cors.Extensions._
+import io.onema.serverlessbase.configuration.cors.DynamodbCorsConfiguration
+import io.onema.serverlessbase.configuration.cors.Extensions._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 

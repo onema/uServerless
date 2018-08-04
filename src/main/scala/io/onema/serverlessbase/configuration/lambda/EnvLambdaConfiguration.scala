@@ -9,7 +9,7 @@
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
 
-package onema.serverlessbase.configuration.lambda
+package io.onema.serverlessbase.configuration.lambda
 
 import scala.collection.JavaConverters._
 

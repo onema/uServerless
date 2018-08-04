@@ -14,6 +14,7 @@ phases:
       - sbt coverageReport
 
       - echo Submit coverage report to Codacy
+      - export CI_COMMIT="${CODEBUILD_SOURCE_VERSION}"
       - sbt codacyCoverage
 
   post_build:
