@@ -12,8 +12,8 @@
 package onema.serverlessbase.function
 
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse
-import onema.core.json.Implicits._
 import onema.serverlessbase.model.ErrorMessage
+import io.onema.json.Extensions._
 import scala.collection.JavaConverters._
 
 
@@ -32,7 +32,7 @@ trait ApiGatewayResponse {
 
   protected def buildResponse(code: Int, payload: AnyRef): AwsProxyResponse = {
     val response = new AwsProxyResponse(code)
-    response.setBody(payload.toJson)
+    response.setBody(payload.asJson)
     response
   }
 

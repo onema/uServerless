@@ -18,10 +18,10 @@ import java.nio.charset.Charset
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.sns.AmazonSNSAsync
 import com.typesafe.scalalogging.Logger
-import onema.core.json.Implicits._
 import onema.serverlessbase.configuration.lambda.LambdaConfiguration
 import onema.serverlessbase.exception.HandleRequestException
 import onema.serverlessbase.exception.ThrowableExtensions._
+import io.onema.json.JavaExtensions._
 import org.apache.http.HttpStatus
 
 import scala.io.Source
@@ -40,13 +40,13 @@ trait ApiGatewayHandler extends LambdaHandler[AwsProxyResponse]
   //--- Methods ---
   protected def getRequest(inputStream: InputStream): AwsProxyRequest = {
     val json = Source.fromInputStream(inputStream).mkString
-    val request = json.jsonParseToJavaClass[AwsProxyRequest]
-    log.info(request.javaClassToJson)
+    val request = json.jsonDecode[AwsProxyRequest]
+    log.info(request.asJson)
     request
   }
 
   protected def writeResponse(outputStream: OutputStream, value: AnyRef): Unit = {
-    outputStream.write(value.javaClassToJson.getBytes(Charset.defaultCharset()))
+    outputStream.write(value.asJson.getBytes(Charset.defaultCharset()))
     outputStream.close()
   }
 

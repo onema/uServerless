@@ -6,18 +6,18 @@ lazy val serverlessBaseRoot = (project in file("."))
 
   name := "serverless-base",
 
-  version := "0.6.0",
+  version := "0.7.0",
 
   scalaVersion := "2.12.5",
 
   libraryDependencies ++= {
-    val awsSdkVersion = "1.11.313"
+    val awsSdkVersion = "1.11.380"
     Seq(
       // CORE!
-       "onema"                      % "json-core_2.12"                      % "1.1.0",
+       "io.onema"                   % "json-extensions_2.12"                % "0.1.0",
 
       // AWS libraries
-      "com.amazonaws"               % "aws-lambda-java-events"              % "2.1.0",
+      "com.amazonaws"               % "aws-lambda-java-events"              % "2.2.2",
       "com.amazonaws"               % "aws-lambda-java-core"                % "1.2.0",
       "com.amazonaws"               % "aws-java-sdk-sns"                    % awsSdkVersion,
       "com.amazonaws"               % "aws-java-sdk-ssm"                    % awsSdkVersion,
@@ -41,7 +41,7 @@ lazy val serverlessBaseRoot = (project in file("."))
 //.dependsOn(jsonCore)
 
 // Sub-projects
-//lazy val jsonCore = RootProject(file("../JsonCore"))
+//lazy val jsonCore = RootProject(file("../JsonExtensions"))
 
 publishMavenStyle := true
 publishTo := Some("Onema Snapshots" at "s3://s3-us-east-1.amazonaws.com/ones-deployment-bucket/snapshots")
