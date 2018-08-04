@@ -9,7 +9,7 @@
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
 
-package onema.serverlessbase.exception
+package io.onema.serverlessbase.exception
 
 import java.io.{PrintWriter, StringWriter}
 

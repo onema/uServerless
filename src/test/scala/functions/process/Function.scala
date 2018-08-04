@@ -15,8 +15,8 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import com.typesafe.scalalogging.Logger
-import onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
-import onema.serverlessbase.function.LambdaHandler
+import io.onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
+import io.onema.serverlessbase.function.LambdaHandler
 
 import scala.collection.JavaConverters._
 

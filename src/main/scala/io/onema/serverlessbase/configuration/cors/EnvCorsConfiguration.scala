@@ -9,7 +9,7 @@
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
 
-package onema.serverlessbase.configuration.cors
+package io.onema.serverlessbase.configuration.cors
 
 class EnvCorsConfiguration(origin: Option[String]) extends CorsConfiguration(origin) {
 

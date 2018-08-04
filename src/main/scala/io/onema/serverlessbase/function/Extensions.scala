@@ -9,7 +9,7 @@
   * @author Juan Manuel Torres <kinojman@gmail.com>
   */
 
-package onema.serverlessbase.function
+package io.onema.serverlessbase.function
 
 import com.amazonaws.services.lambda.runtime.Context
 

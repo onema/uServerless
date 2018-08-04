@@ -1,5 +1,5 @@
 /**
-  * This file is part of the ONEMA onema.serverlessbase Package.
+  * This file is part of the ONEMA io.onema.serverlessbase Package.
   * For the full copyright and license information,
   * please view the LICENSE file that was distributed
   * with this source code.
@@ -18,12 +18,11 @@ import com.amazonaws.services.sns.AmazonSNSAsync
 import com.fasterxml.jackson.databind.ObjectMapper
 import functions.success.Function
 import handler.EnvironmentHelper
-import onema.core.json.Implicits._
-import onema.serverlessbase.configuration.lambda.EnvLambdaConfiguration
-import onema.serverlessbase.exception.{HandleRequestException, RuntimeException}
-import onema.serverlessbase.function.Extensions.RichRegex
-import onema.serverlessbase.function.{ApiGatewayHandler, ApiGatewayResponse}
-import onema.serverlessbase.model.ErrorMessage
+import io.onema.serverlessbase.configuration.lambda.EnvLambdaConfiguration
+import io.onema.serverlessbase.exception.{HandleRequestException, RuntimeException}
+import io.onema.serverlessbase.function.Extensions.RichRegex
+import io.onema.serverlessbase.function.{ApiGatewayHandler, ApiGatewayResponse}
+import io.onema.serverlessbase.model.ErrorMessage
 import org.apache.http.HttpStatus
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
@@ -66,13 +65,14 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
   "A concrete implementation" should "not throw any exceptions" in {
 
     // Arrange
+    import io.onema.json.Extensions._
     val request = new AwsProxyRequest
     val context = new MockLambdaContext
     val lambdaFunction = new Function
 
     // Act
     val response = lambdaFunction.lambdaHandler(request, context)
-    val body = response.getBody.jsonParse[ErrorMessage]
+    val body = response.getBody.jsonDecode[ErrorMessage]
 
     // Assert
     body.message should be ("success")
@@ -81,10 +81,11 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
   "An Exception" should "generate a valid response" in {
 
     // Arrange
+    import io.onema.json.Extensions._
     val message = "{\"message\": \"foo bar\"}"
 
     // Act
-    val errorMessage = message.jsonParse[ErrorMessage]
+    val errorMessage = message.jsonDecode[ErrorMessage]
 
     // Assert
     errorMessage.message should be ("foo bar")
@@ -93,6 +94,7 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
   "A response" should "be properly serialized to json" in {
 
     // Arrange
+    import io.onema.json.JavaExtensions._
     val mapper = new ObjectMapper
     class Foo extends ApiGatewayResponse {
       def test(): AwsProxyResponse = {
@@ -103,7 +105,7 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
 
     // Act
     val foo = new Foo().test()
-    val response = foo.javaClassToJson
+    val response = foo.asJson
 
     // Assert
     response should be (expectedValue)
