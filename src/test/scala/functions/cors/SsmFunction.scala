@@ -25,13 +25,11 @@ import org.apache.http.HttpStatus
 class SsmFunction(val ssmClient: AWSSimpleSystemsManagementAsync) extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Fields ---
-  override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
+  override protected lazy val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
 
   //--- Methods ---
-  def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    handle{
-      new AwsProxyResponse(HttpStatus.SC_OK)
-    }.withCors(SsmCorsConfiguration(Some("https://foo.com"), ssmClient))
+  def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
+    new AwsProxyResponse(HttpStatus.SC_OK).withCors(SsmCorsConfiguration(Some("https://foo.com"), ssmClient))
   }
 
 }

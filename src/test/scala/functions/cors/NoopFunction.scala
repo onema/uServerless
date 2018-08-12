@@ -24,14 +24,12 @@ import org.apache.http.HttpStatus
 class NoopFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Fields ---
-  override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
+  override protected lazy val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
 
   //--- Methods ---
-  def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
+  def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     val origin = request.getHeaders.get("origin")
-    handle{
-      new AwsProxyResponse(HttpStatus.SC_OK)
-    }.withCors(new NoopCorsConfiguration())
+    new AwsProxyResponse(HttpStatus.SC_OK).withCors(new NoopCorsConfiguration())
   }
 
 }

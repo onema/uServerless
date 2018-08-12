@@ -27,7 +27,7 @@ import scala.io.Source
 import scala.util.Try
 
 
-trait ApiGatewayHandler extends LambdaHandler[AwsProxyResponse]
+trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
   with ApiGatewayResponse
   with LambdaConfiguration {
 

@@ -25,10 +25,10 @@ object Logic {
 
 class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
   //--- Fields ---
-  override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
+  override protected lazy val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
 
   //--- Methods ---
-  def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    handle(Logic.handleRequest)
+  def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
+    Logic.handleRequest
   }
 }

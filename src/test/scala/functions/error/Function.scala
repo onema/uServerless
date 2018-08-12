@@ -20,7 +20,7 @@ import io.onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
 import io.onema.serverlessbase.function.ApiGatewayHandler
 
 object Logic {
-  def handleRequest(request: AwsProxyRequest): Nothing = {
+  def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
     throw new NotImplementedError("FooBar")
   }
 }
@@ -28,12 +28,10 @@ object Logic {
 class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Fields ---
-  override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
+  override protected lazy val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
 
   //--- Methods ---
-  def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    handle {
-      Logic.handleRequest(request)
-    }.withCors(new EnvCorsConfiguration(Option(request.getHeaders.get("origin"))))
+  def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
+    Logic.handleRequest(request).withCors(new EnvCorsConfiguration(Option(request.getHeaders.get("origin"))))
   }
 }
