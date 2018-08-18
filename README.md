@@ -281,7 +281,7 @@ class EnvFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
   override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
 
   //--- Methods ---
-  def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
+  def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     val origin = request.getHeaders.get("origin")
     val result = EnvLogic.handleRequest(request)
                    .withCors(new EnvCorsConfiguration(origin))
@@ -290,6 +290,27 @@ class EnvFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
   }
 }
 ```
+
+Keeping functions warm
+----------------------
+Functions can be kept warm by adding a `schedule` event to the functions with the following input:
+
+```yaml
+
+functions:
+  success:
+    handler: serverless.Function::lambdaHandler
+    events:
+      # Main trigger
+      - sns: some-tpic
+      
+      # Custom event to keep the function warm
+      - schedule:
+          rate: rate(5 minute)
+          input:
+            warmup: true
+```
+
 
 Enable error notifications
 --------------------------

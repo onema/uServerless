@@ -16,7 +16,7 @@ import com.amazonaws.services.lambda.runtime.events.ScheduledEvent
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import com.typesafe.scalalogging.Logger
 import io.onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
-import io.onema.serverlessbase.function.{CronJobHandler, LambdaHandler}
+import io.onema.serverlessbase.function.LambdaHandler
 
 object ScheduledLogic {
   def handleEvent(event: ScheduledEvent, log: Logger): Unit = {
