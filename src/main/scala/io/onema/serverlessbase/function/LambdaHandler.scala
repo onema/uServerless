@@ -16,11 +16,13 @@ import java.nio.charset.Charset
 
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.lambda.runtime.Context
+import com.amazonaws.services.lambda.runtime.events.ScheduledEvent
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import com.typesafe.scalalogging.Logger
 import io.onema.json.JavaExtensions._
 import io.onema.serverlessbase.configuration.lambda.LambdaConfiguration
 import io.onema.serverlessbase.exception.ThrowableExtensions._
+import io.onema.serverlessbase.model.WarmUpEvent
 
 import scala.io.Source
 import scala.reflect.ClassTag
@@ -43,13 +45,17 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
   def lambdaHandler(inputStream: InputStream, outputStream: OutputStream, context: Context): Unit = {
     val json = Source.fromInputStream(inputStream).mkString
     log.info(json)
-    val event = json.jsonDecode[TEvent]
-    val response = handle {
-      execute(event, context)
+
+    // A schedule event for the lambda handler is considered a warm-up event and will return immediately
+    if(!isWarmUpEvent(json)) {
+      val event = json.jsonDecode[TEvent]
+      val response = handle {
+        execute(event, context)
+      }
+      response.foreach(response => {
+        outputStream.write(response.asJson.getBytes(Charset.defaultCharset()))
+      })
     }
-    response.foreach(response => {
-      outputStream.write(response.asJson.getBytes(Charset.defaultCharset()))
-    })
     outputStream.close()
   }
 
@@ -73,5 +79,15 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
     log.error(message)
     snsErrorTopic.foreach(snsClient.publish(_, message))
     throw exception
+  }
+
+  private def isWarmUpEvent(json: String): Boolean = {
+    Try(json.jsonDecode[WarmUpEvent]) match {
+      case Success(event) =>
+        log.info("Warm Up Event!")
+        event.getWarmup
+      case Failure(exception) =>
+        false
+    }
   }
 }
