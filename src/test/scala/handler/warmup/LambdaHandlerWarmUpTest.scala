@@ -14,6 +14,7 @@ package handler.warmup
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import functions.process._
 import handler.EnvironmentHelper
 import org.scalamock.scalatest.MockFactory
@@ -33,6 +34,7 @@ class LambdaHandlerWarmUpTest extends FlatSpec with Matchers with MockFactory wi
     function.lambdaHandler(inputStream, outputStream, context)
 
     // Assert
+    outputStream.toString() should be ("")
   }
   "A schedule event with an invalid warmup event" should "return false" in {
 
@@ -43,9 +45,9 @@ class LambdaHandlerWarmUpTest extends FlatSpec with Matchers with MockFactory wi
     val context = new MockLambdaContext
     val function = new ScheduledFunction()
 
-    // Act
-    function.lambdaHandler(inputStream, outputStream, context)
-
-    // Assert
+    // Act - Assert
+    intercept[UnrecognizedPropertyException] {
+      function.lambdaHandler(inputStream, outputStream, context)
+    }
   }
 }
