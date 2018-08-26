@@ -39,6 +39,7 @@ trait ApiGatewayResponse {
   protected def buildError(code: Int, message: String): AwsProxyResponse = {
     buildResponse(code, ErrorMessage(message))
   }
+
   private def addHeaders(response: AwsProxyResponse, headers: Map[String, String]): AwsProxyResponse = {
     if(headers.nonEmpty) {
       new AwsProxyResponse(response.getStatusCode, headers.asJava)

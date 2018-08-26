@@ -3,6 +3,7 @@ Serverless Base for Scala
 ![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiaDJnMmJ0a2M5R1k3OWM0UVg2NnQwV2RsNEg5YUlFWmpxQmlxMXRtY3R4L2J4eW81aG1IMWxVWWhabG92L1lseVVJR0hGUWxxUkZFWVkveHdDazRuSmxFPSIsIml2UGFyYW1ldGVyU3BlYyI6ImRBWm0xOFFIMkxkaFNaL3QiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/8f01afd33edf45779f742520e58a44e7)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=onema/ServerlessBase&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/8f01afd33edf45779f742520e58a44e7)](https://www.codacy.com?utm_source=github.com&utm_medium=referral&utm_content=onema/ServerlessBase&utm_campaign=Badge_Coverage)
+[![LICENSE](https://img.shields.io/badge/license-Apache--2.0-blue.svg?longCache=true&style=flat-square)](LICENSE)
 
 The serverless base package is a small collection of adapters to help you
 build AWS Lambda functions using scala. 
@@ -152,6 +153,9 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 ```
 
 ### Handling unexpected errors for API Gateway
+With the latest version of the framework there is no need to catch any unexpected errors as these will be automatically 
+handled as 500 internal server error and a response will be returned with a generic message. 
+If you wish to 
 ```scala
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
@@ -169,11 +173,11 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    val result = Logic.handleRequest(request)
+    Logic.handleRequest(request)
     
+    // The generated response by the lambda handler will contain the following info
     //result.getBody should be ("{\"message\":\"Internal Server Error: check the logs for more information.\"}")
     //result.getStatusCode should be (HttpStatus.SC_INTERNAL_SERVER_ERROR)
-    result
   }
 }
 ```
@@ -306,7 +310,7 @@ functions:
       
       # Custom event to keep the function warm
       - schedule:
-          rate: rate(5 minute)
+          rate: rate(5 minutes)
           input:
             warmup: true
 ```

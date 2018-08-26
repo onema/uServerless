@@ -17,9 +17,11 @@ import java.nio.charset.Charset
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.{DeserializationFeature, MapperFeature, ObjectMapper}
+import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.typesafe.scalalogging.Logger
 import io.onema.json.JavaExtensions._
+import io.onema.json.Mapper
 import io.onema.serverlessbase.configuration.lambda.LambdaConfiguration
 import io.onema.serverlessbase.exception.ThrowableExtensions._
 import io.onema.serverlessbase.model.WarmUpEvent
@@ -82,7 +84,7 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
   }
 
   private def isWarmUpEvent(json: String): Boolean = {
-    val default: ObjectMapper = new ObjectMapper()
+//    val default: ObjectMapper = new ObjectMapper()
     Try(json.jsonDecode[WarmUpEvent]) match {
       case Success(event) =>
         log.info("Warm Up Event!")
@@ -93,7 +95,8 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
   }
 
   private def decodeEvent(json: String): TEvent = {
-    Try (json.jsonDecode[TEvent]) match {
+    val mapper: ObjectMapper = Mapper.allowUnknownPropertiesMapper
+    Try (json.jsonDecode[TEvent](mapper)) match {
       case Success(event) => event
       case Failure(e) =>
         log.error(s"Unable to parse json message to expected type")

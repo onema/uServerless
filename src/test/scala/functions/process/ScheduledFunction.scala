@@ -19,17 +19,18 @@ import io.onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
 import io.onema.serverlessbase.function.LambdaHandler
 
 object ScheduledLogic {
-  def handleEvent(event: ScheduledEvent, log: Logger): Unit = {
+  def handleEvent(event: ScheduledEvent, log: Logger): Boolean = {
     log.info(event.getId)
+    true
   }
 }
 
-class ScheduledFunction extends LambdaHandler[ScheduledEvent, Unit] with NoopLambdaConfiguration {
+class ScheduledFunction extends LambdaHandler[ScheduledEvent, Boolean] with NoopLambdaConfiguration {
   //--- Fields ---
   override protected lazy val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
 
   //--- Methods ---
-  override def execute(event: ScheduledEvent, context: Context): Unit = {
+  override def execute(event: ScheduledEvent, context: Context): Boolean = {
     ScheduledLogic.handleEvent(event, log)
   }
 }
