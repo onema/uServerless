@@ -1,5 +1,5 @@
 /**
-  * This file is part of the ONEMA io.onema.serverlessbase Package.
+  * This file is part of the ONEMA io.onema.userverless Package.
   * For the full copyright and license information,
   * please view the LICENSE file that was distributed
   * with this source code.
@@ -20,11 +20,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import functions.success.Function
 import handler.EnvironmentHelper
 import handler.function.ApiGatewayHandlerTest._
-import io.onema.serverlessbase.configuration.lambda.{EnvLambdaConfiguration, MemoryLambdaConfiguration}
-import io.onema.serverlessbase.exception.{HandleRequestException, RuntimeException}
-import io.onema.serverlessbase.function.{ApiGatewayHandler, ApiGatewayResponse}
-import io.onema.serverlessbase.model.ErrorMessage
-import io.onema.serverlessbase.function.Extensions._
+import io.onema.userverless.configuration.lambda.{EnvLambdaConfiguration, MemoryLambdaConfiguration}
+import io.onema.userverless.exception.{HandleRequestException, RuntimeException}
+import io.onema.userverless.function.{ApiGatewayHandler, ApiGatewayResponse}
+import io.onema.userverless.model.ErrorMessage
+import io.onema.userverless.function.Extensions._
 import handler.function.ApiGatewayTestHelper._
 import org.apache.http.HttpStatus
 import org.scalamock.scalatest.MockFactory

@@ -1,5 +1,5 @@
 /**
-  * This file is part of the ONEMA onema.serverlessbase Package.
+  * This file is part of the ONEMA onema.userverless Package.
   * For the full copyright and license information,
   * please view the LICENSE file that was distributed
   * with this source code.
@@ -9,11 +9,11 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.serverlessbase.configuration.lambda
+package io.onema.userverless.configuration.lambda
 
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
 import com.amazonaws.services.simplesystemsmanagement.model.{GetParameterRequest, GetParametersByPathRequest, ParameterNotFoundException}
-import io.onema.serverlessbase.configuration.lambda.SsmLambdaConfiguration.StringExtensions
+import io.onema.userverless.configuration.lambda.SsmLambdaConfiguration.StringExtensions
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._

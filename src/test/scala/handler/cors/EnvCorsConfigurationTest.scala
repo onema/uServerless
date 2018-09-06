@@ -1,5 +1,5 @@
 /**
-  * This file is part of the ONEMA io.onema.serverlessbase Package.
+  * This file is part of the ONEMA io.onema.userverless Package.
   * For the full copyright and license information,
   * please view the LICENSE file that was distributed
   * with this source code.
@@ -11,7 +11,7 @@
 package handler.cors
 
 import handler.EnvironmentHelper
-import io.onema.serverlessbase.configuration.cors.EnvCorsConfiguration
+import io.onema.userverless.configuration.cors.EnvCorsConfiguration
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 

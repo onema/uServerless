@@ -1,12 +1,14 @@
+import sbt.url
+
 resolvers += "Onema Snapshots" at "s3://s3-us-east-1.amazonaws.com/ones-deployment-bucket/snapshots"
 
 lazy val serverlessBaseRoot = (project in file("."))
 .settings(
   organization := "io.onema",
 
-  name := "serverless-base",
+  name := "u-serverless",
 
-  version := "0.8.0",
+  version := "0.1.0",
 
   scalaVersion := "2.12.6",
 
@@ -14,7 +16,7 @@ lazy val serverlessBaseRoot = (project in file("."))
     val awsSdkVersion = "1.11.380"
     Seq(
       // CORE!
-//       "io.onema"                   % "json-extensions_2.12"                % "0.3.0",
+       "io.onema"                   % "json-extensions_2.12"                % "0.3.0",
 
     // AWS libraries
       "com.amazonaws"               % "aws-lambda-java-events"              % "2.2.2",
@@ -38,10 +40,34 @@ lazy val serverlessBaseRoot = (project in file("."))
     )
   }
 )
-.dependsOn(jsonExtensions)
+//.dependsOn(jsonExtensions)
 
 // Sub-projects
-lazy val jsonExtensions = RootProject(file("../JsonExtensions"))
-
+//lazy val jsonExtensions = RootProject(file("../JsonExtensions"))
+// Maven Central Repo boilerplate configuration
+pomIncludeRepository := { _ => false }
+licenses := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0"))
+homepage := Some(url("https://github.com/onema/UServerless"))
+scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/onema/SConsole"),
+    "scm:git@github.com:onema/UServerless.git"
+  )
+)
+developers := List(
+  Developer(
+    id    = "onema",
+    name  = "Juan Manuel Torres",
+    email = "software@onema.io",
+    url   = url("https://github.com/onema/")
+  )
+)
 publishMavenStyle := true
-publishTo := Some("Onema Snapshots" at "s3://s3-us-east-1.amazonaws.com/ones-deployment-bucket/snapshots")
+publishTo := {
+  val nexus = "https://oss.sonatype.org/"
+  if (isSnapshot.value)
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+}
+publishArtifact in Test := false

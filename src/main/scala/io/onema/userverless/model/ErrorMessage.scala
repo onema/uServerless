@@ -1,5 +1,5 @@
 /**
-  * This file is part of the ONEMA onema.serverlessbase Package.
+  * This file is part of the ONEMA onema.userverless Package.
   * For the full copyright and license information,
   * please view the LICENSE file that was distributed
   * with this source code.
@@ -9,6 +9,6 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.serverlessbase.model
+package io.onema.userverless.model
 
 case class ErrorMessage(message: String)

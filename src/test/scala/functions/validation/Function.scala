@@ -15,9 +15,9 @@ import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.model.PublishRequest
 import com.amazonaws.services.sns.{AmazonSNS, AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
-import io.onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
-import io.onema.serverlessbase.function.{ApiGatewayHandler, ApiGatewayResponse}
-import io.onema.serverlessbase.function.Extensions.ContextExtension
+import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.function.{ApiGatewayHandler, ApiGatewayResponse}
+import io.onema.userverless.function.Extensions.ContextExtension
 import org.apache.http.HttpStatus
 
 class Logic(val snsClient: AmazonSNS, val topic: String) extends ApiGatewayResponse {

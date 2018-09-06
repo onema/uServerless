@@ -1,5 +1,5 @@
 /**
-  * This file is part of the ONEMA onema.serverlessbase Package.
+  * This file is part of the ONEMA onema.userverless Package.
   * For the full copyright and license information,
   * please view the LICENSE file that was distributed
   * with this source code.
@@ -9,7 +9,7 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.serverlessbase.function
+package io.onema.userverless.function
 
 import java.io.{InputStream, OutputStream}
 import java.nio.charset.Charset
@@ -18,9 +18,9 @@ import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.sns.AmazonSNSAsync
 import com.typesafe.scalalogging.Logger
 import io.onema.json.JavaExtensions._
-import io.onema.serverlessbase.configuration.lambda.LambdaConfiguration
-import io.onema.serverlessbase.exception.HandleRequestException
-import io.onema.serverlessbase.exception.ThrowableExtensions._
+import io.onema.userverless.configuration.lambda.LambdaConfiguration
+import io.onema.userverless.exception.HandleRequestException
+import io.onema.userverless.exception.ThrowableExtensions._
 import org.apache.http.HttpStatus
 
 import scala.io.Source

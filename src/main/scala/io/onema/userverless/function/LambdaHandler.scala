@@ -1,5 +1,5 @@
 /**
-  * This file is part of the ONEMA onema.serverlessbase Package.
+  * This file is part of the ONEMA onema.userverless Package.
   * For the full copyright and license information,
   * please view the LICENSE file that was distributed
   * with this source code.
@@ -9,7 +9,7 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.serverlessbase.function
+package io.onema.userverless.function
 
 import java.io.{InputStream, OutputStream}
 import java.nio.charset.Charset
@@ -17,14 +17,13 @@ import java.nio.charset.Charset
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
-import com.fasterxml.jackson.databind.{DeserializationFeature, MapperFeature, ObjectMapper}
-import com.fasterxml.jackson.datatype.joda.JodaModule
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.typesafe.scalalogging.Logger
 import io.onema.json.JavaExtensions._
 import io.onema.json.Mapper
-import io.onema.serverlessbase.configuration.lambda.LambdaConfiguration
-import io.onema.serverlessbase.exception.ThrowableExtensions._
-import io.onema.serverlessbase.model.WarmUpEvent
+import io.onema.userverless.configuration.lambda.LambdaConfiguration
+import io.onema.userverless.exception.ThrowableExtensions._
+import io.onema.userverless.model.WarmUpEvent
 
 import scala.io.Source
 import scala.reflect.ClassTag
@@ -84,24 +83,37 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
   }
 
   private def isWarmUpEvent(json: String): Boolean = {
-//    val default: ObjectMapper = new ObjectMapper()
-    Try(json.jsonDecode[WarmUpEvent]) match {
-      case Success(event) =>
-        log.info("Warm Up Event!")
-        event.getWarmup
-      case Failure(exception) =>
-        false
+    log.debug("Warmup Event")
+    time {
+      Try(json.jsonDecode[WarmUpEvent]) match {
+        case Success(event) =>
+          log.info("Warm Up Event!")
+          event.getWarmup
+        case Failure(exception) =>
+          false
+      }
     }
   }
 
   private def decodeEvent(json: String): TEvent = {
-    val mapper: ObjectMapper = Mapper.allowUnknownPropertiesMapper
-    Try (json.jsonDecode[TEvent](mapper)) match {
-      case Success(event) => event
-      case Failure(e) =>
-        log.error(s"Unable to parse json message to expected type")
-        handleFailure(e)
-        throw e
+    log.debug("Decode Event")
+    time {
+      val mapper: ObjectMapper = Mapper.allowUnknownPropertiesMapper
+      Try(json.jsonDecode[TEvent](mapper)) match {
+        case Success(event) => event
+        case Failure(e) =>
+          log.error(s"Unable to parse json message to expected type")
+          handleFailure(e)
+          throw e
+      }
     }
+  }
+
+  private def time[R](block: => R): R = {
+    val t0 = System.nanoTime()
+    val result = block    // call-by-name
+    val t1 = System.nanoTime()
+    log.info("Elapsed time: " + (t1 - t0)/1000000 + "milliseconds")
+    result
   }
 }

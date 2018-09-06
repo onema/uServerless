@@ -14,7 +14,7 @@ package handler.function
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, InputStream}
 
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse
-import io.onema.serverlessbase.model.ErrorMessage
+import io.onema.userverless.model.ErrorMessage
 
 
 object ApiGatewayTestHelper {
