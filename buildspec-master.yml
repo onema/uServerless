@@ -15,9 +15,6 @@ phases:
       - echo Submit coverage report to Codacy
       - sbt codacyCoverage
 
-      - echo Publishing on `date`
-      - sbt coverageOff publish
-
   post_build:
     commands:
       - echo Build completed on `date`
