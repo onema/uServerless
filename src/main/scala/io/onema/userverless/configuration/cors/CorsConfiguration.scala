@@ -9,7 +9,7 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.serverlessbase.configuration.cors
+package io.onema.userverless.configuration.cors
 
 abstract class CorsConfiguration(val origin: Option[String]) {
 

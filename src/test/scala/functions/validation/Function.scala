@@ -15,9 +15,9 @@ import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.model.PublishRequest
 import com.amazonaws.services.sns.{AmazonSNS, AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
-import io.onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
-import io.onema.serverlessbase.function.{ApiGatewayHandler, ApiGatewayResponse}
-import io.onema.serverlessbase.function.Extensions.ContextExtension
+import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.function.{ApiGatewayHandler, ApiGatewayResponse}
+import io.onema.userverless.function.Extensions.ContextExtension
 import org.apache.http.HttpStatus
 
 class Logic(val snsClient: AmazonSNS, val topic: String) extends ApiGatewayResponse {
@@ -36,12 +36,12 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
   //--- Fields ---
   private val snsTopicName = System.getenv("SNS_TOPIC")
 
-  override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
+  override protected lazy val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
 
   //--- Methods ---
-  def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
+  def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     val topic = s"arn:aws:sns:$region:${context.accountId}:$snsTopicName"
     val logic = new Logic(snsClient, topic)
-    handle(logic.handleRequest(request))
+    logic.handleRequest(request)
   }
 }

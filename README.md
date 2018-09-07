@@ -1,18 +1,24 @@
-Serverless Base for Scala
-=========================
-![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiaDJnMmJ0a2M5R1k3OWM0UVg2NnQwV2RsNEg5YUlFWmpxQmlxMXRtY3R4L2J4eW81aG1IMWxVWWhabG92L1lseVVJR0hGUWxxUkZFWVkveHdDazRuSmxFPSIsIml2UGFyYW1ldGVyU3BlYyI6ImRBWm0xOFFIMkxkaFNaL3QiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8f01afd33edf45779f742520e58a44e7)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=onema/ServerlessBase&amp;utm_campaign=Badge_Grade)
-[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/8f01afd33edf45779f742520e58a44e7)](https://www.codacy.com?utm_source=github.com&utm_medium=referral&utm_content=onema/ServerlessBase&utm_campaign=Badge_Coverage)
+# µServerless for Scala
+[![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiS2NCN3NOSktlaEdndWZnQU53SmViVnZsdDNFSkk3RWpNRGFibVZlbExyYVZOSlNSY2J4RTJmWlZoeloyNXAzZ1RtdlpmbFZMUmNzekhhSVR4Zi9sU2RrPSIsIml2UGFyYW1ldGVyU3BlYyI6Imk4WExtWmU0V2Urd1BZYjYiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)](https://console.aws.amazon.com/codebuild/home?region=us-east-1#/projects/uServerless-master/view)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/634b14e124ec44429b1b81fdbcb6548f)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=onema/UServerless&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/634b14e124ec44429b1b81fdbcb6548f)](https://www.codacy.com?utm_source=github.com&utm_medium=referral&utm_content=onema/UServerless&utm_campaign=Badge_Coverage)
+[![LICENSE](https://img.shields.io/badge/license-Apache--2.0-blue.svg?longCache=true&style=flat-square)](LICENSE)
 
-The serverless base package is a small collection of adapters to help you
+The µServerless package (pronounced micro-serverless) is a small collection of classes, traits and adapters to help you
 build AWS Lambda functions using scala. 
 
-Invocation model
-----------------
+## Install
+Add the following to your SBT config:
+
+```
+libraryDependencies += "io.onema" %% "userverless" % "0.1.0"
+```
+
+## Invocation model
 The adapters have the following properties:
 
 1. Enable you to separate the lambda `Function` handler from the `Logic` of the application.
-  - The `Function` is responsible for building all the dependencies and constructing the logic object and handling errors and notifications.
+  - The `Function` is responsible for building all the dependencies and constructing the logic object and handling errors, notifications and keeping the function warm (if enabled).
   - The `Logic` should acquire all it's dependencies via DI, hence it should be the testable part of your code.
 1. Handle and report errors as notifications via SNS
 1. API Gateway has a special handler that to help you deal with Lambda Proxy Request and Responses
@@ -20,12 +26,11 @@ The adapters have the following properties:
 
 ### Handlers available
 There are two traits that can be used in your functions:
-* LambdaHandler: A generic handler that uses a type parameter to defined the handler return type. 
+* LambdaHandler: A generic handler that uses a type parameters to defined the handler event and return type. 
 * ApiGatewayHandler: An APIGateway specific handler that generates an API Proxy request. 
 It has support methods to deal with java input and output streams; these are used when using apis that have a cognito custom authorizer.
 
-Lambda Handler Usage
---------------------
+## Lambda Handler Usage
 
 ### Simple lambda function with Unit return type
 ```scala
@@ -34,8 +39,8 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import com.typesafe.scalalogging.Logger
-import onema.serverlessbase.function.LambdaHandler
-import onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
+import io.onema.serverlessbase.function.LambdaHandler
+import io.onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
 import org.apache.http.HttpStatus
 
 object Logic {
@@ -45,17 +50,12 @@ object Logic {
   }
 }
 
-class Function extends LambdaHandler[Unit] with NoopLambdaConfiguration {
-
-  //--- Fields ---
-  override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
+class Function extends LambdaHandler[SNSEvent, Unit] with NoopLambdaConfiguration {
 
   //--- Methods ---
-  def lambdaHandler(snsEvent: SNSEvent, context: Context): Unit = {
-    handle{
-      val message = snsEvent.getRecords.get(0).getSNS.getMessage()
-      Logic.handleRequest(message)
-    }
+  def execute(snsEvent: SNSEvent, context: Context): Unit = {
+    val message = snsEvent.getRecords.get(0).getSNS.getMessage()
+    Logic.handleRequest(message)
   }
 }
 ```
@@ -67,8 +67,8 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import com.typesafe.scalalogging.Logger
-import onema.serverlessbase.function.LambdaHandler
-import onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
+import io.onema.serverlessbase.function.LambdaHandler
+import io.onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
 import org.apache.http.HttpStatus
 
 object Logic {
@@ -78,17 +78,13 @@ object Logic {
   }
 }
 
-class Function extends LambdaHandler[String] with NoopLambdaConfiguration {
-
-  //--- Fields ---
-  override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
+class Function extends LambdaHandler[SNSEvent, String] with NoopLambdaConfiguration {
 
   //--- Methods ---
-  def lambdaHandler(snsEvent: SNSEvent, context: Context): Unit = {
-    val result = handle{
-      Logic.handleRequest(snsEvent)
-    }
+  def execute(snsEvent: SNSEvent, context: Context): String = {
+    val result = Logic.handleRequest(snsEvent)
     log.info(result)
+    result
   }
 }
 ```
@@ -100,8 +96,8 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import com.typesafe.scalalogging.Logger
-import onema.serverlessbase.function.LambdaHandler
-import onema.serverlessbase.configuration.lambda.EnvLambdaConfiguration
+import io.onema.serverlessbase.function.LambdaHandler
+import io.onema.serverlessbase.configuration.lambda.EnvLambdaConfiguration
 import org.apache.http.HttpStatus
 
 object Logic {
@@ -111,16 +107,11 @@ object Logic {
   }
 }
 
-class Function extends LambdaHandler[Unit] with EnvLambdaConfiguration {
-
-  //--- Fields ---
-  override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
+class Function extends LambdaHandler[SNSEvent, Unit] with EnvLambdaConfiguration {
 
   //--- Methods ---
-  def lambdaHandler(snsEvent: SNSEvent, context: Context): Unit = {
-    handle{
-      Logic.handleRequest(snsEvent)
-    }
+  def execute(snsEvent: SNSEvent, context: Context): Unit = {
+    Logic.handleRequest(snsEvent)
   }
 }
 ```
@@ -132,16 +123,16 @@ There are a few things to notice here:
  1. The lambda handler rethrows the error after it has been reported.
 
 
-API Gateway Handler Usage
---------------------------
+## API Gateway Handler Usage
+
 ### Handling a valid requests
 ```scala
 
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
-import onema.serverlessbase.function.ApiGatewayHandler
-import onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
+import io.onema.serverlessbase.function.ApiGatewayHandler
+import io.onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
 import org.apache.http.HttpStatus
 
 object Logic {
@@ -154,14 +145,10 @@ object Logic {
 
 class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 
-  //--- Fields ---
-  override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
-
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    val result = handle {
-      Logic.handleRequest(request)
-    }
+    val result = Logic.handleRequest(request)
+    
     // result.getStatusCode should be (HttpStatus.SC_OK)
     // result.getBody should be ("{\"message\": \"success\"}")
     result
@@ -170,11 +157,14 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 ```
 
 ### Handling unexpected errors for API Gateway
+With the latest version of the framework there is no need to catch any unexpected errors as these will be automatically 
+handled as 500 internal server error and a response will be returned with a generic message. 
+If you wish to 
 ```scala
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
-import onema.serverlessbase.function.ApiGatewayHandler
+import io.onema.serverlessbase.function.ApiGatewayHandler
 import org.apache.http.HttpStatus
 
 object Logic {
@@ -185,17 +175,13 @@ object Logic {
 
 class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 
-  //--- Fields ---
-  override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
-
   //--- Methods ---
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    val result = handle {
-      Logic.handleRequest(request)
-    }
+    Logic.handleRequest(request)
+    
+    // The generated response by the lambda handler will contain the following info
     //result.getBody should be ("{\"message\":\"Internal Server Error: check the logs for more information.\"}")
     //result.getStatusCode should be (HttpStatus.SC_INTERNAL_SERVER_ERROR)
-    result
   }
 }
 ```
@@ -212,7 +198,7 @@ To generate custom messages such as validation errors and present them to the AP
 
 ```scala
 
-import onema.serverlessbase.exception.HandleRequestException
+import io.onema.serverlessbase.exception.HandleRequestException
 import org.apache.http.HttpStatus
 // ...
 
@@ -224,9 +210,8 @@ class Function extends ApiGatewayHandler {
   // ...
   
   def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    val result = handle {
-      Logic.handleRequest
-    }
+    val result = Logic.handleRequest
+    
     //result.getBody should be ("{\"message\":\"FooBar\"}")
     //result.getStatusCode should be (HttpStatus.SC_BAD_REQUEST)
     result 
@@ -241,8 +226,7 @@ In this case the message will be
 ```
 and the response will have the given header `400 BAD REQUEST`.
 
-Lambda Configuration
---------------------
+## Lambda Configuration
 
 ServerlessBase supports three methods to get configuration values: environment variables, SSM Parameter Store, and Noop.
 
@@ -269,8 +253,8 @@ class TestFunction(snsClientMock: AmazonSNSAsync) extends LambdaHandler with Ssm
 }
 ```
 
-Enable CORS
------------
+## Enable CORS
+
 The following is an example of how to return the appropriate `Access-Control-Allow-Origin` header using a custom 
 strategy to look up and validate the origin. 
 
@@ -286,10 +270,10 @@ There are four strategies implemented:
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
-import onema.serverlessbase.configuration.cors.EnvCorsConfiguration
-import onema.serverlessbase.configuration.cors.Extensions.AwsProxyResponseExtension
-import onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
-import onema.serverlessbase.function.ApiGatewayHandler
+import io.onema.serverlessbase.configuration.cors.EnvCorsConfiguration
+import io.onema.serverlessbase.configuration.cors.Extensions.AwsProxyResponseExtension
+import io.onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
+import io.onema.serverlessbase.function.ApiGatewayHandler
 import org.apache.http.HttpStatus
 
 object EnvLogic {
@@ -304,18 +288,38 @@ class EnvFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
   override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
 
   //--- Methods ---
-  def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
+  def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     val origin = request.getHeaders.get("origin")
-    val result = handle {
-      EnvLogic.handleRequest(request)
-    }.withCors(new EnvCorsConfiguration(origin))
+    val result = EnvLogic.handleRequest(request)
+                   .withCors(new EnvCorsConfiguration(origin))
     //result.getHeaders.get("Access-Control-Allow-Origin") should be ("https://bar.com")
     result
   }
 }
 ```
 
-Enable error notifications
---------------------------
+## Keeping functions warm
+
+Functions can be kept warm by adding a `schedule` event to the functions with the following input:
+
+```yaml
+
+functions:
+  success:
+    handler: serverless.Function::lambdaHandler
+    events:
+      # Main trigger
+      - sns: some-tpic
+      
+      # Custom event to keep the function warm
+      - schedule:
+          rate: rate(5 minutes)
+          input:
+            warmup: true
+```
+
+
+## Enable error notifications
+
 If you want to notify a subsystem when lambda functions are failing, you can do so by setting the configuration key `/sns/error/topic`. 
 This should contain the ARN of a valid SNS error topic that will be used to deliver the error generated by the lambda function.  

@@ -1,0 +1,208 @@
+# Code pipeline for scala applications
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: >
+  Template to create testing a master codebuild for components and libraries
+
+#
+#--------------------------------------------------------------------------
+# PARAMETERS
+#--------------------------------------------------------------------------
+#
+# Required and optional parameters to create CodePipeline for
+# an elastic Beanstalk application.
+#
+Parameters:
+
+  #
+  #--------------------------------------------------------------------------
+  # General application settings
+  #--------------------------------------------------------------------------
+  #
+  AppName:
+    Description: Name of the application
+    Type: String
+
+  CodacyProjectToken:
+    Description: Codacy Prject token for submitting code coverage information
+    Type: String
+    NoEcho: true
+
+  #
+  #--------------------------------------------------------------------------
+  # GitHub settings
+  #--------------------------------------------------------------------------
+  #
+  GitHubOwner:
+    Type: String
+    Description: GitHub repository owner
+  GitHubRepo:
+    Type: String
+    Description: GitHub repository name
+  GitHubBranch:
+    Type: String
+    Default: master
+    Description: GitHub repository branch
+
+
+  #
+  #--------------------------------------------------------------------------
+  # Code build settings
+  #--------------------------------------------------------------------------
+  #
+  CodeBuildComputeType:
+    Description: The build compute type
+    Type: String
+    Default: BUILD_GENERAL1_SMALL
+    AllowedValues:
+    - BUILD_GENERAL1_SMALL
+    - BUILD_GENERAL1_MEDIUM
+    - BUILD_GENERAL1_LARGE
+  CodeBuildDockerImage:
+    Description: The docker image to be used for code build
+    Type: String
+    Default: onema/scala-sbt:8u171-2.12.6-1.2.1-build
+
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    - Label:
+        default: "Application Settings"
+      Parameters:
+      - AppName
+      - CodacyProjectToken
+    - Label:
+        default: "CodeBuild Settings"
+      Parameters:
+      - CodeBuildComputeType
+      - CodeBuildDockerImage
+    - Label:
+        default: "GitHub Settings"
+      Parameters:
+      - GitHubBranch
+      - GitHubOwner
+      - GitHubRepo
+
+#
+#--------------------------------------------------------------------------
+# RESOURCES
+#--------------------------------------------------------------------------
+#
+# Definition of all the resources required for the ElasticBeanstalk
+# deployment pipeline
+#
+Resources:
+
+  #
+  #--------------------------------------------------------------------------
+  # CodeBuild Role required to deploy the lambda functions.
+  #--------------------------------------------------------------------------
+  #
+  CodeBuildDeploymentRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AppName}-code-build-role"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: "Allow"
+          Principal:
+            Service:
+            - "codebuild.amazonaws.com"
+          Action:
+          - "sts:AssumeRole"
+      ManagedPolicyArns:
+      #================================================================
+      # NOTE: This role has admin access
+      #       lock down to fit your needs!
+      #================================================================
+      - arn:aws:iam::aws:policy/AdministratorAccess
+
+  #
+  #--------------------------------------------------------------------------
+  # CodeBuild definitions
+  #--------------------------------------------------------------------------
+  #
+  #========================================================================
+  # NOTE: At this time I don't know of an automated way to setup the GitHub
+  #       WebHook, maybe a custom resource with lambda?.
+  #       A manual authentication step is required for the CodeBuildTest
+  #========================================================================
+  CodeBuildTest:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub "${AppName}-tests"
+      Description: !Sub "Run unit test for ${AppName}"
+      Artifacts:
+        Type: NO_ARTIFACTS
+      ServiceRole: !Ref CodeBuildDeploymentRole
+      Environment:
+        ComputeType: !Ref CodeBuildComputeType
+        EnvironmentVariables:
+        - Name: CODACY_PROJECT_TOKEN
+          Value: !Ref CodacyProjectToken
+        - Name: APP_NAME
+          Value: !Ref AppName
+        Image: !Ref CodeBuildDockerImage
+        Type: LINUX_CONTAINER
+      Source:
+        Auth:
+          Type: OAUTH
+        Type: GITHUB
+        GitCloneDepth: 1
+        Location: !Sub "https://github.com/${GitHubOwner}/${GitHubRepo}.git"
+        BuildSpec: "buildspec-test.yml"
+        ReportBuildStatus: true
+      Triggers:
+        Webhook: true
+
+  CodeBuildMaster:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub "${AppName}-master"
+      Description: !Sub "Run unit test for ${AppName}"
+      BadgeEnabled: true
+      Artifacts:
+        Type: NO_ARTIFACTS
+      ServiceRole: !Ref CodeBuildDeploymentRole
+      Environment:
+        ComputeType: !Ref CodeBuildComputeType
+        EnvironmentVariables:
+        - Name: CODACY_PROJECT_TOKEN
+          Value: !Ref CodacyProjectToken
+        - Name: APP_NAME
+          Value: !Ref AppName
+        Image: !Ref CodeBuildDockerImage
+        Type: LINUX_CONTAINER
+      Source:
+        Auth:
+          Type: OAUTH
+        Type: GITHUB
+        GitCloneDepth: 1
+        Location: !Sub "https://github.com/${GitHubOwner}/${GitHubRepo}.git"
+        BuildSpec: "buildspec-master.yml"
+        ReportBuildStatus: true
+      Triggers:
+        Webhook: true
+
+#
+#--------------------------------------------------------------------------
+# OUTPUTS
+#--------------------------------------------------------------------------
+#
+# Outputs of the resources generated by the code pipeline
+#
+Outputs:
+
+  CodeBuildTest:
+    Description: CodeBuild resource for pull requests
+    Value: !Ref CodeBuildTest
+    Export:
+      Name: !Sub "${AppName}-codebuild-test"
+
+  CodeBuildMaster:
+    Description: CodeBuild resource for the master branch
+    Value: !Ref CodeBuildMaster
+    Export:
+      Name: !Sub "${AppName}-codebuild-master"

@@ -1,5 +1,5 @@
 /**
-  * This file is part of the ONEMA io.onema.serverlessbase Package.
+  * This file is part of the ONEMA io.onema.userverless Package.
   * For the full copyright and license information,
   * please view the LICENSE file that was distributed
   * with this source code.
@@ -12,7 +12,7 @@ package handler.cors
 
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
 import com.amazonaws.services.simplesystemsmanagement.model._
-import io.onema.serverlessbase.configuration.cors.SsmCorsConfiguration
+import io.onema.userverless.configuration.cors.SsmCorsConfiguration
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 

@@ -9,7 +9,7 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.serverlessbase.configuration.lambda
+package io.onema.userverless.configuration.lambda
 
 trait NoopLambdaConfiguration extends LambdaConfiguration {
   /**

@@ -9,10 +9,10 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.serverlessbase.configuration.cors
+package io.onema.userverless.configuration.cors
 
 import com.amazonaws.services.simplesystemsmanagement.{AWSSimpleSystemsManagementAsync, AWSSimpleSystemsManagementAsyncClientBuilder}
-import io.onema.serverlessbase.configuration.lambda.SsmLambdaConfiguration
+import io.onema.userverless.configuration.lambda.SsmLambdaConfiguration
 
 object SsmCorsConfiguration {
   def apply(origin: Option[String]): SsmCorsConfiguration = {

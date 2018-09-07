@@ -1,5 +1,5 @@
 /**
-  * This file is part of the ONEMA io.onema.serverlessbase Package.
+  * This file is part of the ONEMA io.onema.userverless Package.
   * For the full copyright and license information,
   * please view the LICENSE file that was distributed
   * with this source code.
@@ -14,7 +14,7 @@ import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement
 import com.amazonaws.services.simplesystemsmanagement.model._
 import handler.EnvironmentHelper
 import handler.configuration.SsmParametersTest.TestFunction
-import io.onema.serverlessbase.configuration.lambda.SsmLambdaConfiguration
+import io.onema.userverless.configuration.lambda.SsmLambdaConfiguration
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
 

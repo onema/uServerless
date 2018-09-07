@@ -1,5 +1,5 @@
 /**
-  * This file is part of the ONEMA io.onema.serverlessbase Package.
+  * This file is part of the ONEMA io.onema.userverless Package.
   * For the full copyright and license information,
   * please view the LICENSE file that was distributed
   * with this source code.
@@ -15,23 +15,21 @@ import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
-import io.onema.serverlessbase.configuration.cors.Extensions.AwsProxyResponseExtension
-import io.onema.serverlessbase.configuration.cors.SsmCorsConfiguration
-import io.onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
-import io.onema.serverlessbase.function.ApiGatewayHandler
+import io.onema.userverless.configuration.cors.Extensions.AwsProxyResponseExtension
+import io.onema.userverless.configuration.cors.SsmCorsConfiguration
+import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.function.ApiGatewayHandler
 import org.apache.http.HttpStatus
 
 
 class SsmFunction(val ssmClient: AWSSimpleSystemsManagementAsync) extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Fields ---
-  override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
+  override protected lazy val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
 
   //--- Methods ---
-  def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    handle{
-      new AwsProxyResponse(HttpStatus.SC_OK)
-    }.withCors(SsmCorsConfiguration(Some("https://foo.com"), ssmClient))
+  def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
+    new AwsProxyResponse(HttpStatus.SC_OK).withCors(SsmCorsConfiguration(Some("https://foo.com"), ssmClient))
   }
 
 }

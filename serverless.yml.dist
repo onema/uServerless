@@ -59,6 +59,11 @@ functions:
       - http:
           path: success
           method: get
+      # Warmup Event
+      - schedule:
+          rate: rate(5 minutes)
+          input:
+            warmup: true
 
   handler-error:
     handler: functions.handler.error.Function::lambdaHandler

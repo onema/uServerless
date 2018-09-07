@@ -1,5 +1,5 @@
 /**
-  * This file is part of the ONEMA io.onema.serverlessbase Package.
+  * This file is part of the ONEMA io.onema.userverless Package.
   * For the full copyright and license information,
   * please view the LICENSE file that was distributed
   * with this source code.
@@ -12,7 +12,7 @@
 package functions.ssmparameters
 
 import com.amazonaws.services.simplesystemsmanagement.{AWSSimpleSystemsManagementAsync, AWSSimpleSystemsManagementAsyncClientBuilder}
-import io.onema.serverlessbase.configuration.lambda.SsmLambdaConfiguration
+import io.onema.userverless.configuration.lambda.SsmLambdaConfiguration
 
 
 object Function extends SsmLambdaConfiguration {

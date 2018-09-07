@@ -1,5 +1,5 @@
 /**
-  * This file is part of the ONEMA io.onema.userverless Package.
+  * This file is part of the ONEMA ServerlessBase Package.
   * For the full copyright and license information,
   * please view the LICENSE file that was distributed
   * with this source code.
@@ -9,26 +9,28 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package functions.handle.error
+package functions.process
 
-import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
+import com.amazonaws.services.lambda.runtime.events.ScheduledEvent
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
+import com.typesafe.scalalogging.Logger
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
-import io.onema.userverless.exception.HandleRequestException
-import io.onema.userverless.function.ApiGatewayHandler
-import org.apache.http.HttpStatus
+import io.onema.userverless.function.LambdaHandler
 
-object Logic {
-  def handleRequest: Nothing = throw new HandleRequestException(HttpStatus.SC_BAD_REQUEST, "FooBar")
+object ScheduledLogic {
+  def handleEvent(event: ScheduledEvent, log: Logger): Boolean = {
+    log.info(event.getId)
+    true
+  }
 }
 
-class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
+class ScheduledFunction extends LambdaHandler[ScheduledEvent, Boolean] with NoopLambdaConfiguration {
   //--- Fields ---
   override protected lazy val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
 
   //--- Methods ---
-  def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    Logic.handleRequest
+  override def execute(event: ScheduledEvent, context: Context): Boolean = {
+    ScheduledLogic.handleEvent(event, log)
   }
 }

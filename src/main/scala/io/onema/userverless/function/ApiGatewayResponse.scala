@@ -9,10 +9,10 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.serverlessbase.function
+package io.onema.userverless.function
 
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse
-import io.onema.serverlessbase.model.ErrorMessage
+import io.onema.userverless.model.ErrorMessage
 import io.onema.json.Extensions._
 import scala.collection.JavaConverters._
 
@@ -39,6 +39,7 @@ trait ApiGatewayResponse {
   protected def buildError(code: Int, message: String): AwsProxyResponse = {
     buildResponse(code, ErrorMessage(message))
   }
+
   private def addHeaders(response: AwsProxyResponse, headers: Map[String, String]): AwsProxyResponse = {
     if(headers.nonEmpty) {
       new AwsProxyResponse(response.getStatusCode, headers.asJava)
