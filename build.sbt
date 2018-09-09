@@ -1,7 +1,5 @@
 import sbt.url
 
-resolvers += "Onema Snapshots" at "s3://s3-us-east-1.amazonaws.com/ones-deployment-bucket/snapshots"
-
 lazy val serverlessBaseRoot = (project in file("."))
 .settings(
   organization := "io.onema",
@@ -71,3 +69,4 @@ publishTo := {
     Some("releases"  at nexus + "service/local/staging/deploy/maven2")
 }
 publishArtifact in Test := false
+parallelExecution in Test := false

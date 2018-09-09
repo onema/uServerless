@@ -4,7 +4,6 @@ phases:
   pre_build:
     commands:
       - ls -la
-      - export STAGE_NAME=test
 
   build:
     commands:
