@@ -4,12 +4,10 @@ phases:
   pre_build:
     commands:
       - ls -la
+      - export STAGE_NAME=test
 
   build:
     commands:
-      - echo "CODEBUILD_RESOLVED_SOURCE_VERSIONGitHub -> ${CODEBUILD_RESOLVED_SOURCE_VERSIONGitHub}"
-      - echo "CODEBUILD_RESOLVED_SOURCE_VERSION -> ${CODEBUILD_RESOLVED_SOURCE_VERSION}"
-      - echo "CODEBUILD_SOURCE_VERSION -> ${CODEBUILD_SOURCE_VERSION}"
       - echo Testing Core on `date`
       - sbt clean coverage test
 

@@ -35,7 +35,7 @@ lazy val serverlessBaseRoot = (project in file("."))
       "ch.qos.logback"              % "logback-classic"                     % "1.1.7",
 
       // Testing
-      "org.scalatest"               % "scalatest_2.12"                      % "3.0.5"   % "test",
+      "org.scalatest"               % "scalatest_2.12"                      % "3.0.5"   % Test,
       "org.scalamock"               %% "scalamock"                          % "4.1.0"   % Test
     )
   }

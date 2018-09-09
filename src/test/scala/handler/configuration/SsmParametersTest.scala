@@ -33,7 +33,6 @@ class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with 
   "A function with ssm parameter store value and stage name" should "return single parameter" in {
 
     // Arrange
-    deleteEnv("STAGE_NAME")
     setEnv("STAGE_NAME", "test")
     val request = new GetParameterRequest().withName("/test/foo").withWithDecryption(true)
     val result = new GetParameterResult().withParameter(
@@ -53,15 +52,16 @@ class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with 
   "A function with ssm parameter store value and stage name" should "return multiple parameters" in {
 
     // Arrange
-    deleteEnv("STAGE_NAME")
     setEnv("STAGE_NAME", "test")
-    val request = new GetParametersByPathRequest().withPath("/test/foo").withRecursive(true).withWithDecryption(true)
     val result = new GetParametersByPathResult().withParameters(
       new Parameter().withName("/test/foo").withValue("test foo value"),
       new Parameter().withName("/test/foo/bar").withValue("test bar value")
     )
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
-    (ssmClientMock.getParametersByPath _).expects(request).returning(result)
+    (ssmClientMock.getParametersByPath _ )
+      .expects(where {x: GetParametersByPathRequest =>
+        x.isRecursive &&  x.getPath == "/test/foo" && x.getWithDecryption
+      }).returning(result)
     val lambdaFunction = new TestFunction(ssmClientMock)
 
     // Act
