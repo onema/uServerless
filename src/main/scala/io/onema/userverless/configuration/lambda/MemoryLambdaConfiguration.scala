@@ -42,5 +42,5 @@ trait MemoryLambdaConfiguration extends LambdaConfiguration {
     * @param path name of the path to search for
     * @return
     */
-  def getValues(path: String): Map[String, String] = map.filter(x => x._1.startsWith(path))
+  def getValues(path: String): Map[String, String] = map.filter { case (key, _) => key.startsWith(path) }
 }

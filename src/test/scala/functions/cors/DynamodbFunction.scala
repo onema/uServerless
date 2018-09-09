@@ -14,9 +14,7 @@ package functions.cors
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync
 import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
-import io.onema.userverless.configuration.cors.DynamodbCorsConfiguration
-import io.onema.userverless.configuration.cors.Extensions.AwsProxyResponseExtension
+import io.onema.userverless.configuration.cors.{CorsConfiguration, DynamodbCorsConfiguration}
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
 import io.onema.userverless.function.ApiGatewayHandler
 import org.apache.http.HttpStatus
@@ -24,13 +22,12 @@ import org.apache.http.HttpStatus
 
 class DynamodbFunction(tableName: String, client: AmazonDynamoDBAsync) extends ApiGatewayHandler with NoopLambdaConfiguration {
 
-  //--- Fields ---
-  override protected lazy val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
-
   //--- Methods ---
+  override protected def corsConfiguration(origin: Option[String]): CorsConfiguration = DynamodbCorsConfiguration(origin, tableName, client)
+
   def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    val origin = Option(request.getHeaders.get("origin"))
-        new AwsProxyResponse(HttpStatus.SC_OK)
-          .withCors(new DynamodbCorsConfiguration(origin, tableName, client))
+    cors(request) {
+      new AwsProxyResponse(HttpStatus.SC_OK)
+    }
   }
 }

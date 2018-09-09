@@ -36,8 +36,6 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
   //--- Fields ---
   private val snsTopicName = System.getenv("SNS_TOPIC")
 
-  override protected lazy val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
-
   //--- Methods ---
   def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     val topic = s"arn:aws:sns:$region:${context.accountId}:$snsTopicName"

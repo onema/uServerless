@@ -19,9 +19,7 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
 
 object SsmParametersTest {
-  class TestFunction(ssmClientMock: AWSSimpleSystemsManagementAsync) extends SsmLambdaConfiguration {
-    override protected val ssmClient: AWSSimpleSystemsManagementAsync = ssmClientMock
-  }
+  case class TestFunction(override val ssmClient: AWSSimpleSystemsManagementAsync) extends SsmLambdaConfiguration
 }
 
 class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with MockFactory with EnvironmentHelper {
@@ -39,7 +37,7 @@ class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with 
     val result = new GetParameterResult().withParameter(new Parameter().withName("/test/foo").withValue("test value"))
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
     (ssmClientMock.getParameter _).expects(request).returning(result)
-    val lambdaFunction = new TestFunction(ssmClientMock)
+    val lambdaFunction = TestFunction(ssmClientMock)
 
     // Act
     val response = lambdaFunction.getValue("/foo")
@@ -60,7 +58,7 @@ class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with 
     )
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
     (ssmClientMock.getParametersByPath _).expects(request).returning(result)
-    val lambdaFunction = new TestFunction(ssmClientMock)
+    val lambdaFunction = TestFunction(ssmClientMock)
 
     // Act
     val response = lambdaFunction.getValues("foo")
@@ -77,7 +75,7 @@ class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with 
     val result = new GetParameterResult().withParameter(new Parameter().withName("/foo").withValue("test value"))
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
     (ssmClientMock.getParameter _).expects(request).returning(result)
-    val lambdaFunction = new TestFunction(ssmClientMock)
+    val lambdaFunction = TestFunction(ssmClientMock)
 
     // Act
     val response = lambdaFunction.getValue("/foo")
@@ -93,7 +91,7 @@ class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with 
     val result = new GetParameterResult().withParameter(new Parameter().withName("/foo").withValue("test value"))
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
     (ssmClientMock.getParameter _).expects(request) throws new ParameterNotFoundException("message")
-    val lambdaFunction = new TestFunction(ssmClientMock)
+    val lambdaFunction = TestFunction(ssmClientMock)
 
     // Act
     val response = lambdaFunction.getValue("/foo")
@@ -107,7 +105,7 @@ class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with 
     // Arrange
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
     (ssmClientMock.getParameter _).expects(*) throws new RuntimeException("message")
-    val lambdaFunction = new TestFunction(ssmClientMock)
+    val lambdaFunction = TestFunction(ssmClientMock)
 
     // Act - Assert
     intercept[RuntimeException] { lambdaFunction.getValue("/bad") }
@@ -133,7 +131,7 @@ class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with 
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
     (ssmClientMock.getParametersByPath _).expects(request).returning(result1).noMoreThanOnce()
     (ssmClientMock.getParametersByPath _).expects(requestWithNextToken).returning(result2).noMoreThanOnce()
-    val lambdaFunction = new TestFunction(ssmClientMock)
+    val lambdaFunction = TestFunction(ssmClientMock)
 
     // Act
     val response = lambdaFunction.getValues("foo")

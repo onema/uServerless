@@ -23,3 +23,7 @@ class EnvCorsConfiguration(origin: Option[String]) extends CorsConfiguration(ori
     isSiteEnabled(corsSites)
   }
 }
+
+object EnvCorsConfiguration {
+  def apply(origin: Option[String]): EnvCorsConfiguration = new EnvCorsConfiguration(origin)
+}

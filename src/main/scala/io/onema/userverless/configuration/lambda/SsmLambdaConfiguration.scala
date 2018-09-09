@@ -11,7 +11,7 @@
 
 package io.onema.userverless.configuration.lambda
 
-import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
+import com.amazonaws.services.simplesystemsmanagement.{AWSSimpleSystemsManagementAsync, AWSSimpleSystemsManagementAsyncClientBuilder}
 import com.amazonaws.services.simplesystemsmanagement.model.{GetParameterRequest, GetParametersByPathRequest, ParameterNotFoundException}
 import io.onema.userverless.configuration.lambda.SsmLambdaConfiguration.StringExtensions
 
@@ -32,7 +32,7 @@ object SsmLambdaConfiguration {
 trait SsmLambdaConfiguration extends LambdaConfiguration {
 
   //--- Fields ---
-  protected val ssmClient: AWSSimpleSystemsManagementAsync
+  protected val ssmClient: AWSSimpleSystemsManagementAsync = AWSSimpleSystemsManagementAsyncClientBuilder.defaultClient()
 
   protected val stageName: String = sys.env.getOrElse("STAGE_NAME", "")
 

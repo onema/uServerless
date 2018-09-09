@@ -32,7 +32,7 @@ object SsmCorsConfiguration {
   }
 }
 
-class SsmCorsConfiguration(origin: Option[String], val ssmClient: AWSSimpleSystemsManagementAsync, override val stageName: String)
+class SsmCorsConfiguration(origin: Option[String], override val ssmClient: AWSSimpleSystemsManagementAsync, override val stageName: String)
   extends CorsConfiguration(origin) with SsmLambdaConfiguration {
 
   //--- Methods ---

@@ -23,6 +23,7 @@ import handler.EnvironmentHelper
 import io.onema.userverless.configuration.cors.DynamodbCorsConfiguration
 import io.onema.userverless.configuration.cors.Extensions._
 import handler.function.ApiGatewayTestHelper._
+import org.apache.http.HttpStatus
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -216,7 +217,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     originOption.getOrElse("") should be (originSite)
   }
 
-  "A function with Noop CORS configuration" should " not return response with access-control-allow-origin header" in {
+  "A function with Noop CORS configuration" should "not return an internal server error response without access-control-allow-origin header" in {
     // Arrange
     val originSite = "https://baz.com"
     val lambdaFunction = new NoopFunction()
@@ -231,6 +232,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
 
     // Assert
     Option(response.getHeaders) should be (None)
+    response.getStatusCode should be (HttpStatus.SC_INTERNAL_SERVER_ERROR)
   }
 
   "A function with CORS enabled using ssm parameter store" should "return response with access-control-allow-origin header" in {
@@ -244,7 +246,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     val paramRequest = new GetParameterRequest().withName("/cors/sites").withWithDecryption(true)
     val result = new GetParameterResult().withParameter(new Parameter().withName("/cors/sites").withValue(originSite))
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
-    (ssmClientMock.getParameter _).expects(paramRequest).returning(result).repeat(2)
+    (ssmClientMock.getParameter _).expects(paramRequest).returning(result).atLeastTwice()
     val output = new ByteArrayOutputStream()
     val lambdaFunction = new SsmFunction(ssmClientMock)
 
@@ -255,5 +257,6 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     // Assert
     response.getHeaders.containsKey("Access-Control-Allow-Origin") should be (true)
     response.getHeaders.get("Access-Control-Allow-Origin") should be (originSite)
+    response.getStatusCode should be (HttpStatus.SC_OK)
   }
 }

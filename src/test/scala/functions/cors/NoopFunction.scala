@@ -13,9 +13,6 @@ package functions.cors
 
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
-import io.onema.userverless.configuration.cors.Extensions.AwsProxyResponseExtension
-import io.onema.userverless.configuration.cors.NoopCorsConfiguration
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
 import io.onema.userverless.function.ApiGatewayHandler
 import org.apache.http.HttpStatus
@@ -23,14 +20,10 @@ import org.apache.http.HttpStatus
 
 class NoopFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
 
-  //--- Fields ---
-  override protected lazy val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
-
   //--- Methods ---
   def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    val origin = request.getHeaders.get("origin")
-    new AwsProxyResponse(HttpStatus.SC_OK).withCors(new NoopCorsConfiguration())
+    cors(request) {
+      new AwsProxyResponse(HttpStatus.SC_OK)
+    }
   }
-
 }
-

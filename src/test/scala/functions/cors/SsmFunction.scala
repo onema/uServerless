@@ -16,7 +16,7 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import io.onema.userverless.configuration.cors.Extensions.AwsProxyResponseExtension
-import io.onema.userverless.configuration.cors.SsmCorsConfiguration
+import io.onema.userverless.configuration.cors.{CorsConfiguration, SsmCorsConfiguration}
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
 import io.onema.userverless.function.ApiGatewayHandler
 import org.apache.http.HttpStatus
@@ -24,12 +24,13 @@ import org.apache.http.HttpStatus
 
 class SsmFunction(val ssmClient: AWSSimpleSystemsManagementAsync) extends ApiGatewayHandler with NoopLambdaConfiguration {
 
-  //--- Fields ---
-  override protected lazy val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
-
   //--- Methods ---
+  override protected def corsConfiguration(origin: Option[String]): CorsConfiguration = SsmCorsConfiguration(origin, ssmClient)
+
   def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    new AwsProxyResponse(HttpStatus.SC_OK).withCors(SsmCorsConfiguration(Some("https://foo.com"), ssmClient))
+    cors(request){
+      new AwsProxyResponse(HttpStatus.SC_OK)
+    }
   }
 
 }
