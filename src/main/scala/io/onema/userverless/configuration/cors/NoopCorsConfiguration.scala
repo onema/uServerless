@@ -18,3 +18,7 @@ class NoopCorsConfiguration extends CorsConfiguration(None) {
 
   override def isOriginValid: Boolean = false
 }
+
+object NoopCorsConfiguration {
+  def apply(): NoopCorsConfiguration = new NoopCorsConfiguration()
+}

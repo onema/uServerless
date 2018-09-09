@@ -11,6 +11,7 @@
 
 package io.onema.userverless.configuration.cors
 
+import com.amazonaws.serverless.proxy.model.AwsProxyRequest
 import com.amazonaws.services.dynamodbv2.document.DynamoDB
 import com.amazonaws.services.dynamodbv2.{AmazonDynamoDBAsync, AmazonDynamoDBAsyncClientBuilder}
 

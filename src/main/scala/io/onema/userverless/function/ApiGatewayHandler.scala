@@ -15,10 +15,11 @@ import java.io.{InputStream, OutputStream}
 import java.nio.charset.Charset
 
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
-import com.amazonaws.services.sns.AmazonSNSAsync
 import com.typesafe.scalalogging.Logger
 import io.onema.json.JavaExtensions._
+import io.onema.userverless.configuration.cors.{CorsConfiguration, NoopCorsConfiguration}
 import io.onema.userverless.configuration.lambda.LambdaConfiguration
+import io.onema.userverless.configuration.cors.Extensions.AwsProxyResponseExtension
 import io.onema.userverless.exception.HandleRequestException
 import io.onema.userverless.exception.ThrowableExtensions._
 import org.apache.http.HttpStatus
@@ -34,9 +35,26 @@ trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
   //--- Fields ---
   override protected val log = Logger("apigateway-handler")
 
-  protected val snsClient: AmazonSNSAsync
-
   //--- Methods ---
+  protected def corsConfiguration(origin: Option[String]): CorsConfiguration = NoopCorsConfiguration()
+
+  protected def cors(request: AwsProxyRequest)(function: => AwsProxyResponse): AwsProxyResponse = {
+    val origin = Option(request.getHeaders.get("origin"))
+    val corsConfig = corsConfiguration(origin)
+    corsConfig match {
+      case _:NoopCorsConfiguration =>
+        throw new RuntimeException(s"The CORS configuration ${NoopCorsConfiguration.getClass} is only a placeholder and " +
+          s"should not be used. Consider using one of the available CORS Configuration strategies. " +
+          s"For more information see the documentation."
+        )
+      case _ =>
+    }
+    if (!corsConfig.isOriginValid) {
+      throw new HandleRequestException(HttpStatus.SC_BAD_REQUEST, s"Origin '${origin.getOrElse("")}' is not authorized")
+    }
+    function.withCors(corsConfig)
+  }
+
   protected def getRequest(inputStream: InputStream): AwsProxyRequest = {
     val json = Source.fromInputStream(inputStream).mkString
     val request = json.jsonDecode[AwsProxyRequest]
