@@ -32,6 +32,8 @@ import org.scalatest.{FlatSpec, Matchers}
 
 object ApiGatewayHandlerTest {
 
+  case class Body(response: String)
+
   class TestApiGateway500ErrorFunction(sns: AmazonSNSAsync) extends ApiGatewayHandler with MemoryLambdaConfiguration {
 
     //--- Fields ---
@@ -83,6 +85,24 @@ object ApiGatewayHandlerTest {
       response
     }
   }
+
+  class ValidResponseFunction extends ApiGatewayResponse {
+    def test(): AwsProxyResponse = {
+      buildResponse(HttpStatus.SC_OK, payload = Body("test"), Map("foo" -> "bar"))
+    }
+  }
+
+  class ValidResponseHeadersOnlyFunction extends ApiGatewayResponse {
+    def test(): AwsProxyResponse = {
+      buildResponse(HttpStatus.SC_OK, Map("foo" -> "bar"))
+    }
+  }
+
+  class ErrorResponseFunction extends ApiGatewayResponse {
+    def test(): AwsProxyResponse = {
+      buildError(HttpStatus.SC_INSUFFICIENT_STORAGE, "test")
+    }
+  }
 }
 
 class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with EnvironmentHelper {
@@ -117,24 +137,46 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
     errorMessage.message should be ("foo bar")
   }
 
-  "A response" should "be properly serialized to json" in {
+  "An error response" should "be properly serialized to json" in {
 
     // Arrange
     import io.onema.json.JavaExtensions._
-    val mapper = new ObjectMapper
-    class Foo extends ApiGatewayResponse {
-      def test(): AwsProxyResponse = {
-        buildError(HttpStatus.SC_OK, "test")
-      }
-    }
-    val expectedValue = "{\"statusCode\":200,\"headers\":null,\"body\":\"{\\\"message\\\":\\\"test\\\"}\",\"base64Encoded\":false}"
+    val expectedValue = "{\"statusCode\":507,\"headers\":null,\"body\":\"{\\\"message\\\":\\\"test\\\"}\",\"base64Encoded\":false}"
 
     // Act
-    val foo = new Foo().test()
+    val foo = new ErrorResponseFunction().test()
     val response = foo.asJson
 
     // Assert
     response should be (expectedValue)
+  }
+
+  "A response with custom headers and payload" should "be properly serialized to json" in {
+
+    // Arrange
+    import io.onema.json.JavaExtensions._
+    val expectedValue = "{\"statusCode\":200,\"headers\":{\"foo\":\"bar\"},\"body\":\"{\\\"response\\\":\\\"test\\\"}\",\"base64Encoded\":false}"
+
+    // Act
+    val foo = new ValidResponseFunction().test()
+    val response = foo.asJson
+
+    // Assert
+    response should be(expectedValue)
+  }
+
+  "A response with custom headers" should "be properly serialized to json" in {
+
+    // Arrange
+    import io.onema.json.JavaExtensions._
+    val expectedValue = "{\"statusCode\":200,\"headers\":{\"foo\":\"bar\"},\"body\":null,\"base64Encoded\":false}"
+
+    // Act
+    val foo = new ValidResponseHeadersOnlyFunction().test()
+    val response = foo.asJson
+
+    // Assert
+    response should be(expectedValue)
   }
 
   "An exception" should "generate the proper response" in {

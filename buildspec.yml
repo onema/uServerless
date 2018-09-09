@@ -4,6 +4,8 @@ phases:
   pre_build:
     commands:
       - ls -la
+      - java -version
+      - echo "${CODEBUILD_SOURCE_VERSION}"
 
   build:
     commands:
@@ -11,10 +13,11 @@ phases:
       - sbt clean coverage test
 
       - echo Generating coverage report
-      - sbt coverageReport
+      - if [[ $CODEBUILD_SOURCE_VERSION =~ [0-9a-f]{5,40} ]] ; then sbt coverageReport; fi
+      -
 
       - echo Submit coverage report to Codacy
-      - sbt codacyCoverage
+      - if [[ $CODEBUILD_SOURCE_VERSION =~ [0-9a-f]{5,40} ]] ; then sbt codacyCoverage; fi
 
   post_build:
     commands:

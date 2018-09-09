@@ -26,5 +26,4 @@ object Extensions {
   implicit class RichRegex(val underlying: Regex) extends AnyVal {
     def matches(s: String): Boolean = underlying.pattern.matcher(s).matches
   }
-
 }

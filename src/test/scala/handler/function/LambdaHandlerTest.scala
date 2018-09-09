@@ -14,10 +14,12 @@ package handler.function
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
+import functions._
+import functions.process.ScheduledFunction
 import handler.EnvironmentHelper
+import handler.function.ApiGatewayTestHelper.toInputStream
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
-import functions._
 
 class LambdaHandlerTest extends FlatSpec with Matchers with MockFactory with EnvironmentHelper {
 
@@ -36,5 +38,17 @@ class LambdaHandlerTest extends FlatSpec with Matchers with MockFactory with Env
 
     // Assert
     response should be ("true")
+  }
+
+  "A function with an invalid event type" should "throw an exception" in {
+    // Arrange
+    val lambdaFunction = new ScheduledFunction()
+    val output = new ByteArrayOutputStream()
+    val context = new MockLambdaContext
+
+    // Act - Assert
+    intercept[Exception] {
+      lambdaFunction.lambdaHandler(toInputStream(""), output, context)
+    }
   }
 }
