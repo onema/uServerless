@@ -55,18 +55,6 @@ trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
     function.withCors(corsConfig)
   }
 
-  protected def getRequest(inputStream: InputStream): AwsProxyRequest = {
-    val json = Source.fromInputStream(inputStream).mkString
-    val request = json.jsonDecode[AwsProxyRequest]
-    log.info(request.asJson)
-    request
-  }
-
-  protected def writeResponse(outputStream: OutputStream, value: AnyRef): Unit = {
-    outputStream.write(value.asJson.getBytes(Charset.defaultCharset()))
-    outputStream.close()
-  }
-
   override protected def handleFailure(exception: Throwable): AwsProxyResponse = {
     val message = s"Internal Server Error: ${exception.message}"
     log.error(message)

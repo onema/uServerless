@@ -94,7 +94,7 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
     time {
       Try(json.jsonDecode[WarmUpEvent]) match {
         case Success(event) =>
-          log.info("Warm Up Event!")
+          log.info("Checking for warm up event!")
           event.getWarmup
         case Failure(exception) =>
           false
