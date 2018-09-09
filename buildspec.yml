@@ -13,11 +13,13 @@ phases:
       - sbt clean coverage test
 
       - echo Generating coverage report
-      - "if [[ $CODEBUILD_SOURCE_VERSION =~ [0-9a-f]{5,40} ]] ; then sbt coverageReport; fi"
-      -
+      - sbt coverageReport;
 
       - echo Submit coverage report to Codacy
-      - "if [[ $CODEBUILD_SOURCE_VERSION =~ [0-9a-f]{5,40} ]] ; then sbt codacyCoverage; fi"
+      - |
+        if [[ $CODEBUILD_SOURCE_VERSION =~ [0-9a-f]{5,40} ]] ; then
+          sbt codacyCoverage;
+        fi
 
   post_build:
     commands:
