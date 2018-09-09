@@ -28,6 +28,7 @@ import io.onema.userverless.model.WarmUpEvent
 import scala.io.Source
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
+import scala.collection.mutable.ArrayBuffer
 
 abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaConfiguration {
 
@@ -40,9 +41,9 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
 
   protected lazy val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.standard().withRegion(region).build()
 
-  protected var responseListeners: List[TResponse => TResponse] = List[TResponse => TResponse]()
+  protected val responseListeners: ArrayBuffer[TResponse => TResponse] = ArrayBuffer[TResponse => TResponse]()
 
-  protected var validationListeners: List[TEvent => Unit] = List[TEvent => Unit]()
+  protected val validationListeners: ArrayBuffer[TEvent => Unit] = ArrayBuffer[TEvent => Unit]()
 
   //--- Methods ---
   def execute(event: TEvent, context: Context): TResponse
@@ -124,10 +125,10 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
   }
 
   protected def responseListener(listener: TResponse => TResponse): Unit = {
-    responseListeners ::= listener
+    responseListeners += listener
   }
 
   protected def validationListener(listener: TEvent => Unit): Unit = {
-    validationListeners ::= listener
+    validationListeners += listener
   }
 }
