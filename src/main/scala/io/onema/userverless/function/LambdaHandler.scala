@@ -40,6 +40,10 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
 
   protected lazy val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.standard().withRegion(region).build()
 
+  protected var responseListeners: List[TResponse => TResponse] = List[TResponse => TResponse]()
+
+  protected var validationListeners: List[TEvent => Unit] = List[TEvent => Unit]()
+
   //--- Methods ---
   def execute(event: TEvent, context: Context): TResponse
 
@@ -51,10 +55,12 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
     if(!isWarmUpEvent(json)) {
       val event = decodeEvent(json)
       val response = handle {
+        validationListeners.foreach(listener => listener(event))
         execute(event, context)
       }
       response.foreach(response => {
-        outputStream.write(response.asJson.getBytes(Charset.defaultCharset()))
+        val output = responseListeners.foldLeft(response)((res, func) => func(res))
+        outputStream.write(output.asJson.getBytes(Charset.defaultCharset()))
       })
     }
     outputStream.close()
@@ -82,7 +88,7 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
     throw exception
   }
 
-  private def isWarmUpEvent(json: String): Boolean = {
+  protected def isWarmUpEvent(json: String): Boolean = {
     log.debug("Warmup Event")
     time {
       Try(json.jsonDecode[WarmUpEvent]) match {
@@ -95,7 +101,7 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
     }
   }
 
-  private def decodeEvent(json: String): TEvent = {
+  protected def decodeEvent(json: String): TEvent = {
     log.debug("Decode Event")
     time {
       val mapper: ObjectMapper = Mapper.allowUnknownPropertiesMapper
@@ -109,11 +115,19 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
     }
   }
 
-  private def time[R](block: => R): R = {
+  protected def time[R](block: => R): R = {
     val t0 = System.nanoTime()
     val result = block    // call-by-name
     val t1 = System.nanoTime()
     log.info("Elapsed time: " + (t1 - t0)/1000000 + "milliseconds")
     result
+  }
+
+  protected def responseListener(listener: TResponse => TResponse): Unit = {
+    responseListeners ::= listener
+  }
+
+  protected def validationListener(listener: TEvent => Unit): Unit = {
+    validationListeners ::= listener
   }
 }
