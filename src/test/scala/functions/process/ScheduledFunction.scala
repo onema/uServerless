@@ -26,8 +26,6 @@ object ScheduledLogic {
 }
 
 class ScheduledFunction extends LambdaHandler[ScheduledEvent, Boolean] with NoopLambdaConfiguration {
-  //--- Fields ---
-  override protected lazy val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
 
   //--- Methods ---
   override def execute(event: ScheduledEvent, context: Context): Boolean = {

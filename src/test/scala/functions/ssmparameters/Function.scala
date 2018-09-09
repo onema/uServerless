@@ -11,14 +11,10 @@
 
 package functions.ssmparameters
 
-import com.amazonaws.services.simplesystemsmanagement.{AWSSimpleSystemsManagementAsync, AWSSimpleSystemsManagementAsyncClientBuilder}
 import io.onema.userverless.configuration.lambda.SsmLambdaConfiguration
 
 
 object Function extends SsmLambdaConfiguration {
-
-  //--- Fields ---
-  override protected val ssmClient: AWSSimpleSystemsManagementAsync = AWSSimpleSystemsManagementAsyncClientBuilder.defaultClient()
 
   //--- Methods ---
   def main(args: Array[String]): Unit = {

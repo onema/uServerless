@@ -39,8 +39,8 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import com.typesafe.scalalogging.Logger
-import io.onema.serverlessbase.function.LambdaHandler
-import io.onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.function.LambdaHandler
+import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
 import org.apache.http.HttpStatus
 
 object Logic {
@@ -67,8 +67,8 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import com.typesafe.scalalogging.Logger
-import io.onema.serverlessbase.function.LambdaHandler
-import io.onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.function.LambdaHandler
+import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
 import org.apache.http.HttpStatus
 
 object Logic {
@@ -90,14 +90,14 @@ class Function extends LambdaHandler[SNSEvent, String] with NoopLambdaConfigurat
 ```
 
 ### Dealing with exceptions
-```scala
 
+```scala
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import com.typesafe.scalalogging.Logger
-import io.onema.serverlessbase.function.LambdaHandler
-import io.onema.serverlessbase.configuration.lambda.EnvLambdaConfiguration
+import io.onema.userverless.function.LambdaHandler
+import io.onema.userverless.configuration.lambda.EnvLambdaConfiguration
 import org.apache.http.HttpStatus
 
 object Logic {
@@ -115,6 +115,7 @@ class Function extends LambdaHandler[SNSEvent, Unit] with EnvLambdaConfiguration
   }
 }
 ```
+
 There are a few things to notice here:
  1. The function uses the `EnvLambdaConfiguration` trait. This will enable the handler to get the `SNS_ERROR_TOPIC` 
  environment variable. This is the topic that will be use to report the error. 
@@ -123,16 +124,16 @@ There are a few things to notice here:
  1. The lambda handler rethrows the error after it has been reported.
 
 
-## API Gateway Handler Usage
+## API Gateway Handler
 
 ### Handling a valid requests
-```scala
 
+```scala
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
-import io.onema.serverlessbase.function.ApiGatewayHandler
-import io.onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.function.ApiGatewayHandler
+import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
 import org.apache.http.HttpStatus
 
 object Logic {
@@ -146,7 +147,7 @@ object Logic {
 class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Methods ---
-  def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
+  def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     val result = Logic.handleRequest(request)
     
     // result.getStatusCode should be (HttpStatus.SC_OK)
@@ -159,12 +160,12 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 ### Handling unexpected errors for API Gateway
 With the latest version of the framework there is no need to catch any unexpected errors as these will be automatically 
 handled as 500 internal server error and a response will be returned with a generic message. 
-If you wish to 
+
 ```scala
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
-import io.onema.serverlessbase.function.ApiGatewayHandler
+import io.onema.userverless.function.ApiGatewayHandler
 import org.apache.http.HttpStatus
 
 object Logic {
@@ -176,7 +177,7 @@ object Logic {
 class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Methods ---
-  def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
+  def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     Logic.handleRequest(request)
     
     // The generated response by the lambda handler will contain the following info
@@ -185,6 +186,7 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
   }
 }
 ```
+
 In this instance the lambda handler will return an `AwsProxyResponse` with a body containing a JSON like this:
 
 ```json
@@ -192,13 +194,11 @@ In this instance the lambda handler will return an `AwsProxyResponse` with a bod
     "message": "Internal Server Error: check the logs for more information."
 }
 ```
-     
 
 To generate custom messages such as validation errors and present them to the API user, use the provided `HandleRequestException`:
 
 ```scala
-
-import io.onema.serverlessbase.exception.HandleRequestException
+import io.onema.userverless.exception.HandleRequestException
 import org.apache.http.HttpStatus
 // ...
 
@@ -209,7 +209,7 @@ object Logic {
 class Function extends ApiGatewayHandler {
   // ...
   
-  def lambdaHandler(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
+  def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     val result = Logic.handleRequest
     
     //result.getBody should be ("{\"message\":\"FooBar\"}")
@@ -218,7 +218,9 @@ class Function extends ApiGatewayHandler {
   }
 }
 ```
+
 In this case the message will be 
+
 ```json
 {
     "message": "FooBar"
@@ -226,9 +228,107 @@ In this case the message will be
 ```
 and the response will have the given header `400 BAD REQUEST`.
 
+## Enable CORS
+
+Cross-Origin Resource Sharing can be enabled in µServerless by passing your function code to the `cors` function. 
+The method takes the AwsProxyRequest as an input which is used to get the information about the origin, and it will 
+properly add the required headers to the returned `AwsProxyResponse`.
+
+```scala
+def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
+
+  // Wrapp your code with the followibg block
+  cors(request) {
+    // Code...
+ 
+    // ... and return an AwsProxyResponse
+    new AwsProxyResponse(HttpStatus.SC_OK)
+  }
+}
+```
+
+Your function should extend from the `ApiGatewayHandler` and override the `corsConfiguration` method which should return 
+a `CorsConfiguration` object.
+
+```scala 
+corsConfiguration(origin: Option[String]): CorsConfiguration = EnvCorsConfiguration(origin)
+```
+
+There are four `CorsConfiguration` strategies available:
+
+### `EnvCorsConfiguration`
+Sites are stored in an environment variable called `CORS_SITES` as a comma separated list of origins.
+```bash
+CORS_SITES=foo.com,bar.com,baz.net
+```
+
+### `DynamodbCorsConfiguration`
+Sites are stored in a DynamoDB table as items in the table. Each site should be Under the `Origin` column.
+The following is an example of how to generate the table using a CloudFormation template:
+
+```yaml
+Resources:
+  CorsDynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref CorsTableName
+
+      AttributeDefinitions:
+      - AttributeName: Origin
+        AttributeType: S
+
+      KeySchema:
+      - AttributeName: Origin
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+```
+
+### `SsmCorsConfiguration`
+Sites are stored in a SSM parameter store value called `/cors/sites`. 
+
+> **NOTE**: 
+>
+> Please note that the stage name will be prepended if one has been set in the `STAGE_NAME` environment variable, 
+> reference the [configuration](#lambda-configuration) section for additional information.
+
+### `NoopCorsConfiguration`
+Always returns empty values. This strategy fails validation for all origins and is only 
+used as a placeholder by the ApiGateway class.
+
+### Example
+The following is an example of how to return the appropriate `Access-Control-Allow-Origin` header using a custom 
+configuration to look up and validate the origin. 
+
+```scala
+import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
+import com.amazonaws.services.lambda.runtime.Context
+import org.apache.http.HttpStatus
+
+import io.onema.userverless.configuration.cors.EnvCorsConfiguration
+import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.function.ApiGatewayHandler
+
+class EnvFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
+
+  //--- Fields ---
+  override protected def corsConfiguration(origin: Option[String]) = new EnvCorsConfiguration(origin)
+
+  //--- Methods ---
+  def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
+    cors(request) {
+      new AwsProxyResponse(HttpStatus.SC_OK)
+    }
+    //result.getHeaders.get("Access-Control-Allow-Origin") should be ("https://bar.com")
+  }
+}
+```
+
+
 ## Lambda Configuration
 
-ServerlessBase supports three methods to get configuration values: environment variables, SSM Parameter Store, and Noop.
+µServerless supports three methods to get configuration values: environment variables, SSM Parameter Store, and Noop.
 
 By default the lambda handlers require you to implement the methods defined in the `LambdaConfiguration` trait. 
 You can satisfy this requirement by simply extending your function with one of the provided traits: 
@@ -250,51 +350,6 @@ To use the SSM environment variable in  your function simply extend from the `Ss
 class TestFunction(snsClientMock: AmazonSNSAsync) extends LambdaHandler with SsmLambdaConfiguration {
   val foo: Option[String] = getValue("/foo")
   val barHierarchy: Map[String, String] = getValues("/bar/")
-}
-```
-
-## Enable CORS
-
-The following is an example of how to return the appropriate `Access-Control-Allow-Origin` header using a custom 
-strategy to look up and validate the origin. 
-
-Simply import the `AwsProxyResponseExtension` and call the `withCors(Strategy)` method on it.
-
-There are four strategies implemented:
-* `DynamodbCorsConfiguration`: Sites are stored in a DynamoDB table as items in the table. Each site should be Under the `Origin` column
-* `EnvCorsConfiguration`: Sites are stored in an environment variable called `CORS_SITES` as a comma separated list of origins
-* `NoopCorsConfiguration`: Always returns empty values
-* `SsmCorsConfiguration`: Sites are stored in a SSM parameter store value called `/cors/sites`. Please note that the stage name will be prepended if one has been set in the `STAGE_NAME` environment variable
-
-```scala
-import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
-import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
-import io.onema.serverlessbase.configuration.cors.EnvCorsConfiguration
-import io.onema.serverlessbase.configuration.cors.Extensions.AwsProxyResponseExtension
-import io.onema.serverlessbase.configuration.lambda.NoopLambdaConfiguration
-import io.onema.serverlessbase.function.ApiGatewayHandler
-import org.apache.http.HttpStatus
-
-object EnvLogic {
-  def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
-    new AwsProxyResponse(HttpStatus.SC_OK)
-  }
-}
-
-class EnvFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
-
-  //--- Fields ---
-  override protected val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.defaultClient()
-
-  //--- Methods ---
-  def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    val origin = request.getHeaders.get("origin")
-    val result = EnvLogic.handleRequest(request)
-                   .withCors(new EnvCorsConfiguration(origin))
-    //result.getHeaders.get("Access-Control-Allow-Origin") should be ("https://bar.com")
-    result
-  }
 }
 ```
 
