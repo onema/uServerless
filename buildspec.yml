@@ -4,6 +4,8 @@ phases:
   pre_build:
     commands:
       - ls -la
+      - java -version
+      - echo "${CODEBUILD_SOURCE_VERSION}"
 
   build:
     commands:
