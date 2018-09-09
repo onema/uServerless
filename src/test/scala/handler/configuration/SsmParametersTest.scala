@@ -36,7 +36,9 @@ class SsmParametersTest extends FlatSpec with BeforeAndAfter with Matchers with 
     deleteEnv("STAGE_NAME")
     setEnv("STAGE_NAME", "test")
     val request = new GetParameterRequest().withName("/test/foo").withWithDecryption(true)
-    val result = new GetParameterResult().withParameter(new Parameter().withName("/test/foo").withValue("test value"))
+    val result = new GetParameterResult().withParameter(
+      new Parameter().withName("/test/foo").withValue("test value")
+    )
     val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
     (ssmClientMock.getParameter _).expects(request).returning(result)
     val lambdaFunction = new TestFunction(ssmClientMock)
