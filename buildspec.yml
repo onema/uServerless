@@ -14,7 +14,7 @@ phases:
       - sbt clean coverage test
 
       - echo Submit coverage report to Codacy
-      - submit_coverage.sh
+      - ./submit_coverage.sh
 
 
   post_build:
