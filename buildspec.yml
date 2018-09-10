@@ -14,7 +14,6 @@ phases:
 
   build:
     commands:
-
     - echo Testing JsonExtensions on `date`
     - sbt clean coverage test
 
