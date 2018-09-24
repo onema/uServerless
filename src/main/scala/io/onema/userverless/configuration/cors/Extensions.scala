@@ -16,7 +16,13 @@ import scala.collection.JavaConverters._
 
 
 object Extensions {
+
   implicit class AwsProxyResponseExtension(response: AwsProxyResponse) {
+
+    /**
+      * Extension method for the AwsProxyResponse to add the required access control headers to the response
+      * @param response
+      */
     def withCors(corsConfiguration: CorsConfiguration): AwsProxyResponse = {
       if(corsConfiguration.isOriginValid) {
         corsConfiguration.origin match {

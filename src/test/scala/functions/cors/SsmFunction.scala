@@ -14,15 +14,14 @@ package functions.cors
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
-import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
-import io.onema.userverless.configuration.cors.Extensions.AwsProxyResponseExtension
 import io.onema.userverless.configuration.cors.{CorsConfiguration, SsmCorsConfiguration}
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
 import io.onema.userverless.function.ApiGatewayHandler
+import io.onema.userverless.function.ApiGatewayHandler.Cors
 import org.apache.http.HttpStatus
 
 
-class SsmFunction(val ssmClient: AWSSimpleSystemsManagementAsync) extends ApiGatewayHandler with NoopLambdaConfiguration {
+class SsmFunction(val ssmClient: AWSSimpleSystemsManagementAsync) extends ApiGatewayHandler with NoopLambdaConfiguration with Cors {
 
   //--- Methods ---
   override protected def corsConfiguration(origin: Option[String]): CorsConfiguration = SsmCorsConfiguration(origin, ssmClient)

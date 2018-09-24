@@ -13,10 +13,26 @@ package io.onema.userverless.configuration.cors
 
 abstract class CorsConfiguration(val origin: Option[String]) {
 
+  /**
+    * Check if CORS is enabled. A check must verify that the configuration has access to the
+    * data store used to keep track of the configuration.
+    * @return
+    */
   def isEnabled: Boolean
 
+  /**
+    * Check if the origin for this class is valid. The protected method
+    * isSiteEnabled is a helper function to help check the contents of the sites.
+    * @return
+    */
   def isOriginValid: Boolean
 
+  /**
+    * Checks if the value for the sites is valid. This can be a single value,
+    * coma separated values, '*', or None.
+    * @param sites
+    * @return
+    */
   protected def isSiteEnabled(sites: Option[String]): Boolean = {
     if(!isEnabled) {
       false

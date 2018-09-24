@@ -1,25 +1,25 @@
 version: 0.2
 
-phases:
-  install:
-    commands:
-    - wget https://s3.amazonaws.com/foobarbaz.com/submit_coverage.sh
-    - chmod +x submit_coverage.sh
+        phases:
+          install:
+            commands:
+            - wget https://s3.amazonaws.com/foobarbaz.com/submit_coverage.sh
+            - chmod +x submit_coverage.sh
 
-  pre_build:
-    commands:
-    - ls -la
-    - java -version
-    - echo "${CODEBUILD_SOURCE_VERSION}"
+          pre_build:
+            commands:
+            - ls -la
+            - java -version
+            - echo "${CODEBUILD_SOURCE_VERSION}"
 
-  build:
-    commands:
-    - echo Testing JsonExtensions on `date`
-    - sbt clean coverage test
+          build:
+            commands:
+            - echo Testing JsonExtensions on `date`
+            - sbt clean coverage test
 
-    - echo Submit coverage report to Codacy
-    - ./submit_coverage.sh
+            - echo Submit coverage report to Codacy
+            - ./submit_coverage.sh
 
-  post_build:
-    commands:
-    - echo Build completed on `date`
+          post_build:
+            commands:
+            - echo Build completed on `date`

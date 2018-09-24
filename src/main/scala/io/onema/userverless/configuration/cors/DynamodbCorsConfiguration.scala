@@ -40,10 +40,18 @@ class DynamodbCorsConfiguration(origin: Option[String], val tableName: String, d
   private val table = dynamoDb.getTable(tableName)
 
   //--- Methods ---
+  /**
+    * Check if the table exist by describing it. If the operation is successful return true, else false.
+    * @return
+    */
   override def isEnabled: Boolean = {
     Try(dynamodbClient.describeTable(tableName)).isSuccess
   }
 
+  /**
+    * Tries to find the origin in the dynamodb table, return true if it does, false otherwise.
+    * @return
+    */
   override def isOriginValid: Boolean = {
     origin match {
       case Some(originValue) =>
@@ -58,6 +66,10 @@ class DynamodbCorsConfiguration(origin: Option[String], val tableName: String, d
     }
   }
 
+  /**
+    * Find the origin in the dynamo table
+    * @return
+    */
   private def findOrigin: Option[String]  = {
     Option(table.getItem("Origin", origin.getOrElse(""))) match {
       case Some(item) => Some(item.getString("Origin"))
