@@ -11,7 +11,7 @@
 
 package functions.cors
 
-import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
+import io.onema.userverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import io.onema.userverless.configuration.cors.{CorsConfiguration, EnvCorsConfiguration}
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration

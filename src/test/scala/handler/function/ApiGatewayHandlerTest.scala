@@ -12,8 +12,8 @@ package handler.function
 
 import java.io._
 
-import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
-import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
+import io.onema.userverless.proxy.internal.testutils.MockLambdaContext
+import io.onema.userverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.AmazonSNSAsync
 import com.fasterxml.jackson.databind.ObjectMapper

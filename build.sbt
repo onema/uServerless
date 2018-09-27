@@ -11,7 +11,7 @@ lazy val serverlessBaseRoot = (project in file("."))
   scalaVersion := "2.12.6",
 
   libraryDependencies ++= {
-    val awsSdkVersion = "1.11.380"
+    val awsSdkVersion = "1.11.416"
     Seq(
       // CORE!
        "io.onema"                   % "json-extensions_2.12"                % "0.3.0",
@@ -22,8 +22,6 @@ lazy val serverlessBaseRoot = (project in file("."))
       "com.amazonaws"               % "aws-java-sdk-sns"                    % awsSdkVersion,
       "com.amazonaws"               % "aws-java-sdk-ssm"                    % awsSdkVersion,
       "com.amazonaws"               % "aws-java-sdk-dynamodb"               % awsSdkVersion,
-      // The serverless java-container supports request context authorizer claims that are currently not available in the lambda-java-events
-      "com.amazonaws.serverless"    % "aws-serverless-java-container-core"  % "0.9.1",
 
       // Http
       "org.apache.httpcomponents"   % "httpcore"                            % "4.4.8",

@@ -12,8 +12,8 @@ package handler.function
 
 import java.io.ByteArrayOutputStream
 
-import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
-import com.amazonaws.serverless.proxy.model.AwsProxyRequest
+import io.onema.userverless.proxy.internal.testutils.MockLambdaContext
+import io.onema.userverless.proxy.model.AwsProxyRequest
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync
 import com.amazonaws.services.dynamodbv2.model.{AttributeValue, DescribeTableResult, GetItemRequest, GetItemResult}
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync

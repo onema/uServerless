@@ -14,7 +14,7 @@ package io.onema.userverless.function
 import java.io.{InputStream, OutputStream}
 import java.nio.charset.Charset
 
-import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
+import io.onema.userverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.typesafe.scalalogging.Logger
 import io.onema.json.JavaExtensions._
 import io.onema.userverless.configuration.cors.{CorsConfiguration, NoopCorsConfiguration}
@@ -69,8 +69,7 @@ object ApiGatewayHandler {
     /**
       * Curried method that takes the API Gateway AwsProxyRequest as it's first parameter. Before
       * executing the function passed to it, it check if the configuration and the origin are valid.
-      * @param request
-      * @param function
+      * @param request the AWS proxy request
       * @return
       */
     protected def cors(request: AwsProxyRequest)(function: => AwsProxyResponse): AwsProxyResponse = {

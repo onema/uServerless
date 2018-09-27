@@ -13,7 +13,7 @@ package handler.function
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, InputStream}
 
-import com.amazonaws.serverless.proxy.model.AwsProxyResponse
+import io.onema.userverless.proxy.model.AwsProxyResponse
 import io.onema.userverless.model.ErrorMessage
 
 

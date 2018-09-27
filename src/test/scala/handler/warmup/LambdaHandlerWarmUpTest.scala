@@ -13,7 +13,7 @@ package handler.warmup
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 
-import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
+import io.onema.userverless.proxy.internal.testutils.MockLambdaContext
 import functions.process._
 import handler.EnvironmentHelper
 import org.scalamock.scalatest.MockFactory

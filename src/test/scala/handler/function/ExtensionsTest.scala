@@ -11,7 +11,7 @@
 
 package handler.function
 
-import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
+import io.onema.userverless.proxy.internal.testutils.MockLambdaContext
 import handler.function.ExtensionsTest.MockContext
 import io.onema.userverless.function.Extensions._
 import org.scalamock.scalatest.MockFactory

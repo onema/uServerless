@@ -13,7 +13,7 @@ package handler.function
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 
-import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
+import io.onema.userverless.proxy.internal.testutils.MockLambdaContext
 import functions._
 import functions.process.ScheduledFunction
 import handler.EnvironmentHelper
