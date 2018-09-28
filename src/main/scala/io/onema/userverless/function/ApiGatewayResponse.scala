@@ -11,7 +11,7 @@
 
 package io.onema.userverless.function
 
-import io.onema.userverless.proxy.model.AwsProxyResponse
+import io.onema.userverless.model.AwsProxyResponse
 import io.onema.userverless.model.ErrorMessage
 import io.onema.json.Extensions._
 import scala.collection.JavaConverters._
@@ -21,30 +21,18 @@ trait ApiGatewayResponse {
 
   //--- Methods ---
   protected def buildResponse(code: Int, headers: Map[String, String] = Map()): AwsProxyResponse = {
-    addHeaders(new AwsProxyResponse(code), headers)
+    AwsProxyResponse(code, headers = headers)
   }
 
   protected def buildResponse(code: Int, payload: AnyRef, headers: Map[String, String]): AwsProxyResponse = {
-    val response = buildResponse(code, payload)
-    response.setHeaders(headers.asJava)
-    response
+    AwsProxyResponse(code, headers = headers, body = payload.asJson)
   }
 
   protected def buildResponse(code: Int, payload: AnyRef): AwsProxyResponse = {
-    val response = new AwsProxyResponse(code)
-    response.setBody(payload.asJson)
-    response
+    AwsProxyResponse(code, body = payload.asJson)
   }
 
   protected def buildError(code: Int, message: String): AwsProxyResponse = {
     buildResponse(code, ErrorMessage(message))
-  }
-
-  private def addHeaders(response: AwsProxyResponse, headers: Map[String, String]): AwsProxyResponse = {
-    if(headers.nonEmpty) {
-      new AwsProxyResponse(response.getStatusCode, headers.asJava)
-    } else {
-      response
-    }
   }
 }

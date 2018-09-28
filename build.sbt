@@ -6,7 +6,7 @@ lazy val serverlessBaseRoot = (project in file("."))
 
   name := "userverless",
 
-  version := "0.0.2",
+  version := "0.0.4",
 
   scalaVersion := "2.12.6",
 

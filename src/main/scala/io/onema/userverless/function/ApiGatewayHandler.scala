@@ -14,7 +14,7 @@ package io.onema.userverless.function
 import java.io.{InputStream, OutputStream}
 import java.nio.charset.Charset
 
-import io.onema.userverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
+import io.onema.userverless.model.{AwsProxyRequest, AwsProxyResponse}
 import com.typesafe.scalalogging.Logger
 import io.onema.json.JavaExtensions._
 import io.onema.userverless.configuration.cors.{CorsConfiguration, NoopCorsConfiguration}
@@ -73,7 +73,7 @@ object ApiGatewayHandler {
       * @return
       */
     protected def cors(request: AwsProxyRequest)(function: => AwsProxyResponse): AwsProxyResponse = {
-      val origin = Option(request.getHeaders.get("origin"))
+      val origin = request.headers.get("origin")
       val corsConfig = corsConfiguration(origin)
       corsConfig match {
         case _:NoopCorsConfiguration =>
