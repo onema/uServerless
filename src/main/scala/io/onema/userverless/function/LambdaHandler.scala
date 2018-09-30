@@ -17,20 +17,17 @@ import java.nio.charset.Charset
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.typesafe.scalalogging.Logger
-import io.onema.json.JavaExtensions._
-import io.onema.json.Mapper
+import io.onema.json.Extensions._
 import io.onema.userverless.configuration.lambda.LambdaConfiguration
 import io.onema.userverless.exception.ThrowableExtensions._
 import io.onema.userverless.model.WarmUpEvent
 
-import scala.io.Source
-import scala.reflect.ClassTag
-import scala.util.{Failure, Success, Try}
 import scala.collection.mutable.ArrayBuffer
+import scala.io.Source
+import scala.util.{Failure, Success, Try}
 
-abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaConfiguration {
+abstract class LambdaHandler[TEvent:Manifest, TResponse<: Any] extends LambdaConfiguration {
 
   //--- Fields ---
   protected val log: Logger = Logger("lambda-handler")
@@ -61,7 +58,17 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
       }
       response.foreach(response => {
         val output = responseListeners.foldLeft(response)((res, func) => func(res))
-        outputStream.write(output.asJson.getBytes(Charset.defaultCharset()))
+
+        output match {
+          case _:AnyRef =>
+
+            // Ensure that only AnyRef objects are converted to json
+            outputStream.write(output.asInstanceOf[AnyRef].asJson.getBytes(Charset.defaultCharset()))
+          case _ =>
+
+            // AnyVal should be converted to string
+            outputStream.write(output.asInstanceOf[String].getBytes(Charset.defaultCharset()))
+        }
       })
     }
     outputStream.close()
@@ -73,7 +80,7 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
 
         // If the TResponse is Unit, return None, else wrap the response in an option
         val returnVal = response match {
-          case _:Unit => None
+          case _: Unit => None
           case _ => Option(response)
         }
         returnVal
@@ -95,7 +102,7 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
       Try(json.jsonDecode[WarmUpEvent]) match {
         case Success(event) =>
           log.info("Checking for warm up event!")
-          event.getWarmup
+          event.warmup
         case Failure(exception) =>
           false
       }
@@ -105,8 +112,7 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
   protected def decodeEvent(json: String): TEvent = {
     log.debug("Decode Event")
     time {
-      val mapper: ObjectMapper = Mapper.allowUnknownPropertiesMapper
-      Try(json.jsonDecode[TEvent](mapper)) match {
+      Try(json.jsonDecode[TEvent]) match {
         case Success(event) => event
         case Failure(e) =>
           log.error(s"Unable to parse json message to expected type")

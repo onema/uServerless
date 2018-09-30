@@ -11,8 +11,7 @@
 
 package io.onema.userverless.configuration.cors
 
-import io.onema.userverless.model.AwsProxyResponse
-import scala.collection.JavaConverters._
+import io.onema.userverless.events.ApiGateway.AwsProxyResponse
 
 
 object Extensions {
@@ -35,8 +34,9 @@ object Extensions {
             response.copy(headers = headers)
           case None => throw new RuntimeException("Logic error: The origin was mark as valid, yet it's value is empty")
         }
+      } else {
+        response
       }
-      response
     }
   }
 }

@@ -11,10 +11,10 @@
 
 package functions.cors
 
-import io.onema.userverless.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import io.onema.userverless.configuration.cors.{CorsConfiguration, NoopCorsConfiguration}
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.events.ApiGateway.{AwsProxyRequest, AwsProxyResponse}
 import io.onema.userverless.function.ApiGatewayHandler
 import io.onema.userverless.function.ApiGatewayHandler.Cors
 import org.apache.http.HttpStatus
@@ -25,7 +25,7 @@ class NoopFunction extends ApiGatewayHandler with NoopLambdaConfiguration with C
   //--- Methods ---
   def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     cors(request) {
-      new AwsProxyResponse(HttpStatus.SC_OK)
+      AwsProxyResponse(HttpStatus.SC_OK)
     }
   }
 

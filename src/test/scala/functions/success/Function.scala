@@ -11,16 +11,15 @@
 
 package functions.success
 
-import io.onema.userverless.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.events.ApiGateway.{AwsProxyRequest, AwsProxyResponse}
 import io.onema.userverless.function.ApiGatewayHandler
 import org.apache.http.HttpStatus
 
 object Logic {
   def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
-    AwsProxyResponse(HttpStatus.SC_OK, body = "{\"message\": \"success\"}")
+    AwsProxyResponse(HttpStatus.SC_OK, body = Some("{\"message\": \"success\"}"))
   }
 }
 

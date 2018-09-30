@@ -13,15 +13,14 @@ package handler.function
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, InputStream}
 
-import io.onema.userverless.model.AwsProxyResponse
+import io.onema.userverless.events.ApiGateway.AwsProxyResponse
 import io.onema.userverless.model.ErrorMessage
+import io.onema.json.Extensions._
 
 
 object ApiGatewayTestHelper {
 
     def toInputStream(obj: Object): InputStream = {
-
-        import io.onema.json.JavaExtensions._
         toInputStream(obj.asJson)
     }
 
@@ -30,14 +29,10 @@ object ApiGatewayTestHelper {
     }
 
     def outputToResponse(stream: ByteArrayOutputStream):AwsProxyResponse = {
-
-        import io.onema.json.JavaExtensions._
         stream.toString.jsonDecode[AwsProxyResponse]
     }
 
     def jsonToErrorMessage(str: String): ErrorMessage = {
-
-        import io.onema.json.Extensions._
         str.jsonDecode[ErrorMessage]
     }
 

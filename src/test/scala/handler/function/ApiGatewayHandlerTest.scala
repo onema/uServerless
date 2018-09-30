@@ -20,10 +20,11 @@ import handler.function.ApiGatewayHandlerTest._
 import handler.function.ApiGatewayTestHelper._
 import io.onema.json.Extensions._
 import io.onema.userverless.configuration.lambda.{EnvLambdaConfiguration, MemoryLambdaConfiguration}
+import io.onema.userverless.events.ApiGateway.{AwsProxyRequest, AwsProxyResponse}
 import io.onema.userverless.exception.{HandleRequestException, RuntimeException}
 import io.onema.userverless.function.Extensions._
 import io.onema.userverless.function.{ApiGatewayHandler, ApiGatewayResponse}
-import io.onema.userverless.model.{AwsProxyRequest, AwsProxyResponse, ErrorMessage}
+import io.onema.userverless.model.ErrorMessage
 import io.onema.userverless.proxy.internal.testutils.MockLambdaContext
 import org.apache.http.HttpStatus
 import org.scalamock.scalatest.MockFactory
@@ -115,7 +116,7 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
     // Act
     lambdaFunction.lambdaHandler(request, output, context)
     val response: AwsProxyResponse = outputToResponse(output)
-    val body = jsonToErrorMessage(response.body)
+    val body = jsonToErrorMessage(response.body.get)
 
     // Assert
     body.message should be ("success")
@@ -137,7 +138,7 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
   "An error response" should "be properly serialized to json" in {
 
     // Arrange
-    val expectedValue = "{\"statusCode\":507,\"headers\":null,\"body\":\"{\\\"message\\\":\\\"test\\\"}\",\"base64Encoded\":false}"
+    val expectedValue = "{\"statusCode\":507,\"headers\":{},\"body\":\"{\\\"message\\\":\\\"test\\\"}\",\"base64Encoded\":false}"
 
     // Act
     val foo = new ErrorResponseFunction().test()
@@ -163,7 +164,7 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
   "A response with custom headers" should "be properly serialized to json" in {
 
     // Arrange
-    val expectedValue = "{\"statusCode\":200,\"headers\":{\"foo\":\"bar\"},\"body\":null,\"base64Encoded\":false}"
+    val expectedValue = "{\"statusCode\":200,\"headers\":{\"foo\":\"bar\"},\"base64Encoded\":false}"
 
     // Act
     val foo = new ValidResponseHeadersOnlyFunction().test()
@@ -187,7 +188,7 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
     val result = outputToResponse(output)
 
     // Assert
-    result.body should be ("{\"message\":\"Internal Server Error: check the logs for more information.\"}")
+    result.body.get should be ("{\"message\":\"Internal Server Error: check the logs for more information.\"}")
     result.statusCode should be (HttpStatus.SC_INTERNAL_SERVER_ERROR)
   }
 
@@ -219,7 +220,7 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
     val result = outputToResponse(output)
 
     // Assert
-    result.body should be ("{\"message\":\"Bad request exception\"}")
+    result.body.get should be ("{\"message\":\"Bad request exception\"}")
     result.statusCode should be (HttpStatus.SC_BAD_REQUEST)
   }
 
@@ -237,7 +238,7 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
     val result = outputToResponse(output)
 
     // Assert
-    result.body should be ("{\"message\":\"Runtime exception\"}")
+    result.body.get should be ("{\"message\":\"Runtime exception\"}")
     result.statusCode should be (HttpStatus.SC_INTERNAL_SERVER_ERROR)
   }
 

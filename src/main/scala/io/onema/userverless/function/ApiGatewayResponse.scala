@@ -11,10 +11,9 @@
 
 package io.onema.userverless.function
 
-import io.onema.userverless.model.AwsProxyResponse
 import io.onema.userverless.model.ErrorMessage
 import io.onema.json.Extensions._
-import scala.collection.JavaConverters._
+import io.onema.userverless.events.ApiGateway.AwsProxyResponse
 
 
 trait ApiGatewayResponse {
@@ -25,11 +24,11 @@ trait ApiGatewayResponse {
   }
 
   protected def buildResponse(code: Int, payload: AnyRef, headers: Map[String, String]): AwsProxyResponse = {
-    AwsProxyResponse(code, headers = headers, body = payload.asJson)
+    AwsProxyResponse(code, headers = headers, body = Some(payload.asJson))
   }
 
   protected def buildResponse(code: Int, payload: AnyRef): AwsProxyResponse = {
-    AwsProxyResponse(code, body = payload.asJson)
+    AwsProxyResponse(code, body = Some(payload.asJson))
   }
 
   protected def buildError(code: Int, message: String): AwsProxyResponse = {

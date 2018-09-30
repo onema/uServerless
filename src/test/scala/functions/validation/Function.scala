@@ -11,7 +11,7 @@
 
 package functions.validation
 
-import io.onema.userverless.model.{AwsProxyRequest, AwsProxyResponse}
+import io.onema.userverless.events.ApiGateway.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.model.PublishRequest
 import com.amazonaws.services.sns.{AmazonSNS, AmazonSNSAsync, AmazonSNSAsyncClientBuilder}

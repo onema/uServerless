@@ -1,47 +1,47 @@
 import sbt.url
 
 lazy val serverlessBaseRoot = (project in file("."))
-.settings(
-  organization := "io.onema",
+  .settings(
+    organization := "io.onema",
 
-  name := "userverless",
+    name := "userverless",
 
-  version := "0.0.4",
+    version := "0.0.3",
 
-  scalaVersion := "2.12.6",
+    scalaVersion := "2.12.6",
 
-  libraryDependencies ++= {
-    val awsSdkVersion = "1.11.416"
-    Seq(
-      // CORE!
-       "io.onema"                   % "json-extensions_2.12"                % "0.3.0",
+    libraryDependencies ++= {
+      val awsSdkVersion = "1.11.416"
+      Seq(
+        // CORE!
+        "io.onema"                   % "json-extensions_2.12"                % "0.3.0",
 
-    // AWS libraries
-      "com.amazonaws"               % "aws-lambda-java-events"              % "2.2.2",
-      "com.amazonaws"               % "aws-lambda-java-core"                % "1.2.0",
-      "com.amazonaws"               % "aws-java-sdk-sns"                    % awsSdkVersion,
-      "com.amazonaws"               % "aws-java-sdk-ssm"                    % awsSdkVersion,
-      "com.amazonaws"               % "aws-java-sdk-dynamodb"               % awsSdkVersion,
+        // AWS libraries
+        //      "com.amazonaws"               % "aws-lambda-java-events"              % "2.2.2",
+        "com.amazonaws"               % "aws-lambda-java-core"                % "1.2.0",
+        "com.amazonaws"               % "aws-java-sdk-sns"                    % awsSdkVersion,
+        "com.amazonaws"               % "aws-java-sdk-ssm"                    % awsSdkVersion,
+        "com.amazonaws"               % "aws-java-sdk-dynamodb"               % awsSdkVersion,
 
-      // Http
-      "org.apache.httpcomponents"   % "httpcore"                            % "4.4.8",
+        // Http
+        "org.apache.httpcomponents"   % "httpcore"                            % "4.4.8",
 
-      // Logging
-      "com.typesafe.scala-logging"  %% "scala-logging"                      % "3.7.2",
-      "ch.qos.logback"              % "logback-classic"                     % "1.1.7",
+        // Logging
+        "com.typesafe.scala-logging"  %% "scala-logging"                      % "3.7.2",
+        "ch.qos.logback"              % "logback-classic"                     % "1.1.7",
 
-      // Testing
-      "org.scalatest"               % "scalatest_2.12"                      % "3.0.5"   % Test,
-      "org.scalamock"               %% "scalamock"                          % "4.1.0"   % Test
-    )
-  },
-  publishMavenStyle := true,
-  publishTo := Some("Onema Snapshots" at "s3://s3-us-east-1.amazonaws.com/ones-deployment-bucket/snapshots")
-)
-//.dependsOn(jsonExtensions)
+        // Testing
+        "org.scalatest"               % "scalatest_2.12"                      % "3.0.5"   % Test,
+        "org.scalamock"               %% "scalamock"                          % "4.1.0"   % Test
+      )
+    },
+    publishMavenStyle := true,
+    publishTo := Some("Onema Snapshots" at "s3://s3-us-east-1.amazonaws.com/ones-deployment-bucket/snapshots")
+  )
+  .dependsOn(uServerlessEvents)
 
 // Sub-projects
-//lazy val jsonExtensions = RootProject(file("../JsonExtensions"))
+lazy val uServerlessEvents = RootProject(file("../uServerlessEvents"))
 
 
 // Maven Central Repo boilerplate configuration

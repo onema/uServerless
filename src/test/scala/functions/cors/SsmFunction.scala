@@ -11,11 +11,11 @@
 
 package functions.cors
 
-import io.onema.userverless.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
 import io.onema.userverless.configuration.cors.{CorsConfiguration, SsmCorsConfiguration}
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.events.ApiGateway.{AwsProxyRequest, AwsProxyResponse}
 import io.onema.userverless.function.ApiGatewayHandler
 import io.onema.userverless.function.ApiGatewayHandler.Cors
 import org.apache.http.HttpStatus
@@ -28,7 +28,7 @@ class SsmFunction(val ssmClient: AWSSimpleSystemsManagementAsync) extends ApiGat
 
   def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     cors(request){
-      new AwsProxyResponse(HttpStatus.SC_OK)
+      AwsProxyResponse(HttpStatus.SC_OK)
     }
   }
 
