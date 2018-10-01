@@ -6,7 +6,7 @@ lazy val serverlessBaseRoot = (project in file("."))
 
     name := "userverless",
 
-    version := "0.0.3",
+    version := "0.0.4",
 
     scalaVersion := "2.12.6",
 
@@ -15,9 +15,9 @@ lazy val serverlessBaseRoot = (project in file("."))
       Seq(
         // CORE!
         "io.onema"                   % "json-extensions_2.12"                % "0.3.0",
+        "io.onema"                   % "userverlessevents_2.12"              % "0.0.1",
 
         // AWS libraries
-        //      "com.amazonaws"               % "aws-lambda-java-events"              % "2.2.2",
         "com.amazonaws"               % "aws-lambda-java-core"                % "1.2.0",
         "com.amazonaws"               % "aws-java-sdk-sns"                    % awsSdkVersion,
         "com.amazonaws"               % "aws-java-sdk-ssm"                    % awsSdkVersion,
@@ -38,10 +38,10 @@ lazy val serverlessBaseRoot = (project in file("."))
     publishMavenStyle := true,
     publishTo := Some("Onema Snapshots" at "s3://s3-us-east-1.amazonaws.com/ones-deployment-bucket/snapshots")
   )
-  .dependsOn(uServerlessEvents)
+//  .dependsOn(uServerlessEvents)
 
 // Sub-projects
-lazy val uServerlessEvents = RootProject(file("../uServerlessEvents"))
+//lazy val uServerlessEvents = RootProject(file("../uServerlessEvents"))
 
 
 // Maven Central Repo boilerplate configuration
