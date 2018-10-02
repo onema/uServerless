@@ -25,7 +25,8 @@ class PositiveRandomFunction extends LambdaHandler[String, Int] with NoopLambdaC
 
   //--- Methods ---
   override def execute(event: String, context: Context): Int = {
-    current = rand.nextInt
-    if(current >= 0) current else current * -1
+    val int = rand.nextInt
+    current = if(int >= 0) int else int * -1
+    current
   }
 }

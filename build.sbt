@@ -73,4 +73,4 @@ lazy val serverlessBaseRoot = (project in file("."))
 //    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
 //}
 //publishArtifact in Test := false
-//parallelExecution in Test := false
+parallelExecution in Test := false
