@@ -16,9 +16,10 @@ import com.amazonaws.services.lambda.runtime.Context
 import io.onema.userverless.configuration.cors.{CorsConfiguration, EnvCorsConfiguration}
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
 import io.onema.userverless.function.ApiGatewayHandler
+import io.onema.userverless.function.ApiGatewayHandler.Cors
 import org.apache.http.HttpStatus
 
-class EnvFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
+class EnvFunction extends ApiGatewayHandler with NoopLambdaConfiguration with Cors {
 
   //--- Methods ---
   override protected def corsConfiguration(origin: Option[String]): CorsConfiguration = EnvCorsConfiguration(origin)

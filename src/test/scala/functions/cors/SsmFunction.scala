@@ -19,10 +19,11 @@ import io.onema.userverless.configuration.cors.Extensions.AwsProxyResponseExtens
 import io.onema.userverless.configuration.cors.{CorsConfiguration, SsmCorsConfiguration}
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
 import io.onema.userverless.function.ApiGatewayHandler
+import io.onema.userverless.function.ApiGatewayHandler.Cors
 import org.apache.http.HttpStatus
 
 
-class SsmFunction(val ssmClient: AWSSimpleSystemsManagementAsync) extends ApiGatewayHandler with NoopLambdaConfiguration {
+class SsmFunction(val ssmClient: AWSSimpleSystemsManagementAsync) extends ApiGatewayHandler with NoopLambdaConfiguration with Cors {
 
   //--- Methods ---
   override protected def corsConfiguration(origin: Option[String]): CorsConfiguration = SsmCorsConfiguration(origin, ssmClient)

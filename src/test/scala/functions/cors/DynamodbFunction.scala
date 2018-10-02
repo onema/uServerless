@@ -17,10 +17,11 @@ import com.amazonaws.services.lambda.runtime.Context
 import io.onema.userverless.configuration.cors.{CorsConfiguration, DynamodbCorsConfiguration}
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
 import io.onema.userverless.function.ApiGatewayHandler
+import io.onema.userverless.function.ApiGatewayHandler.Cors
 import org.apache.http.HttpStatus
 
 
-class DynamodbFunction(tableName: String, client: AmazonDynamoDBAsync) extends ApiGatewayHandler with NoopLambdaConfiguration {
+class DynamodbFunction(tableName: String, client: AmazonDynamoDBAsync) extends ApiGatewayHandler with NoopLambdaConfiguration with Cors {
 
   //--- Methods ---
   override protected def corsConfiguration(origin: Option[String]): CorsConfiguration = DynamodbCorsConfiguration(origin, tableName, client)
