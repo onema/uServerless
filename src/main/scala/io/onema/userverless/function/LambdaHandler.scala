@@ -120,15 +120,16 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
     log.debug("Decode Event")
     time {
       if(json.isEmpty) {
-        return tryCastEmpty(json)
-      }
-      val mapper: ObjectMapper = Mapper.allowUnknownPropertiesMapper
-      Try(json.jsonDecode[TEvent](mapper)) match {
-        case Success(event) => event
-        case Failure(e) =>
-          log.error(s"Unable to parse json message to expected type")
-          handleFailure(e)
-          throw e
+        tryCastEmpty(json)
+      } else {
+        val mapper: ObjectMapper = Mapper.allowUnknownPropertiesMapper
+        Try(json.jsonDecode[TEvent](mapper)) match {
+          case Success(event) => event
+          case Failure(e) =>
+            log.error(s"Unable to parse json message to expected type")
+            handleFailure(e)
+            throw e
+        }
       }
     }
   }
