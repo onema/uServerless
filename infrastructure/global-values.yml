@@ -1,0 +1,25 @@
+iamRoleStatements:
+  - Effect: "Allow"
+    Action:
+      - sns:Publish
+    Resource:
+      - Fn::ImportValue: "${self:custom.stageName}-error-topic-arn"
+  - Effect: Allow
+    Action:
+      - sqs:SendMessageBatch
+      - sqs:SendMessage
+    Resource:
+      - Fn::ImportValue: "${self:custom.stageName}-dead-letter-queue-arn"
+  # =======================================================================
+  # ADD CUSTOM PERMISSIONS HERE
+  # =======================================================================
+
+environment:
+  SNS_ERROR_TOPIC:
+    Fn::ImportValue: "${self:custom.stageName}-error-topic-arn"
+
+custom:
+  stageName: ${opt:stage, self:provider.stage}
+
+deadLetterQueue:
+  Fn::ImportValue: "${self:custom.stageName}-dead-letter-queue-arn"

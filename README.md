@@ -232,22 +232,25 @@ and the response will have the given header `400 BAD REQUEST`.
 
 Cross-Origin Resource Sharing can be enabled in µServerless by passing your function code to the `cors` function. 
 The method takes the AwsProxyRequest as an input which is used to get the information about the origin, and it will 
-properly add the required headers to the returned `AwsProxyResponse`.
+properly add the required headers to the returned `AwsProxyResponse`. To enable Cors, extend the `io.onema.userverless.function.ApiGatewayHandler.Cors`
+trait:
 
 ```scala
-def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
+class foo extends ApiGatewayHandler with Cors {
+    def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
 
-  // Wrapp your code with the followibg block
-  cors(request) {
-    // Code...
- 
-    // ... and return an AwsProxyResponse
-    new AwsProxyResponse(HttpStatus.SC_OK)
-  }
+      // Wrapp your code with the followibg block
+      cors(request) {
+        // Code...
+     
+        // ... and return an AwsProxyResponse
+        new AwsProxyResponse(HttpStatus.SC_OK)
+      }
+    }
 }
 ```
 
-Your function should extend from the `ApiGatewayHandler` and override the `corsConfiguration` method which should return 
+Your function should extend from the `ApiGatewayHandler` and `ApiGatewayHandler.Cors` and implement the `corsConfiguration` method which should return 
 a `CorsConfiguration` object.
 
 ```scala 
@@ -310,7 +313,7 @@ import io.onema.userverless.configuration.cors.EnvCorsConfiguration
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
 import io.onema.userverless.function.ApiGatewayHandler
 
-class EnvFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
+class EnvFunction extends ApiGatewayHandler with Cors with NoopLambdaConfiguration {
 
   //--- Fields ---
   override protected def corsConfiguration(origin: Option[String]) = new EnvCorsConfiguration(origin)

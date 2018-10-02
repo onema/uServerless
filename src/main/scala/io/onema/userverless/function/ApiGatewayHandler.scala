@@ -11,20 +11,15 @@
 
 package io.onema.userverless.function
 
-import java.io.{InputStream, OutputStream}
-import java.nio.charset.Charset
-
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.typesafe.scalalogging.Logger
-import io.onema.json.JavaExtensions._
+import io.onema.userverless.configuration.cors.Extensions.AwsProxyResponseExtension
 import io.onema.userverless.configuration.cors.{CorsConfiguration, NoopCorsConfiguration}
 import io.onema.userverless.configuration.lambda.LambdaConfiguration
-import io.onema.userverless.configuration.cors.Extensions.AwsProxyResponseExtension
 import io.onema.userverless.exception.HandleRequestException
 import io.onema.userverless.exception.ThrowableExtensions._
 import org.apache.http.HttpStatus
 
-import scala.io.Source
 import scala.util.Try
 
 
