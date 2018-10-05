@@ -14,8 +14,10 @@ package handler.function
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
+import com.fasterxml.jackson.core.JsonParseException
 import functions._
 import handler.EnvironmentHelper
+import io.onema.userverless.exception.{MessageDecodingException, MessageStringCastException}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -38,7 +40,7 @@ class LambdaHandlerTest extends FlatSpec with Matchers with MockFactory with Env
     response should be ("true")
   }
 
-  "A simple function that takes an Int" should "Throw an exception on empty value" in {
+  "A simple function that takes an Int" should "Throw an exception on wrong value value" in {
     // Arrange
     val function = new simple.EchoFunction
     val number = ""
@@ -47,11 +49,9 @@ class LambdaHandlerTest extends FlatSpec with Matchers with MockFactory with Env
     val context = new MockLambdaContext
 
     // Act-Assert
-    assertThrows[Exception] {
+    assertThrows[MessageDecodingException] {
       function.lambdaHandler(inputStream, outputStream, context)
     }
-
-    // Assert
   }
 
   "A simple function returning a String" should "properly write the value to the output stream" in {
@@ -73,7 +73,7 @@ class LambdaHandlerTest extends FlatSpec with Matchers with MockFactory with Env
   "A simple function returning an integer" should "properly write the integer to the output stream" in {
     // Arrange
     val function = new simple.PositiveRandomFunction
-    val inputStream = new ByteArrayInputStream("".getBytes)
+    val inputStream = new ByteArrayInputStream("0".getBytes)
     val outputStream = new ByteArrayOutputStream()
     val context = new MockLambdaContext
 
@@ -84,6 +84,21 @@ class LambdaHandlerTest extends FlatSpec with Matchers with MockFactory with Env
     // Assert
     response.foreach(x => x.isDigit should be(true))
     response should be(function.current.toString)
+  }
+  "A bad request object" should "Throw an exception" in {
+    // Arrange
+    val function = new simple.EchoFunction
+    val number = "{}"
+    val inputStream = new ByteArrayInputStream(number.getBytes())
+    val outputStream = new ByteArrayOutputStream()
+    val context = new MockLambdaContext
+
+    // Act-Assert
+    assertThrows[MessageDecodingException] {
+      function.lambdaHandler(inputStream, outputStream, context)
+    }
+
+    // Assert
   }
 
   // @TODO: This is a misleading test. The serialization needs to be tuned to properly handle all cases.

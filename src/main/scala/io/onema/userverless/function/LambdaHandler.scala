@@ -22,13 +22,14 @@ import com.typesafe.scalalogging.Logger
 import io.onema.json.JavaExtensions._
 import io.onema.json.Mapper
 import io.onema.userverless.configuration.lambda.LambdaConfiguration
+import io.onema.userverless.exception.MessageDecodingException
 import io.onema.userverless.exception.ThrowableExtensions._
 import io.onema.userverless.model.WarmUpEvent
 
+import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
-import scala.collection.mutable.ArrayBuffer
 
 abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaConfiguration {
 
@@ -120,30 +121,20 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
     log.debug("Decode Event")
     time {
       if(json.isEmpty) {
-        tryCastEmpty(json)
+        throw new MessageDecodingException("Empty event values are not allowed")
       } else {
         val mapper: ObjectMapper = Mapper.allowUnknownPropertiesMapper
         Try(json.jsonDecode[TEvent](mapper)) match {
           case Success(event) => event
           case Failure(e) =>
             log.error(s"Unable to parse json message to expected type")
-            handleFailure(e)
-            throw e
+            val ex = new MessageDecodingException(e.message)
+            handleFailure(ex)
+            throw ex
         }
       }
     }
   }
-
-  protected def tryCastEmpty(str: String): TEvent = {
-    Try(str.asInstanceOf[TEvent]) match {
-      case Success(value) => value
-      case Failure(e) =>
-        log.error(s"Unable to properly cast empty value: ${e.getMessage}")
-        handleFailure(e)
-        throw e
-    }
-  }
-
 
   protected def time[R](block: => R): R = {
     val t0 = System.nanoTime()
