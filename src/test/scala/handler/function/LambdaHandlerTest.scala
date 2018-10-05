@@ -14,10 +14,9 @@ package handler.function
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
-import com.fasterxml.jackson.core.JsonParseException
 import functions._
 import handler.EnvironmentHelper
-import io.onema.userverless.exception.{MessageDecodingException, MessageStringCastException}
+import io.onema.userverless.exception.MessageDecodingException
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 
