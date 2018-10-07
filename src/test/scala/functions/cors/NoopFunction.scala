@@ -13,12 +13,14 @@ package functions.cors
 
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
+import io.onema.userverless.configuration.cors.{CorsConfiguration, NoopCorsConfiguration}
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
 import io.onema.userverless.function.ApiGatewayHandler
+import io.onema.userverless.function.ApiGatewayHandler.Cors
 import org.apache.http.HttpStatus
 
 
-class NoopFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
+class NoopFunction extends ApiGatewayHandler with NoopLambdaConfiguration with Cors {
 
   //--- Methods ---
   def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
@@ -26,4 +28,12 @@ class NoopFunction extends ApiGatewayHandler with NoopLambdaConfiguration {
       new AwsProxyResponse(HttpStatus.SC_OK)
     }
   }
+
+  /**
+    * This method should construct and return the the cors configuration
+    *
+    * @param origin option containing a string or None with the request origin.
+    * @return
+    */
+  override protected def corsConfiguration(origin: Option[String]): CorsConfiguration = NoopCorsConfiguration()
 }

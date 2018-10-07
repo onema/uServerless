@@ -11,20 +11,15 @@
 
 package io.onema.userverless.function
 
-import java.io.{InputStream, OutputStream}
-import java.nio.charset.Charset
-
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.typesafe.scalalogging.Logger
-import io.onema.json.JavaExtensions._
+import io.onema.userverless.configuration.cors.Extensions.AwsProxyResponseExtension
 import io.onema.userverless.configuration.cors.{CorsConfiguration, NoopCorsConfiguration}
 import io.onema.userverless.configuration.lambda.LambdaConfiguration
-import io.onema.userverless.configuration.cors.Extensions.AwsProxyResponseExtension
 import io.onema.userverless.exception.HandleRequestException
 import io.onema.userverless.exception.ThrowableExtensions._
 import org.apache.http.HttpStatus
 
-import scala.io.Source
 import scala.util.Try
 
 
@@ -36,25 +31,6 @@ trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
   override protected val log = Logger("apigateway-handler")
 
   //--- Methods ---
-  protected def corsConfiguration(origin: Option[String]): CorsConfiguration = NoopCorsConfiguration()
-
-  protected def cors(request: AwsProxyRequest)(function: => AwsProxyResponse): AwsProxyResponse = {
-    val origin = Option(request.getHeaders.get("origin"))
-    val corsConfig = corsConfiguration(origin)
-    corsConfig match {
-      case _:NoopCorsConfiguration =>
-        throw new RuntimeException(s"The CORS configuration ${NoopCorsConfiguration.getClass} is only a placeholder and " +
-          s"should not be used. Consider using one of the available CORS Configuration strategies. " +
-          s"For more information see the documentation."
-        )
-      case _ =>
-    }
-    if (!corsConfig.isOriginValid) {
-      throw new HandleRequestException(HttpStatus.SC_BAD_REQUEST, s"Origin '${origin.getOrElse("")}' is not authorized")
-    }
-    function.withCors(corsConfig)
-  }
-
   override protected def handleFailure(exception: Throwable): AwsProxyResponse = {
     val message = s"Internal Server Error: ${exception.message}"
     log.error(message)
@@ -70,6 +46,42 @@ trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
 
         // Generate response to send back to the api user
         buildError(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: check the logs for more information.")
+    }
+  }
+}
+
+object ApiGatewayHandler {
+  trait Cors {
+
+    //--- Methods ---
+    /**
+      * This method should construct and return the the cors configuration
+      * @param origin option containing a string or None with the request origin.
+      * @return
+      */
+    protected def corsConfiguration(origin: Option[String]): CorsConfiguration
+
+    /**
+      * Curried method that takes the API Gateway AwsProxyRequest as it's first parameter. Before
+      * executing the function passed to it, it check if the configuration and the origin are valid.
+      * @param request the AWS proxy request
+      * @return
+      */
+    protected def cors(request: AwsProxyRequest)(function: => AwsProxyResponse): AwsProxyResponse = {
+      val origin = Option(request.getHeaders.get("origin"))
+      val corsConfig = corsConfiguration(origin)
+      corsConfig match {
+        case _:NoopCorsConfiguration =>
+          throw new RuntimeException(s"The CORS configuration ${NoopCorsConfiguration.getClass} is only a placeholder and " +
+            s"should not be used. Consider using one of the available CORS Configuration strategies. " +
+            s"For more information see the documentation."
+          )
+        case _ =>
+      }
+      if (!corsConfig.isOriginValid) {
+        throw new HandleRequestException(HttpStatus.SC_BAD_REQUEST, s"Origin '${origin.getOrElse("")}' is not authorized")
+      }
+      function.withCors(corsConfig)
     }
   }
 }

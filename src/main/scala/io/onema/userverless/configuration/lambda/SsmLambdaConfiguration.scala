@@ -79,6 +79,11 @@ trait SsmLambdaConfiguration extends LambdaConfiguration {
     getParameters(path)
   }
 
+  /**
+    * Try to get the parameter from parameter store, return an Option[String] if found, None otherwise.
+    * @param name The full path to the parameter you are trying to find
+    * @return
+    */
   private def tryParameter(name: String): Option[String] = {
     val response = Try(ssmClient.getParameter(
       new GetParameterRequest()

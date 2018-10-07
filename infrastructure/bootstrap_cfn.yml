@@ -1,0 +1,54 @@
+# Bootstrap infrastructure for uServerless
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: >
+  Template to create basic infrastructure for uServerless
+
+Parameters:
+  StageName:
+    Type: String
+    Description: The Stage or Environment name
+    Default: dev
+
+Resources:
+  DeadLetterQueue:
+    Type: AWS::SQS::Queue
+#    Properties:
+#      QueueName:
+#        Fn::Join: ["-", [Ref: StageName, "dead-letter-queue"]]
+
+  ErrorSNSTopic:
+    Type: AWS::SNS::Topic
+#    Properties:
+#      TopicName:
+#        Fn::Join: ["-", [Ref: StageName, "error-topic"]]
+
+Outputs:
+  SnsErrorTopicArn:
+    Description: The ARN of the Error Topic
+    Value:
+      Ref: ErrorSNSTopic
+    Export:
+      Name:
+        Fn::Join: ["-", [Ref: StageName, "error-topic-arn"]]
+  SnsErrorTopicName:
+    Description: The Name of the Error Topic
+    Value:
+      Fn::GetAtt: [ErrorSNSTopic, "TopicName"]
+    Export:
+      Name:
+        Fn::Join: ["-", [Ref: StageName, "error-topic-name"]]
+  DeadLetterQueueURL:
+    Description: URL of the dead letter queue
+    Value:
+      Ref: DeadLetterQueue
+    Export:
+      Name:
+        Fn::Join: ["-", [Ref: StageName, "dead-letter-queue-url"]]
+  DeadLetterQueueARN:
+    Description: ARN of the dead letter queue
+    Value:
+      Fn::GetAtt: [DeadLetterQueue, Arn]
+    Export:
+      Name:
+        Fn::Join: ["-", [Ref: StageName, "dead-letter-queue-arn"]]

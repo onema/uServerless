@@ -14,8 +14,17 @@ package io.onema.userverless.configuration.cors
 class NoopCorsConfiguration extends CorsConfiguration(None) {
 
   //--- Methods ---
+
+  /**
+    * Is never enabled
+    * @return
+    */
   override def isEnabled: Boolean = false
 
+  /**
+    * No origin is valid
+    * @return
+    */
   override def isOriginValid: Boolean = false
 }
 
