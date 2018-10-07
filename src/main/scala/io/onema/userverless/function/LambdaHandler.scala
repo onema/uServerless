@@ -22,13 +22,14 @@ import com.typesafe.scalalogging.Logger
 import io.onema.json.JavaExtensions._
 import io.onema.json.Mapper
 import io.onema.userverless.configuration.lambda.LambdaConfiguration
+import io.onema.userverless.exception.MessageDecodingException
 import io.onema.userverless.exception.ThrowableExtensions._
 import io.onema.userverless.model.WarmUpEvent
 
+import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
-import scala.collection.mutable.ArrayBuffer
 
 abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaConfiguration {
 
@@ -61,7 +62,21 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
       }
       response.foreach(response => {
         val output = responseListeners.foldLeft(response)((res, func) => func(res))
-        outputStream.write(output.asJson.getBytes(Charset.defaultCharset()))
+
+        output match {
+          case _: String =>
+
+            // Strings should be treated independent from other objects to prevent format issues
+            outputStream.write(output.asInstanceOf[String].getBytes(Charset.defaultCharset()))
+          case _: java.lang.Number =>
+
+            // AnyVal should be converted to string
+            outputStream.write(output.toString.getBytes(Charset.defaultCharset()))
+          case _: AnyRef =>
+
+            // Ensure that only AnyRef objects are converted to json
+            outputStream.write(output.asInstanceOf[AnyRef].asJson.getBytes(Charset.defaultCharset()))
+        }
       })
     }
     outputStream.close()
@@ -73,7 +88,7 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
 
         // If the TResponse is Unit, return None, else wrap the response in an option
         val returnVal = response match {
-          case _:Unit => None
+          case _: Unit => None
           case _ => Option(response)
         }
         returnVal
@@ -105,13 +120,18 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
   protected def decodeEvent(json: String): TEvent = {
     log.debug("Decode Event")
     time {
-      val mapper: ObjectMapper = Mapper.allowUnknownPropertiesMapper
-      Try(json.jsonDecode[TEvent](mapper)) match {
-        case Success(event) => event
-        case Failure(e) =>
-          log.error(s"Unable to parse json message to expected type")
-          handleFailure(e)
-          throw e
+      if(json.isEmpty) {
+        throw new MessageDecodingException("Empty event values are not allowed")
+      } else {
+        val mapper: ObjectMapper = Mapper.allowUnknownPropertiesMapper
+        Try(json.jsonDecode[TEvent](mapper)) match {
+          case Success(event) => event
+          case Failure(e) =>
+            log.error(s"Unable to parse json message to expected type")
+            val ex = new MessageDecodingException(e.message)
+            handleFailure(ex)
+            throw ex
+        }
       }
     }
   }

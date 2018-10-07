@@ -8,26 +8,30 @@
 #
 # @author Juan Manuel Torres <software@onema.io>
 #
-service: ServerlessBase
+service: serverless-test
 
 provider:
   name: aws
-  runtime: java8
-  profile: ${opt:profile, 'default'}
-  timeout: 300
-  versionFunctions: false
+    runtime: java8
+  #  profile: ${opt:profile, 'default'}
+    timeout: 30
+    versionFunctions: false
+    memorySize: 1024
+    stage: dev
+    region: us-east-1
 
+  # you can add statements to the Lambda function's IAM Role here
+  iamRoleStatements: ${file(infrastructure/global-values.yml):iamRoleStatements}
 
-# you can overwrite defaults here
-  stage: dev
-  region: us-east-1
+  # Service wide environment variables
+  environment:
 
-# you can add statements to the Lambda function's IAM Role here
-  iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - sns:Publish
-      Resource: "arn:aws:sns:*:*:${self:custom.stageName}-processing-function"
+    # This is used by the configuration providers
+    STAGE_NAME: ${self:custom.stageName}
+
+    # The error topic is part of the bootstrap infrastructure for uServerless
+    SNS_ERROR_TOPIC: ${file(infrastructure/global-values.yml):environment.SNS_ERROR_TOPIC}
+
 # Usage plan and API keys
 #  apiKeys:
 #    - ${opt:stage}-cloud-platform-user-key
@@ -38,23 +42,22 @@ provider:
 #      limit: 100000
 #      period: MONTH
 # you can define service wide environment variables here
-  environment:
-    STAGE_NAME: ${self:custom.stageName}
 
 # Custom values. These can be referenced in the Cloud Formation template
-custom:
-  stageName: ${opt:stage, self:provider.stage}
+custom: ${file(infrastructure/global-values.yml):custom}
 
 # you can add packaging information here
 # Make sure to run "sbt assembly" to create a jar file
 # with all your dependencies and put that jar file name here.
 package:
-  artifact: target/scala-2.12/serverlessbase.jar
+  artifact: target/scala-2.12/app.jar
 
 functions:
   # API Gateway functions
   success:
     handler: functions.success.Function::lambdaHandler
+    # the DLQ is part of the bootstrap infrastructure for uServerless
+    onError: ${file(infrastructure/global-values.yml):deadLetterQueue}
     events:
       - http:
           path: success
@@ -65,42 +68,15 @@ functions:
           input:
             warmup: true
 
-  handler-error:
-    handler: functions.handler.error.Function::lambdaHandler
-    events:
-      - http:
-          path: handle-error
-          method: get
-
-  error:
-    handler: functions.error.Function::lambdaHandler
-    events:
-      - http:
-          path: error
-          method: get
-
-  validation:
-    handler: functions.validation.Function::lambdaHandler
-    events:
-      - http:
-          path: validation
-          method: get
-    environment:
-      SNS_TOPIC: ${self:custom.stageName}-processing-function
-
   # SNS Processing functions
   process:
     handler: functions.process.Function::lambdaHandler
+    # the DLQ is part of the bootstrap infrastructure for uServerless
+    onError: ${file(infrastructure/global-values.yml):deadLetterQueue}
     events:
       - sns: ${self:custom.stageName}-processing-function
 
 # you can add CloudFormation resource templates here
 #resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: ${self:custom.stageName}-my-new-bucket
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"
+#  Parameters: ${file(infrastructure/custom-resources_cfn.yml):Parameters}
+#  Resources: ${file(infrastructure/custom-resources_cfn.yml):Resources}

@@ -36,8 +36,16 @@ class SsmCorsConfiguration(origin: Option[String], override val ssmClient: AWSSi
   extends CorsConfiguration(origin) with SsmLambdaConfiguration {
 
   //--- Methods ---
+  /**
+    * Check if the parameter store exists.
+    * @return
+    */
   override def isEnabled: Boolean = getValue("/cors/sites").isDefined
 
+  /**
+    * Get the value from the parameter store, and check it's contents using the isSiteEnabled method.
+    * @return
+    */
   override def isOriginValid: Boolean = {
     val sites = getValue("/cors/sites")
     isSiteEnabled(sites)
