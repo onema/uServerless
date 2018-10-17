@@ -123,8 +123,7 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
       if(json.isEmpty) {
         throw new MessageDecodingException("Empty event values are not allowed")
       } else {
-        val mapper: ObjectMapper = Mapper.allowUnknownPropertiesMapper
-        Try(json.jsonDecode[TEvent](mapper)) match {
+        Try(jsonDecode(json)) match {
           case Success(event) => event
           case Failure(e) =>
             log.error(s"Unable to parse json message to expected type")
@@ -134,6 +133,16 @@ abstract class LambdaHandler[TEvent:ClassTag, TResponse<: Any] extends LambdaCon
         }
       }
     }
+  }
+
+  /**
+    * Override this method to use a custom serialization mechanism
+    * @param json
+    * @return TEvent
+    */
+  protected def jsonDecode(json: String): TEvent = {
+    val mapper: ObjectMapper = Mapper.allowUnknownPropertiesMapper
+    json.jsonDecode[TEvent](mapper)
   }
 
   protected def time[R](block: => R): R = {
