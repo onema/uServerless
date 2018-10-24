@@ -8,13 +8,14 @@ lazy val serverlessBaseRoot = (project in file("."))
 
   version := "0.0.8",
 
-  scalaVersion := "2.12.6",
+  scalaVersion := "2.12.7",
 
   libraryDependencies ++= {
     val awsSdkVersion = "1.11.416"
     Seq(
       // core libs
       "io.onema"                   % "json-extensions_2.12"                % "0.3.0",
+      "io.onema"                   % "userverlessevents_2.12"              % "0.0.1",
 
       // AWS libraries
       "com.amazonaws"               % "aws-lambda-java-events"              % "2.2.2",
