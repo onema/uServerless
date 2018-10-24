@@ -20,6 +20,7 @@ import handler.EnvironmentHelper
 import io.onema.userverless.events.Sns.{SnsEvent, SnsRecord, SnsRecords}
 import io.onema.json.Extensions._
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.exception.MessageDecodingException
 import io.onema.userverless.function.SnsHandler
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
@@ -62,7 +63,7 @@ class LambdaHandlerWarmUpTest extends FlatSpec with Matchers with MockFactory wi
     outputStream.toString() should be ("")
   }
 
-  "An SNS event with invalid type" should "throw and exception" in {
+  "An SNS event with invalid different type" should "serialize to expected type only" in {
     // Arrange
     val rand = scala.util.Random.nextDouble()
     class TestFunction extends SnsHandler[Int] with NoopLambdaConfiguration {
@@ -78,6 +79,20 @@ class LambdaHandlerWarmUpTest extends FlatSpec with Matchers with MockFactory wi
 
     // Act - Assert
     function.lambdaHandler(inputStream, outputStream, context)
+  }
+
+  "An SNS event with no record " should "throw and exception" in {
+    // Arrange
+    val message = SnsEvent(List()).asJson
+    val inputStream = new ByteArrayInputStream(message.getBytes())
+    val outputStream = new ByteArrayOutputStream()
+    val context = new MockLambdaContext
+    val function = new Function()
+
+    // Act - Assert
+    assertThrows[MessageDecodingException] {
+      function.lambdaHandler(inputStream, outputStream, context)
+    }
   }
 
   "A schedule event with a warmup event" should "return true" in {

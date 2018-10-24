@@ -11,7 +11,7 @@
 
 package io.onema.userverless.function
 
-import io.onema.userverless.events.Sns.SnsEvent
+import io.onema.userverless.events.Sns.{SnsEvent, SnsRecord}
 import io.onema.json.Extensions._
 import io.onema.userverless.exception.MessageDecodingException
 
@@ -19,10 +19,15 @@ import scala.reflect._
 
 abstract class SnsHandler[TEvent: Manifest] extends LambdaHandler[TEvent, Unit]{
   override protected def decodeEvent(json: String): TEvent = {
-    val record = json.jsonDecode[SnsEvent].Records.head
-    record.Sns.Message.map(x => x.jsonDecode[TEvent]) match {
-      case Some(event: TEvent) => event
-      case None => throw new MessageDecodingException("No message available for decoding")
+    val records = json.jsonDecode[SnsEvent].Records
+    records match {
+      case record::Nil =>
+        record.Sns.Message.map(_.jsonDecode[TEvent]) match {
+          case Some(event: TEvent) => event
+          case None => throw new MessageDecodingException("No message class available for decoding")
+        }
+      case _ =>
+        throw new MessageDecodingException("The SNS Event contains no records, this should never happen!")
     }
   }
 }

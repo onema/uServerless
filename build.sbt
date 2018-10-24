@@ -8,7 +8,7 @@ lazy val serverlessBaseRoot = (project in file("."))
 
   version := "0.0.7",
 
-  scalaVersion := "2.12.7",
+  scalaVersion := "2.12.8",
 
   libraryDependencies ++= {
     val awsSdkVersion = "1.11.416"
