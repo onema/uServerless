@@ -6,7 +6,7 @@ lazy val serverlessBaseRoot = (project in file("."))
 
   name := "userverless",
 
-  version := "0.0.6",
+  version := "0.0.7",
 
   scalaVersion := "2.12.7",
 
@@ -15,6 +15,7 @@ lazy val serverlessBaseRoot = (project in file("."))
     Seq(
       // core libs
       "io.onema"                   % "json-extensions_2.12"                % "0.3.0",
+      "io.onema"                   % "userverlessevents_2.12"              % "0.0.1",
 
       // AWS libraries
       "com.amazonaws"               % "aws-lambda-java-events"              % "2.2.2",
