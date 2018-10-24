@@ -123,6 +123,34 @@ There are a few things to notice here:
      * If we used the `NoopLambdaConfig` errors will never get reported.
  1. The lambda handler rethrows the error after it has been reported.
 
+## SNS Handler
+For convenience, there is an `SnsHandler`, this handler automatically decodes the message to the expected `case class`.
+
+```scala
+import com.amazonaws.services.lambda.runtime.Context
+import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.function.SnsHandler
+
+case class Foo(bar: String)
+
+class Function extends SnsHandler[Foo] with NoopLambdaConfiguration {
+
+  //--- Methods ---
+  def execute(event: Foo, context: Context): Unit = {
+    println(event.bar)
+  }
+}
+```
+
+Notice how in this case the expected type is Foo, the handler will automatically unpack the SNS event and give  your
+`execute` method the expected type. 
+
+> **NOTE:**
+>
+> Unlike the base `LambdaHandler` which is designed to deal with the amazon Java POJOs, this class is designed to work with
+> case classes, this way you can define your own events. For convenience an S3 event is provided under :
+>
+> `io.onema.userverless.events.S3.S3Event`
 
 ## API Gateway Handler
 
