@@ -12,24 +12,20 @@
 package functions.process
 
 import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.typesafe.scalalogging.Logger
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
-import io.onema.userverless.function.LambdaHandler
-
-import scala.collection.JavaConverters._
+import io.onema.userverless.function.SnsHandler
 
 object Logic {
-  def handleEvent(event: SNSEvent, log: Logger): Unit = {
-    val records = event.getRecords.asScala
-    records.foreach(x => log.info(x.getSNS.getMessage))
+  def handleEvent(eventMessage: String, log: Logger): Unit = {
+    log.info(eventMessage)
   }
 }
 
-class Function extends LambdaHandler[SNSEvent, Unit] with NoopLambdaConfiguration {
+class Function extends SnsHandler[String] with NoopLambdaConfiguration {
 
   //--- Methods ---
-  def execute(event: SNSEvent, context: Context): Unit = {
+  def execute(event: String, context: Context): Unit = {
     Logic.handleEvent(event, log)
   }
 }

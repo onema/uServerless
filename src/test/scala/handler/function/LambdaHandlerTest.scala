@@ -82,7 +82,6 @@ class LambdaHandlerTest extends FlatSpec with Matchers with MockFactory with Env
 
     // Assert
     response.foreach(x => x.isDigit should be(true))
-    response should be(function.current.toString)
   }
   "A bad request object" should "Throw an exception" in {
     // Arrange
