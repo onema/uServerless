@@ -14,8 +14,13 @@ package handler.warmup
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
+import com.amazonaws.services.lambda.runtime.Context
 import functions.process._
 import handler.EnvironmentHelper
+import io.onema.userverless.events.Sns.{SnsEvent, SnsRecord, SnsRecords}
+import io.onema.json.Extensions._
+import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.function.SnsHandler
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -34,6 +39,45 @@ class LambdaHandlerWarmUpTest extends FlatSpec with Matchers with MockFactory wi
 
     // Assert
     outputStream.toString() should be ("")
+  }
+
+  "An SNS event " should "deserialize correctly" in {
+    // Arrange
+    val rand = scala.util.Random.nextDouble()
+    class TestFunction extends SnsHandler[Double] with NoopLambdaConfiguration {
+      def execute(event: Double, context: Context): Unit = {
+        event should be (rand)
+      }
+    }
+    val message = SnsEvent(List(SnsRecords(Sns = SnsRecord(Message = Some(rand.toString))))).asJson
+    val inputStream = new ByteArrayInputStream(message.getBytes())
+    val outputStream = new ByteArrayOutputStream()
+    val context = new MockLambdaContext
+    val function = new TestFunction()
+
+    // Act
+    function.lambdaHandler(inputStream, outputStream, context)
+
+    // Assert
+    outputStream.toString() should be ("")
+  }
+
+  "An SNS event with invalid type" should "throw and exception" in {
+    // Arrange
+    val rand = scala.util.Random.nextDouble()
+    class TestFunction extends SnsHandler[Int] with NoopLambdaConfiguration {
+      def execute(event: Int, context: Context): Unit = {
+        event should not be rand
+      }
+    }
+    val message = SnsEvent(List(SnsRecords(Sns = SnsRecord(Message = Some(rand.toString))))).asJson
+    val inputStream = new ByteArrayInputStream(message.getBytes())
+    val outputStream = new ByteArrayOutputStream()
+    val context = new MockLambdaContext
+    val function = new TestFunction()
+
+    // Act - Assert
+    function.lambdaHandler(inputStream, outputStream, context)
   }
 
   "A schedule event with a warmup event" should "return true" in {
