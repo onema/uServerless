@@ -31,6 +31,14 @@ trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
   override protected val log = Logger("apigateway-handler")
 
   //--- Methods ---
+
+  /**
+    * Custom handleFailure method for ApiGateway, will generate a response with a custom error message or a generic
+    * message to prevent exposing internal details.
+    *
+    * @param exception the reported exception
+    * @return TResponse
+    */
   override protected def handleFailure(exception: Throwable): AwsProxyResponse = {
     val message = s"Internal Server Error: ${exception.message}"
     log.error(message)
@@ -51,21 +59,25 @@ trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
 }
 
 object ApiGatewayHandler {
+
+  /**
+    * Trait for functions that require cors
+    */
   trait Cors {
 
     //--- Methods ---
     /**
       * This method should construct and return the the cors configuration
       * @param origin option containing a string or None with the request origin.
-      * @return
+      * @return CorsConfiguration
       */
     protected def corsConfiguration(origin: Option[String]): CorsConfiguration
 
     /**
       * Curried method that takes the API Gateway AwsProxyRequest as it's first parameter. Before
-      * executing the function passed to it, it check if the configuration and the origin are valid.
+      * executing the codeBlock passed to it, it check if the configuration and the origin are valid.
       * @param request the AWS proxy request
-      * @return
+      * @return AwsProxyResponse
       */
     protected def cors(request: AwsProxyRequest)(function: => AwsProxyResponse): AwsProxyResponse = {
       val origin = Option(request.getHeaders.get("origin"))

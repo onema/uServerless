@@ -17,13 +17,26 @@ import scala.util.matching.Regex
 
 object Extensions {
   implicit class ContextExtension(context: Context) {
+
+    /**
+      * Get the account id from the Context
+      *
+      * @return Option[String]
+      */
     def accountId: Option[String] = {
       context.getInvokedFunctionArn
         .split(':').find(x => "[\\d]{12}".r matches x)
     }
   }
 
-  implicit class RichRegex(val underlying: Regex) extends AnyVal {
-    def matches(s: String): Boolean = underlying.pattern.matcher(s).matches
+  implicit class RichRegex(val regex: Regex) extends AnyVal {
+
+    /**
+      * Extension method for regex to match a string
+      *
+      * @param s the string that will match against
+      * @return Boolean
+      */
+    def matches(s: String): Boolean = regex.pattern.matcher(s).matches
   }
 }
