@@ -18,7 +18,7 @@ import io.onema.userverless.exception.MessageDecodingException
 import scala.reflect._
 
 abstract class SnsHandler[TEvent: Manifest] extends LambdaHandler[TEvent, Unit]{
-  override protected def decodeEvent(json: String): TEvent = {
+  override protected def jsonDecode(json: String): TEvent = {
     val records = json.jsonDecode[SnsEvent].Records
     records match {
       case record::Nil =>
