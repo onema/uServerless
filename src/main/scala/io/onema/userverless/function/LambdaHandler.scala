@@ -78,7 +78,7 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
         validationListeners.foreach(listener => listener(event))
 
         // Execute the lambda function code for the application
-        time("ExecuteCodeBlock") {
+        time("FunctionCodeBlock") {
           execute(event, context)
         }
       }
@@ -150,7 +150,6 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
     * @return Boolean
     */
   protected def isWarmUpEvent(json: String): Boolean = {
-    log.debug("WarmUp")
     time("WarmUpEvent") {
       Try(json.jsonDecode[WarmUpEvent]) match {
         case Success(event) =>
@@ -185,7 +184,7 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
     val t0 = System.nanoTime()
     val result = block
     val t1 = System.nanoTime()
-    log.info(s"Elapsed time [$blockName]: " + (t1 - t0)/1000000 + " ms")
+    log.info(s"[$blockName] " + (t1 - t0)/1000000 + " ms")
     result
   }
 
@@ -212,7 +211,6 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
     * @return TEvent
     */
   private def decodeEvent(json: String): TEvent = {
-    log.debug("Decode Event")
     time("JsonDecode") {
       if(json.isEmpty) {
         throw new MessageDecodingException("Empty event values are not allowed")
