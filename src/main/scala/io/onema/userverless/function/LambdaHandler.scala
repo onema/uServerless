@@ -34,7 +34,7 @@ import scala.util.{Failure, Success, Try}
 abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaConfiguration {
 
   //--- Fields ---
-  protected val log: Logger = Logger("lambda-handler")
+  protected val log: Logger = Logger(classOf[LambdaHandler[TEvent, TResponse]])
 
   protected val region: Regions = Regions.fromName(sys.env.getOrElse("AWS_REGION", "us-east-1"))
 
@@ -185,7 +185,7 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
     val t0 = System.nanoTime()
     val result = block
     val t1 = System.nanoTime()
-    log.info(s"Elapsed time [$blockName]: " + (t1 - t0)/1000000 + "milliseconds")
+    log.info(s"Elapsed time [$blockName]: " + (t1 - t0)/1000000 + " ms")
     result
   }
 
