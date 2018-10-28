@@ -78,7 +78,9 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
         validationListeners.foreach(listener => listener(event))
 
         // Execute the lambda function code for the application
-        execute(event, context)
+        time("ExecuteCodeBlock") {
+          execute(event, context)
+        }
       }
 
       // If the response is not None, make the proper transformations before writing it to the output stream
@@ -148,8 +150,8 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
     * @return Boolean
     */
   protected def isWarmUpEvent(json: String): Boolean = {
-    log.debug("Warmup Event")
-    time {
+    log.debug("WarmUp")
+    time("WarmUpEvent") {
       Try(json.jsonDecode[WarmUpEvent]) match {
         case Success(event) =>
           log.info("Checking for warm up event!")
@@ -174,15 +176,16 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
   /**
     * Time the execution of a code block
     *
+    * @param blockName The name of the code block that will be timed
     * @param block of code
     * @tparam T return type of the block
     * @return T
     */
-  protected def time[T](block: => T): T = {
+  protected def time[T](blockName: String)(block: => T): T = {
     val t0 = System.nanoTime()
     val result = block
     val t1 = System.nanoTime()
-    log.info("Elapsed time: " + (t1 - t0)/1000000 + "milliseconds")
+    log.info(s"Elapsed time [$blockName]: " + (t1 - t0)/1000000 + "milliseconds")
     result
   }
 
@@ -210,7 +213,7 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
     */
   private def decodeEvent(json: String): TEvent = {
     log.debug("Decode Event")
-    time {
+    time("JsonDecode") {
       if(json.isEmpty) {
         throw new MessageDecodingException("Empty event values are not allowed")
       } else {
