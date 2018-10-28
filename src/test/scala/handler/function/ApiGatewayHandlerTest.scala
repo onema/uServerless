@@ -16,16 +16,15 @@ import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.AmazonSNSAsync
-import com.fasterxml.jackson.databind.ObjectMapper
 import functions.success.Function
 import handler.EnvironmentHelper
 import handler.function.ApiGatewayHandlerTest._
 import io.onema.userverless.configuration.lambda.{EnvLambdaConfiguration, MemoryLambdaConfiguration}
 import io.onema.userverless.exception.{HandleRequestException, RuntimeException}
+import io.onema.userverless.function.Extensions._
 import io.onema.userverless.function.{ApiGatewayHandler, ApiGatewayResponse}
 import io.onema.userverless.model.ErrorMessage
-import io.onema.userverless.function.Extensions._
-import handler.function.ApiGatewayTestHelper._
+import io.onema.userverless.test.TestJavaObjectExtensions._
 import org.apache.http.HttpStatus
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
@@ -110,15 +109,15 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
   "A concrete implementation" should "not throw any exceptions" in {
 
     // Arrange
-    val request = toInputStream(new AwsProxyRequest)
+    val request = new AwsProxyRequest
     val context = new MockLambdaContext
     val lambdaFunction = new Function
     val output = new ByteArrayOutputStream()
 
     // Act
-    lambdaFunction.lambdaHandler(request, output, context)
-    val response: AwsProxyResponse = outputToResponse(output)
-    val body = jsonToErrorMessage(response.getBody)
+    lambdaFunction.lambdaHandler(request.toInputStream, output, context)
+    val response: AwsProxyResponse = output.toObject[AwsProxyResponse]
+    val body = response.getBody.toErrorMessage
 
     // Assert
     body.message should be ("success")
@@ -151,7 +150,7 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
     response should be (expectedValue)
   }
 
-  "A response with custom headers and payload" should "be properly serialized to json" in {
+  "A response with custom headers and str" should "be properly serialized to json" in {
 
     // Arrange
     import io.onema.json.JavaExtensions._
@@ -182,15 +181,15 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
   "An exception" should "generate the proper response" in {
 
     // Arrange
-    val request = toInputStream(new AwsProxyRequest)
+    val request = new AwsProxyRequest
     val context = new MockLambdaContext
     val output = new ByteArrayOutputStream()
     val snsMock = mock[AmazonSNSAsync]
     val function = new TestApiGateway500ErrorFunction(snsMock)
 
     // Act
-    function.lambdaHandler(request, output, context)
-    val result = outputToResponse(output)
+    function.lambdaHandler(request.toInputStream, output, context)
+    val result = output.toObject[AwsProxyResponse]
 
     // Assert
     result.getBody should be ("{\"message\":\"Internal Server Error: check the logs for more information.\"}")
@@ -200,7 +199,7 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
   "An exception" should "generate the proper response and send notification to SNS if topic is set" in {
 
     // Arrange
-    val request = toInputStream(new AwsProxyRequest)
+    val request = new AwsProxyRequest
     val context = new MockLambdaContext
     val output = new ByteArrayOutputStream()
     val snsMock = mock[AmazonSNSAsync]
@@ -208,21 +207,21 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
     val function = new TestApiGateway500ErrorFunction(snsMock)
 
     // Act - Assert
-    function.lambdaHandler(request, output, context)
+    function.lambdaHandler(request.toInputStream, output, context)
   }
 
   "A handle request exception" should "should generate the proper response" in {
 
     // Arrange
     val snsMock = mock[AmazonSNSAsync]
-    val request = toInputStream(new AwsProxyRequest)
+    val request = new AwsProxyRequest
     val context = new MockLambdaContext
     val output = new ByteArrayOutputStream()
     val function = new TestApiGateway400ErrorFunction(snsMock)
 
     // Act
-    function.lambdaHandler(request, output, context)
-    val result = outputToResponse(output)
+    function.lambdaHandler(request.toInputStream, output, context)
+    val result = output.toObject[AwsProxyResponse]
 
     // Assert
     result.getBody should be ("{\"message\":\"Bad request exception\"}")
@@ -233,14 +232,14 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
 
     // Arrange
     val snsMock = mock[AmazonSNSAsync]
-    val request = toInputStream(new AwsProxyRequest)
+    val request = new AwsProxyRequest
     val context = new MockLambdaContext
     val output = new ByteArrayOutputStream()
     val function = new TestApiGatewayRuntimeErrorFunction(snsMock)
 
     // Act
-    function.lambdaHandler(request, output, context)
-    val result = outputToResponse(output)
+    function.lambdaHandler(request.toInputStream, output, context)
+    val result = output.toObject[AwsProxyResponse]
 
     // Assert
     result.getBody should be ("{\"message\":\"Runtime exception\"}")
