@@ -28,7 +28,7 @@ trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
   with LambdaConfiguration {
 
   //--- Fields ---
-  override protected val log = Logger("apigateway-handler")
+  override protected val log = Logger(classOf[ApiGatewayHandler])
 
   //--- Methods ---
 
