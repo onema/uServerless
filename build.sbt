@@ -1,6 +1,7 @@
 ThisBuild / organization := "io.onema"
 ThisBuild / version      := "0.0.1"
 ThisBuild / scalaVersion := "2.12.7"
+ThisBuild / parallelExecution in Test := false
 
 val awsSdkVersion = "1.11.438"
 
@@ -80,7 +81,6 @@ lazy val uServerlessTests = (project in file("userverless-tests"))
   publishArtifact := false
 ).dependsOn(uServerlessEvents, uServerlessCore, uServerlessDynamoConfig, uServerlessSsmConfig)
 
-parallelExecution in Test := false
 
 // Maven Central Repo boilerplate configuration
 lazy val commonPublishSettings = Seq(
