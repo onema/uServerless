@@ -9,6 +9,8 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
+package events
+
 import io.onema.json.Extensions._
 import io.onema.userverless.events.Sns.SnsEvent
 import org.scalatest.{FlatSpec, Matchers}

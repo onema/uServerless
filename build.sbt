@@ -1,77 +1,114 @@
-import sbt.url
+ThisBuild / organization := "io.onema"
+ThisBuild / version      := "0.0.1"
+ThisBuild / scalaVersion := "2.12.7"
 
-lazy val serverlessBaseRoot = (project in file("."))
+val awsSdkVersion = "1.11.438"
+
+lazy val uServerless = (project in file("."))
+.aggregate(uServerlessEvents, uServerlessCore, uServerlessDynamoConfig, uServerlessSsmConfig, uServerlessTests)
+publishArtifact in uServerless := false
+
+lazy val uServerlessEvents = (project in file("userverless-events"))
 .settings(
-  organization := "io.onema",
+  name := "userverless-events",
+  commonPublishSettings
+)
 
-  name := "userverless",
-
-  version := "0.0.10",
-
-  scalaVersion := "2.12.7",
-
+lazy val uServerlessCore = (project in file("userverless-core"))
+.settings(
+  name := "userverless-core",
+  commonPublishSettings,
   libraryDependencies ++= {
-    val awsSdkVersion = "1.11.416"
     Seq(
       // core libs
       "io.onema"                   % "json-extensions_2.12"                % "0.3.0",
-      "io.onema"                   % "userverlessevents_2.12"              % "0.0.1",
 
       // AWS libraries
       "com.amazonaws"               % "aws-lambda-java-events"              % "2.2.2",
       "com.amazonaws"               % "aws-lambda-java-core"                % "1.2.0",
       "com.amazonaws"               % "aws-java-sdk-sns"                    % awsSdkVersion,
-      "com.amazonaws"               % "aws-java-sdk-ssm"                    % awsSdkVersion,
-      "com.amazonaws"               % "aws-java-sdk-dynamodb"               % awsSdkVersion,
       // The serverless java-container supports request context authorizer claims that are currently not available in the lambda-java-events
       "com.amazonaws.serverless"    % "aws-serverless-java-container-core"  % "0.9.1",
 
       // Http
-      "org.apache.httpcomponents"   % "httpcore"                            % "4.4.8",
+      "org.apache.httpcomponents"   % "httpcore"                            % "4.4.10",
 
       // Logging
-      "com.typesafe.scala-logging"  %% "scala-logging"                      % "3.7.2",
-      "ch.qos.logback"              % "logback-classic"                     % "1.1.7",
+      "com.typesafe.scala-logging"  %% "scala-logging"                      % "3.9.0",
+      "ch.qos.logback"              % "logback-classic"                     % "1.2.3",
+    )
+  }
+).dependsOn(uServerlessEvents)
 
+lazy val uServerlessDynamoConfig = (project in file("userverless-dynamo-config"))
+.settings(
+  name := "userverless-dynamo-config",
+  commonPublishSettings,
+  libraryDependencies ++= {
+    Seq(
+      // AWS libraries
+      "com.amazonaws"               % "aws-java-sdk-dynamodb"               % awsSdkVersion,
+    )
+  }
+).dependsOn(uServerlessCore)
+
+lazy val uServerlessSsmConfig = (project in file("userverless-ssm-config"))
+.settings(
+  name := "userverless-ssm-config",
+  commonPublishSettings,
+  libraryDependencies ++= {
+    Seq(
+      // AWS libraries
+      "com.amazonaws"               % "aws-java-sdk-ssm"                    % awsSdkVersion,
+    )
+  }
+).dependsOn(uServerlessCore)
+
+
+lazy val uServerlessTests = (project in file("userverless-tests"))
+.settings(
+  name := "userverless-tests",
+  publishTo := Some(Resolver.file("unused repo", file("foo/bar"))),
+  publishArtifact := false,
+  libraryDependencies ++= {
+    Seq(
       // Testing
       "org.scalatest"               % "scalatest_2.12"                      % "3.0.5"   % Test,
       "org.scalamock"               %% "scalamock"                          % "4.1.0"   % Test
     )
   },
-  publishMavenStyle := true,
-  publishTo := Some("Onema Snapshots" at "s3://s3-us-east-1.amazonaws.com/ones-deployment-bucket/snapshots")
-)
-//  .dependsOn(uServerlessEvents)
+  publishArtifact := false
+).dependsOn(uServerlessEvents, uServerlessCore, uServerlessDynamoConfig, uServerlessSsmConfig)
 
-// Sub-projects
-//lazy val uServerlessEvents = RootProject(file("../uServerlessEvents"))
-
+parallelExecution in Test := false
 
 // Maven Central Repo boilerplate configuration
-//pomIncludeRepository := { _ => false }
-//licenses := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0"))
-//homepage := Some(url("https://github.com/onema/uServerless"))
-//scmInfo := Some(
-//  ScmInfo(
-//    url("https://github.com/onema/uServerless"),
-//    "scm:git@github.com:onema/uServerless.git"
-//  )
-//)
-//developers := List(
-//  Developer(
-//    id    = "onema",
-//    name  = "Juan Manuel Torres",
-//    email = "software@onema.io",
-//    url   = url("https://github.com/onema/")
-//  )
-//)
-//publishMavenStyle := true
-//publishTo := {
-//  val nexus = "https://oss.sonatype.org/"
-//  if (isSnapshot.value)
-//    Some("snapshots" at nexus + "content/repositories/snapshots")
-//  else
-//    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-//}
-//publishArtifact in Test := false
-parallelExecution in Test := false
+lazy val commonPublishSettings = Seq(
+  publishTo := Some("Onema Snapshots" at "s3://s3-us-east-1.amazonaws.com/ones-deployment-bucket/snapshots"),
+  //  publishTo := {
+  //    val nexus = "https://oss.sonatype.org/"
+  //    if (isSnapshot.value)
+  //      Some("snapshots" at nexus + "content/repositories/snapshots")
+  //    else
+  //      Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+  //  },
+  publishMavenStyle := true,
+  pomIncludeRepository := { _ => false },
+  licenses := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0")),
+  homepage := Some(url("https://github.com/onema/uServerless")),
+  scmInfo := Some(
+    ScmInfo(
+      url("https://github.com/onema/uServerless"),
+      "scm:git@github.com:onema/uServerless.git"
+    )
+  ),
+  developers := List(
+    Developer(
+      id    = "onema",
+      name  = "Juan Manuel Torres",
+      email = "software@onema.io",
+      url   = url("https://github.com/onema/")
+    )
+  ),
+  publishArtifact in Test := false
+)
