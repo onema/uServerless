@@ -11,11 +11,11 @@
 
 package io.onema.userverless.function
 
-import io.onema.userverless.events.Sns.{SnsEvent, SnsRecord}
 import io.onema.json.Extensions._
+import io.onema.userverless.events.Sns.SnsEvent
 import io.onema.userverless.exception.MessageDecodingException
 
-import scala.reflect._
+import scala.reflect.Manifest
 
 abstract class SnsHandler[TEvent: Manifest] extends LambdaHandler[TEvent, Unit]{
   override protected def jsonDecode(json: String): TEvent = {

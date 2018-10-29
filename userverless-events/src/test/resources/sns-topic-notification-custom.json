@@ -1,0 +1,22 @@
+{
+    "Records": [
+        {
+            "EventSource": "aws:sns",
+            "EventVersion": "1.0",
+            "EventSubscriptionArn": "arn:aws:sns:us-east-1:1234567890123:mailer:c1960b45-adfa",
+            "Sns": {
+                "Type": "Notification",
+                "MessageId": "f17a914a-c562-c8e2e-8c6",
+                "TopicArn": "arn:aws:sns:us-east-1:065150860170:dev-mailer",
+                "Subject": null,
+                "Message": "{\"to\":[\"my@email.com\"],\"from\":\"some@email.com\",\"subject\":\"#1 Ranked Competitor\",\"body\":\"FooBar\",\"raw\":false}",
+                "Timestamp": "2018-09-28T21:57:43.704Z",
+                "SignatureVersion": "1",
+                "Signature": "oO59DxjWIdPkua5V5lf9WJO1zwtBiSZPM63WQeBX72ZsEiJv9AoQ9lsi1ScISaueJQ==",
+                "SigningCertUrl": "https://sns.us-east-1.amazonaws.com/SimpleNotificationService-d9b.pem",
+                "UnsubscribeUrl": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:1234567890123:mailer:c1-960b45-73c5",
+                "MessageAttributes": {}
+            }
+        }
+    ]
+}
