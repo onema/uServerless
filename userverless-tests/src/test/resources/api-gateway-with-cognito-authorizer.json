@@ -1,0 +1,109 @@
+{
+    "resource": "/test",
+    "path": "/test",
+    "httpMethod": "POST",
+    "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, deflate, br",
+        "accept-language": "en-US,en;q=0.9,es;q=0.8",
+        "Authorization": "asdfghjklzxcvbnm1234567809",
+        "content-type": "application/json",
+        "Host": "api.test.com",
+        "origin": "http://test.com",
+        "referer": "http://test.com/member.html",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36",
+        "X-Amzn-Trace-Id": "Root=1-5bada81c-6f9d7f50f14f081014efa690",
+        "X-Forwarded-For": "72.220.188.78",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "multiValueHeaders": {
+        "accept": [
+            "*/*"
+        ],
+        "accept-encoding": [
+            "gzip, deflate, br"
+        ],
+        "accept-language": [
+            "en-US,en;q=0.9,es;q=0.8"
+        ],
+        "Authorization": [
+            "asdfghjklzxcvbnm1234567809"
+        ],
+        "content-type": [
+            "application/json"
+        ],
+        "Host": [
+            "api.test.com"
+        ],
+        "origin": [
+            "http://test.com"
+        ],
+        "referer": [
+            "http://test.com/member.html"
+        ],
+        "User-Agent": [
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"
+        ],
+        "X-Amzn-Trace-Id": [
+            "Root=1-5bada81c-6f9d7f50f14f081014efa690"
+        ],
+        "X-Forwarded-For": [
+            "72.220.188.78"
+        ],
+        "X-Forwarded-Port": [
+            "443"
+        ],
+        "X-Forwarded-Proto": [
+            "https"
+        ]
+    },
+    "queryStringParameters": null,
+    "multiValueQueryStringParameters": null,
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+        "resourceId": "abc123",
+        "authorizer": {
+            "claims": {
+                "sub": "1234567-abcd-efef-1234-1234567890123",
+                "aud": "asdfghjkl12345678",
+                "email_verified": "true",
+                "event_id": "1234567-abcd-efef-1234-1234567890123",
+                "token_use": "id",
+                "auth_time": "1538107413",
+                "iss": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_XYzAbcde",
+                "cognito:username": "test-at-email.com",
+                "exp": "Fri Sep 28 05:03:33 UTC 2018",
+                "iat": "Fri Sep 28 04:03:33 UTC 2018",
+                "email": "test@email.com"
+            }
+        },
+        "resourcePath": "/ride",
+        "httpMethod": "POST",
+        "extendedRequestId": "N6c0eEDhoAMFdtA=",
+        "requestTime": "28/Sep/2018:04:03:40 +0000",
+        "path": "/ride",
+        "accountId": "065150860170",
+        "protocol": "HTTP/1.1",
+        "stage": "dev",
+        "requestTimeEpoch": 1538107420602,
+        "requestId": "abcdef-1234-1234-5678-ffffffff",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "accountId": null,
+            "cognitoIdentityId": null,
+            "caller": null,
+            "sourceIp": "127.0.1.200",
+            "accessKey": null,
+            "cognitoAuthenticationType": null,
+            "cognitoAuthenticationProvider": null,
+            "userArn": null,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36",
+            "user": null
+        },
+        "apiId": "abcdefg"
+    },
+    "body": "{\"PickupLocation\":{\"Latitude\":49.123123123,\"Longitude\":-22.987987987}}",
+    "isBase64Encoded": false
+}
