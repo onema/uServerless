@@ -73,6 +73,11 @@ SSM Parameter Store could do a lookup of value names prepending an "environment 
 them in the function using a consistent name. For example the value `/database/username` for the environment name `prod` will result in a lookup of the parameter `/prod/database/username`.
 The environment name is set as the environment variable `STAGE_NAME`.
 
+SSM Parameter store configuration must be installed using the `userverless-ssm-config` package:
+```
+libraryDependencies += "io.onema" %% "userverless-ssm-config" % "<LATEST_VERSION>"
+```
+
 To use the SSM environment variable in  your function simply extend from the `SsmLambdaConfiguration` trait like such
 
 ```scala
@@ -321,6 +326,12 @@ CORS_SITES=foo.com,bar.com,baz.net
 ```
 
 #### `DynamodbCorsConfiguration`
+You must install the dynamo configuration package to use it:
+
+```
+libraryDependencies += "io.onema" %% "userverless-dynamo-config" % "<LATEST_VERSION>"
+```
+
 Sites are stored in a DynamoDB table as items in the table. Each site should be Under the `Origin` column.
 The following is an example of how to generate the table using a CloudFormation template:
 
@@ -344,6 +355,11 @@ Resources:
 ```
 
 #### `SsmCorsConfiguration`
+
+SSM Parameter store configuration must be installed using the `userverless-ssm-config` package:
+```
+libraryDependencies += "io.onema" %% "userverless-ssm-config" % "<LATEST_VERSION>"
+```
 Sites are stored in a SSM parameter store value called `/cors/sites`. 
 
 > **NOTE**: 
