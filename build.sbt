@@ -6,6 +6,7 @@ ThisBuild / parallelExecution in Test := false
 val awsSdkVersion = "1.11.438"
 
 lazy val uServerless = (project in file("."))
+.settings(skip in publish := true)
 .aggregate(uServerlessEvents, uServerlessCore, uServerlessDynamoConfig, uServerlessSsmConfig, uServerlessTests)
 publishArtifact in uServerless := false
 
