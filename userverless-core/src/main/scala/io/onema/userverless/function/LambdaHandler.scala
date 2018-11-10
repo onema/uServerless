@@ -13,7 +13,6 @@ package io.onema.userverless.function
 
 import java.io.{InputStream, OutputStream}
 import java.nio.charset.Charset
-import java.util
 
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.lambda.runtime.Context
@@ -32,7 +31,6 @@ import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
-import scala.collection.JavaConverters._
 
 abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaConfiguration {
 
@@ -70,7 +68,7 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
     */
   final def lambdaHandler(inputStream: InputStream, outputStream: OutputStream, context: Context): Unit = {
     val json = Source.fromInputStream(inputStream).mkString
-    log.info(json)
+    log.debug(json)
 
     // Check if it is a warm-up event and if it is, it will return immediately!
     if(!isWarmUpEvent(json)) {
