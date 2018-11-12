@@ -568,6 +568,17 @@ This will result in a log containing the following message:
 > 
 > At this point there is no implementation to submit metrics to a system like CloudWatch metrics or datadog, but ideally this the foundation to implement such system.
 
+### Override log configuration
+Simply add a `src/main/resources/logback.xml` with your custom configuration and add a custom merging strategy to your `build.sbt`:
+```scala
+assemblyMergeStrategy in assembly := {
+  case "logback.xml" => MergeStrategy.first
+  case x =>
+    val oldStrategy = (assemblyMergeStrategy in assembly).value
+    oldStrategy(x)
+}
+```
+
 ## Keeping functions warm
 Functions can be kept warm by adding a `schedule` event to the functions with the following input:
 
