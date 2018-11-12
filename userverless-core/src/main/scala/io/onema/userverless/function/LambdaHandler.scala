@@ -25,6 +25,7 @@ import io.onema.userverless.configuration.lambda.LambdaConfiguration
 import io.onema.userverless.exception.MessageDecodingException
 import io.onema.userverless.exception.ThrowableExtensions._
 import io.onema.userverless.model.WarmUpEvent
+import io.onema.userverless.monitoring.LogMetrics.{count, time}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
@@ -67,12 +68,12 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
     */
   final def lambdaHandler(inputStream: InputStream, outputStream: OutputStream, context: Context): Unit = {
     val json = Source.fromInputStream(inputStream).mkString
-    log.info(json)
+    log.debug(json)
 
     // Check if it is a warm-up event and if it is, it will return immediately!
     if(!isWarmUpEvent(json)) {
-      val event = decodeEvent(json)
       val response: Option[TResponse] = handle {
+        val event = decodeEvent(json)
 
         // Validate the event object using custom listeners
         validationListeners.foreach(listener => listener(event))
@@ -137,7 +138,8 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
     * @return TResponse
     */
   protected def handleFailure(exception: Throwable): TResponse = {
-    val message = exception.message
+    count("generalFailure")
+    val message = exception.structuredMessage
     log.error(message)
     snsErrorTopic.foreach(snsClient.publish(_, message))
     throw exception
@@ -173,22 +175,6 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
   }
 
   /**
-    * Time the execution of a code block
-    *
-    * @param blockName The name of the code block that will be timed
-    * @param block of code
-    * @tparam T return type of the block
-    * @return T
-    */
-  protected def time[T](blockName: String)(block: => T): T = {
-    val t0 = System.nanoTime()
-    val result = block
-    val t1 = System.nanoTime()
-    log.info(s"[$blockName] " + (t1 - t0)/1000000 + " ms")
-    result
-  }
-
-  /**
     * Transform the function response using custom functions
     * @param listener function
     */
@@ -218,10 +204,8 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
         Try(jsonDecode(json)) match {
           case Success(event) => event
           case Failure(e) =>
-            log.error(s"Unable to parse json message to expected type")
-            val ex = new MessageDecodingException(e.message)
-            handleFailure(ex)
-            throw ex
+            log.warn(s"Unable to parse json message to expected type")
+            throw new MessageDecodingException(e.getMessage)
         }
       }
     }

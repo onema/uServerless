@@ -18,6 +18,7 @@ import io.onema.userverless.configuration.cors.{CorsConfiguration, NoopCorsConfi
 import io.onema.userverless.configuration.lambda.LambdaConfiguration
 import io.onema.userverless.exception.HandleRequestException
 import io.onema.userverless.exception.ThrowableExtensions._
+import io.onema.userverless.monitoring.LogMetrics.count
 import org.apache.http.HttpStatus
 
 import scala.util.Try
@@ -40,10 +41,10 @@ trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
     * @return TResponse
     */
   override protected def handleFailure(exception: Throwable): AwsProxyResponse = {
-    val message = s"Internal Server Error: ${exception.message}"
-    log.error(message)
     exception match {
       case ex: HandleRequestException =>
+        count("handledFailure")
+        log.error(ex.structuredMessage)
         buildError(ex.code, ex.getMessage)
 
       // General exception, handle it gracefully

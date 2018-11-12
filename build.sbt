@@ -1,9 +1,9 @@
 ThisBuild / organization := "io.onema"
-ThisBuild / version      := "0.0.1"
+ThisBuild / version      := "0.0.2"
 ThisBuild / scalaVersion := "2.12.7"
 ThisBuild / parallelExecution in Test := false
 
-val awsSdkVersion = "1.11.438"
+val awsSdkVersion = "1.11.441"
 
 lazy val uServerless = (project in file("."))
 .settings(skip in publish := true)
@@ -23,7 +23,7 @@ lazy val uServerlessCore = (project in file("userverless-core"))
   libraryDependencies ++= {
     Seq(
       // core libs
-      "io.onema"                   % "json-extensions_2.12"                % "0.3.0",
+      "io.onema"                   % "json-extensions_2.12"                % "0.5.0",
 
       // AWS libraries
       "com.amazonaws"               % "aws-lambda-java-events"              % "2.2.2",
@@ -37,7 +37,8 @@ lazy val uServerlessCore = (project in file("userverless-core"))
 
       // Logging
       "com.typesafe.scala-logging"  %% "scala-logging"                      % "3.9.0",
-      "ch.qos.logback"              % "logback-classic"                     % "1.2.3",
+      "ch.qos.logback"              % "logback-classic"                     % "1.2.0",
+      "net.logstash.logback"        % "logstash-logback-encoder"            % "5.2",
     )
   }
 ).dependsOn(uServerlessEvents)
