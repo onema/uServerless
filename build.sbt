@@ -86,14 +86,14 @@ lazy val uServerlessTests = (project in file("userverless-tests"))
 
 // Maven Central Repo boilerplate configuration
 lazy val commonPublishSettings = Seq(
-  publishTo := Some("Onema Snapshots" at "s3://s3-us-east-1.amazonaws.com/ones-deployment-bucket/snapshots"),
-  //  publishTo := {
-  //    val nexus = "https://oss.sonatype.org/"
-  //    if (isSnapshot.value)
-  //      Some("snapshots" at nexus + "content/repositories/snapshots")
-  //    else
-  //      Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-  //  },
+//  publishTo := Some("Onema Snapshots" at "s3://s3-us-east-1.amazonaws.com/ones-deployment-bucket/snapshots"),
+  publishTo := {
+    val nexus = "https://oss.sonatype.org/"
+    if (isSnapshot.value)
+      Some("snapshots" at nexus + "content/repositories/snapshots")
+    else
+      Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+  },
   publishMavenStyle := true,
   pomIncludeRepository := { _ => false },
   licenses := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0")),
