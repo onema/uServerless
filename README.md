@@ -568,6 +568,13 @@ This will result in a log containing the following message:
 > 
 > At this point there is no implementation to submit metrics to a system like CloudWatch metrics or datadog, but ideally this the foundation to implement such system.
 
+### Selecting the log level
+By default the log level is set to DEBUG, you can overwrite this by setting the `LOG_LEVEL` **environment variable** to one of the log levels:
+- `DEBUG`
+- `INFO`
+- `WARN`
+- `ERROR`
+
 ### Override log configuration
 Simply add a `src/main/resources/logback.xml` with your custom configuration and add a custom merging strategy to your `build.sbt`:
 ```scala

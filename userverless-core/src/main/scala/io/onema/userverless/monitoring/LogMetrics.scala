@@ -29,7 +29,7 @@ object LogMetrics extends Metrics {
     * @return Sting of coma separated k:v pairs
     */
   final lazy val tags: String = dimensions
-    .filter(_._2.nonEmpty)
+    .filter { case(_, value) => value.nonEmpty }
     .map { case(k, v) => s"$k:$v" }
     .mkString(",")
 

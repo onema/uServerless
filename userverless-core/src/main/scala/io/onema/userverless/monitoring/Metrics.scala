@@ -16,7 +16,7 @@ import io.onema.userverless.monitoring.Metrics.Dimension
 trait Metrics {
 
   //--- Fields ---
-  var dimensions: Map[String, String] = Map(
+  val dimensions: Map[String, String] = Map(
     "function" -> sys.env.getOrElse("AWS_LAMBDA_FUNCTION_NAME", ""),
     "version" -> sys.env.getOrElse("AWS_LAMBDA_FUNCTION_VERSION", ""),
     "stage" -> sys.env.getOrElse("STAGE_NAME", "dev")
