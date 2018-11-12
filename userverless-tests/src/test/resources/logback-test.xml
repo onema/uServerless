@@ -48,7 +48,7 @@
     <variable name="LOG_LEVEL" value="${LOG_LEVEL:-DEBUG}" />
 
     <!--Logger exclusively for metrics-->
-    <logger name="io.onema.userverless.monitoring.Metrics" >
+    <logger name="io.onema.userverless.monitoring.Metrics" additivity="false">
         <appender-ref ref="METRIC" />
     </logger>
 

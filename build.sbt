@@ -23,7 +23,7 @@ lazy val uServerlessCore = (project in file("userverless-core"))
   libraryDependencies ++= {
     Seq(
       // core libs
-      "io.onema"                   % "json-extensions_2.12"                % "0.3.1",
+      "io.onema"                   % "json-extensions_2.12"                % "0.5.0",
 
       // AWS libraries
       "com.amazonaws"               % "aws-lambda-java-events"              % "2.2.2",
@@ -37,7 +37,7 @@ lazy val uServerlessCore = (project in file("userverless-core"))
 
       // Logging
       "com.typesafe.scala-logging"  %% "scala-logging"                      % "3.9.0",
-      "ch.qos.logback"              % "logback-classic"                     % "1.2.3",
+      "ch.qos.logback"              % "logback-classic"                     % "1.2.0",
       "net.logstash.logback"        % "logstash-logback-encoder"            % "5.2",
     )
   }
