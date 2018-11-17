@@ -14,9 +14,7 @@ package io.onema.userverless.function
 import java.io.{InputStream, OutputStream}
 import java.nio.charset.Charset
 
-import com.amazonaws.regions.Regions
 import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.typesafe.scalalogging.Logger
 import io.onema.json.JavaExtensions._
@@ -37,15 +35,13 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
   //--- Fields ---
   protected val log: Logger = Logger(classOf[LambdaHandler[TEvent, TResponse]])
 
-  protected val region: Regions = Regions.fromName(sys.env.getOrElse("AWS_REGION", "us-east-1"))
-
-  private val snsErrorTopic = getValue("/sns/error/topic")
-
-  protected lazy val snsClient: AmazonSNSAsync = AmazonSNSAsyncClientBuilder.standard().withRegion(region).build()
+  protected val region: String = sys.env.getOrElse("AWS_REGION", "us-east-1")
 
   protected val responseListeners: ArrayBuffer[TResponse => TResponse] = ArrayBuffer[TResponse => TResponse]()
 
   protected val validationListeners: ArrayBuffer[TEvent => Unit] = ArrayBuffer[TEvent => Unit]()
+
+  protected val exceptionListeners: ArrayBuffer[Throwable => Unit] = ArrayBuffer[Throwable => Unit]()
 
   //--- Methods ---
   /**
@@ -73,13 +69,19 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
     // Check if it is a warm-up event and if it is, it will return immediately!
     if(!isWarmUpEvent(json)) {
       val response: Option[TResponse] = handle {
-        val event = decodeEvent(json)
+
+        // Decode the event
+        val event = time("µServerlessJsonDecode") {
+          decodeEvent(json)
+        }
 
         // Validate the event object using custom listeners
-        validationListeners.foreach(listener => listener(event))
+        time("µServerlessFunctionValidation") {
+          validationListeners.foreach(listener => listener(event))
+        }
 
         // Execute the lambda function code for the application
-        time("FunctionCodeBlock") {
+        time("µServerlessFunctionCode") {
           execute(event, context)
         }
       }
@@ -138,10 +140,10 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
     * @return TResponse
     */
   protected def handleFailure(exception: Throwable): TResponse = {
-    count("generalFailure")
     val message = exception.structuredMessage
     log.error(message)
-    snsErrorTopic.foreach(snsClient.publish(_, message))
+    count("µServerlessFunctionError")
+    exceptionListeners.foreach(listener => listener(exception))
     throw exception
   }
 
@@ -152,7 +154,7 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
     * @return Boolean
     */
   protected def isWarmUpEvent(json: String): Boolean = {
-    time("WarmUpEvent") {
+    time("µServerlessWarmUpEvent") {
       Try(json.jsonDecode[WarmUpEvent]) match {
         case Success(event) =>
           log.info("Checking for warm up event!")
@@ -191,22 +193,28 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
   }
 
   /**
+    * Add custom logic in the handleFailure method before raising the exception
+    * @param listener function
+    */
+  protected def exceptionListener(listener: Throwable => Unit): Unit = {
+    exceptionListeners += listener
+  }
+
+  /**
     * General decoding handling, the decoding strategy is implemented in the jsonDecode method
     *
     * @param json String event
     * @return TEvent
     */
   private def decodeEvent(json: String): TEvent = {
-    time("JsonDecode") {
-      if(json.isEmpty) {
-        throw new MessageDecodingException("Empty event values are not allowed")
-      } else {
-        Try(jsonDecode(json)) match {
-          case Success(event) => event
-          case Failure(e) =>
-            log.warn(s"Unable to parse json message to expected type")
-            throw new MessageDecodingException(e.getMessage)
-        }
+    if(json.isEmpty) {
+      throw new MessageDecodingException("Empty event values are not allowed")
+    } else {
+      Try(jsonDecode(json)) match {
+        case Success(event) => event
+        case Failure(e) =>
+          log.warn(s"Unable to parse json message to expected type")
+          throw new MessageDecodingException(e.getMessage)
       }
     }
   }
