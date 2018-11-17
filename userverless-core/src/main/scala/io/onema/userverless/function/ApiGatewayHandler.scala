@@ -42,15 +42,15 @@ trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
     */
   override protected def handleFailure(exception: Throwable): AwsProxyResponse = {
     exception match {
+
+        // Handled Exceptions generate a response with an error message. This is well suited for 4XX errors
       case ex: HandleRequestException =>
-        count("handledFailure")
+        count("µServerlessApiGatewayHandledError")
         log.error(ex.structuredMessage)
         buildError(ex.code, ex.getMessage)
 
       // General exception, handle it gracefully
       case ex =>
-
-        // report error to SNS Topic
         Try(super.handleFailure(ex))
 
         // Generate response to send back to the api user
