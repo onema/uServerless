@@ -13,33 +13,50 @@ package functions.validation
 
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.sns.model.PublishRequest
-import com.amazonaws.services.sns.{AmazonSNS, AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
+import com.typesafe.scalalogging.Logger
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.exception.HandleRequestException
 import io.onema.userverless.function.{ApiGatewayHandler, ApiGatewayResponse}
-import io.onema.userverless.function.Extensions.ContextExtension
 import org.apache.http.HttpStatus
 
-class Logic(val snsClient: AmazonSNS, val topic: String) extends ApiGatewayResponse {
+class ValidationLogic() extends ApiGatewayResponse {
+
+  //--- Fields ---
+  val log = Logger(classOf[ValidationLogic])
 
   //--- Methods ---
-  def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
-    snsClient.publish(
-      new PublishRequest(topic, "Message from Success Function")
-    )
-    buildResponse(HttpStatus.SC_OK, Map("message" -> "validation succeeded"))
+  def validate(request: AwsProxyRequest): Unit = {
+    log.info("validate your message")
+    containsOriginHeader(request)
+    containsValidJson(request)
+  }
+
+  def containsValidJson(request: AwsProxyRequest): Unit = {
+    if (Option(request.getBody).isEmpty) {
+      throw new HandleRequestException(HttpStatus.SC_BAD_REQUEST, "The Body of your request is empty")
+    }
+  }
+
+  def containsOriginHeader(request: AwsProxyRequest): Unit = {
+    if(Option(request.getHeaders.get("Origin")).isEmpty) {
+      throw new HandleRequestException(HttpStatus.SC_UNAUTHORIZED, "The Origin header is required")
+    }
   }
 }
 
 class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Fields ---
-  private val snsTopicName = System.getenv("SNS_TOPIC")
+  val logic = new ValidationLogic()
+
+  //--- Validation Setup ---
+  validationListener(logic.validate)
 
   //--- Methods ---
   def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    val topic = s"arn:aws:sns:$region:${context.accountId}:$snsTopicName"
-    val logic = new Logic(snsClient, topic)
-    logic.handleRequest(request)
+    log.info("Submit your validated message to a background processing function")
+    buildResponse(HttpStatus.SC_ACCEPTED, Message("validation succeeded"))
   }
 }
+
+case class Message(message: String)
