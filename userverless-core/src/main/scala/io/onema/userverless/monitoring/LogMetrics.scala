@@ -45,11 +45,11 @@ object LogMetrics extends Metrics {
     val startTime = System.nanoTime()
     val result = codeBlock
     val endTime = System.nanoTime()
-    log.info(s"$blockName:" + (endTime - startTime)/1000000 + "|ms|@1|#" + tags, keyValue("metric_name", blockName), keyValue("metric_type", "time"))
+    log.info(s"$blockName:" + (endTime - startTime)/1000 + "|us|@1|#" + tags, keyValue("metric_name", blockName), keyValue("metric_type", "timer"))
     result
   }
 
   override def count(metricName: String, count: Int = 1): Unit = {
-    log.info(s"$metricName:$count|c|@1|$tags", keyValue("metric_name", metricName), keyValue("metric_type", "count"))
+    log.info(s"$metricName:$count|c|@1|#$tags", keyValue("metric_name", metricName), keyValue("metric_type", "count"))
   }
 }
