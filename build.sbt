@@ -1,9 +1,9 @@
 ThisBuild / organization := "io.onema"
-ThisBuild / version      := "0.0.2"
+ThisBuild / version      := "0.0.3-SNAPSHOT"
 ThisBuild / scalaVersion := "2.12.7"
 ThisBuild / parallelExecution in Test := false
 
-val awsSdkVersion = "1.11.441"
+val awsSdkVersion = "1.11.451"
 
 lazy val uServerless = (project in file("."))
 .settings(skip in publish := true)
@@ -26,9 +26,8 @@ lazy val uServerlessCore = (project in file("userverless-core"))
       "io.onema"                   % "json-extensions_2.12"                % "0.5.0",
 
       // AWS libraries
-      "com.amazonaws"               % "aws-lambda-java-events"              % "2.2.2",
+      "com.amazonaws"               % "aws-lambda-java-events"              % "2.2.3",
       "com.amazonaws"               % "aws-lambda-java-core"                % "1.2.0",
-      "com.amazonaws"               % "aws-java-sdk-sns"                    % awsSdkVersion,
       // The serverless java-container supports request context authorizer claims that are currently not available in the lambda-java-events
       "com.amazonaws.serverless"    % "aws-serverless-java-container-core"  % "0.9.1",
 
