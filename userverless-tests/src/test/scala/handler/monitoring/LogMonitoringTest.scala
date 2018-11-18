@@ -25,7 +25,7 @@ class LogMonitoringTest extends FlatSpec with Matchers with MockFactory {
     val results = getTags(customTags)
 
     // Assert
-    results should be ("stage:dev,foo:bar,baz:blah")
+    results should be ("#stage:dev,foo:bar,baz:blah")
 
   }
 
@@ -37,7 +37,7 @@ class LogMonitoringTest extends FlatSpec with Matchers with MockFactory {
     val results = getTags(customTags)
 
     // Assert
-    results should be ("stage:dev")
+    results should be ("#stage:dev")
 
   }
 }
