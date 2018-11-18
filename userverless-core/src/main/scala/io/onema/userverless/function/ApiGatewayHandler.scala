@@ -45,7 +45,7 @@ trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
 
         // Handled Exceptions generate a response with an error message. This is well suited for 4XX errors
       case ex: HandleRequestException =>
-        count("µServerlessApiGatewayHandledError")
+        count("uServerlessApiGatewayHandledError")
         log.error(ex.structuredMessage)
         buildError(ex.code, ex.getMessage)
 

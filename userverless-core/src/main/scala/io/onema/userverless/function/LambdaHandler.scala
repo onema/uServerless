@@ -71,17 +71,17 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
       val response: Option[TResponse] = handle {
 
         // Decode the event
-        val event = time("µServerlessJsonDecode") {
+        val event = time("uServerlessJsonDecode") {
           decodeEvent(json)
         }
 
         // Validate the event object using custom listeners
-        time("µServerlessFunctionValidation") {
+        time("uServerlessFunctionValidation") {
           validationListeners.foreach(listener => listener(event))
         }
 
         // Execute the lambda function code for the application
-        time("µServerlessFunctionCode") {
+        time("uServerlessFunctionCode") {
           execute(event, context)
         }
       }
@@ -142,7 +142,7 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
   protected def handleFailure(exception: Throwable): TResponse = {
     val message = exception.structuredMessage
     log.error(message)
-    count("µServerlessFunctionError")
+    count("uServerlessFunctionError")
     exceptionListeners.foreach(listener => listener(exception))
     throw exception
   }
@@ -154,7 +154,7 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
     * @return Boolean
     */
   protected def isWarmUpEvent(json: String): Boolean = {
-    time("µServerlessWarmUpEvent") {
+    time("uServerlessWarmUpEvent") {
       Try(json.jsonDecode[WarmUpEvent]) match {
         case Success(event) =>
           log.info("Checking for warm up event!")
