@@ -575,7 +575,16 @@ This will result in a log containing the following message:
 
 > *NOTE:*
 > 
-> At this point there is no implementation to submit metrics to a system like CloudWatch metrics or datadog, but ideally this the foundation to implement such system.
+> The metrics are only logged and are not submitted to CloudWatch. To get the metrics reported to CloudWatch you need 
+> to use the Overwatch app 
+
+#### Adding custom tags to your metrics
+To submit custom tags in your metrics, pass key value pairs to the functions:
+
+```scala
+count("CounterName", ("MyKey", "MyValue"), ("AnotherKey", "AnotherValue"))
+time("TimerName", ("MyKey", "MyValue"), ("AnotherKey", "AnotherValue"))
+```
 
 ### Selecting the log level
 By default the log level is set to DEBUG, you can overwrite this by setting the `LOG_LEVEL` **environment variable** to one of the log levels:

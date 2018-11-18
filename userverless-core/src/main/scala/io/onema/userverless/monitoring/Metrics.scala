@@ -32,14 +32,23 @@ trait Metrics {
     * @tparam T return type of the block
     * @return T
     */
-  def time[T](blockName: String)(codeBlock: => T): T
+  def time[T](blockName: String, customTags: (String, String)*)(codeBlock: => T): T
 
   /**
     * Record counts, count value should default to one
     * @param metricName name of the counter
-    * @param count optional value, should default to one
+    * @param count increment of the counter
+    * @param customTags varargs of key value pairs to add to the metric as tags
     */
-  def count(metricName: String, count: Int): Unit
+
+  def count(metricName: String, count: Int, customTags: (String, String)*): Unit
+
+  /**
+    * Record counts, this is used as a default that increments the counter by one
+    * @param metricName name of the counter
+    * @param customTags varargs of key value pairs to add to the metric as tags
+    */
+  def count(metricName: String, customTags: (String, String)*): Unit
 
 }
 
