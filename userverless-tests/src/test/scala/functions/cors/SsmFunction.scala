@@ -14,8 +14,6 @@ package functions.cors
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
-import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
-import io.onema.userverless.configuration.cors.Extensions.AwsProxyResponseExtension
 import io.onema.userverless.configuration.cors.{CorsConfiguration, SsmCorsConfiguration}
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
 import io.onema.userverless.function.ApiGatewayHandler

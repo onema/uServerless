@@ -13,7 +13,6 @@ package functions.error
 
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import io.onema.userverless.configuration.cors.EnvCorsConfiguration
 import io.onema.userverless.configuration.cors.Extensions._
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration

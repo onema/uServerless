@@ -12,7 +12,7 @@
 package io.onema.userverless.function
 
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse
-import io.onema.userverless.model.ErrorMessage
+import io.onema.userverless.model.ApiGatewayErrorMessage
 import io.onema.json.Extensions._
 import scala.collection.JavaConverters._
 
@@ -66,7 +66,7 @@ trait ApiGatewayResponse {
     * @return AwsProxyResponse
     */
   protected def buildError(code: Int, message: String): AwsProxyResponse = {
-    buildResponse(code, ErrorMessage(message))
+    buildResponse(code, ApiGatewayErrorMessage(message))
   }
 
   /**

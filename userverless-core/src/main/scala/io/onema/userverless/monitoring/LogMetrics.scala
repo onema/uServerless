@@ -28,10 +28,19 @@ object LogMetrics extends Metrics {
     *
     * @return Sting of coma separated k:v pairs
     */
-  final lazy val tags: String = dimensions
+  final lazy val defaultTags: String = dimensions
     .filter { case(_, value) => value.nonEmpty }
     .map { case(k, v) => s"$k:$v" }
     .mkString(",")
+
+  def getTags(customTags: Seq[(String, String)]): String = {
+    val result = customTags.map { case(k, v) => s"$k:$v"}.mkString(",")
+    if(result.nonEmpty) {
+      s"#$defaultTags,$result"
+    } else {
+      s"#$defaultTags"
+    }
+  }
 
   /**
     * Time the execution of a code block
@@ -41,15 +50,30 @@ object LogMetrics extends Metrics {
     * @tparam T return type of the block
     * @return T
     */
-  override def time[T](blockName: String)(codeBlock: => T): T = {
+  override def time[T](blockName: String, customTags: (String, String)*)(codeBlock: => T): T = {
     val startTime = System.nanoTime()
     val result = codeBlock
     val endTime = System.nanoTime()
-    log.info(s"$blockName:" + (endTime - startTime)/1000000 + "|ms|@1|#" + tags, keyValue("metric_name", blockName), keyValue("metric_type", "time"))
+    log.info(s"$blockName:" + (endTime - startTime)/1000 + "|us|@1|" + getTags(customTags), keyValue("metric_name", blockName), keyValue("metric_type", "timer"))
     result
   }
 
-  override def count(metricName: String, count: Int = 1): Unit = {
-    log.info(s"$metricName:$count|c|@1|$tags", keyValue("metric_name", metricName), keyValue("metric_type", "count"))
+  /**
+    * Record counts, count value should default to one
+    * @param metricName name of the counter
+    * @param count increment of the counter
+    * @param customTags varargs of key value pairs to add to the metric as tags
+    */
+  override def count(metricName: String, count: Int, customTags: (String, String)*): Unit = {
+    log.info(s"$metricName:$count|c|@1|" + getTags(customTags), keyValue("metric_name", metricName), keyValue("metric_type", "count"))
+  }
+
+  /**
+    * Record counts, this is used as a default that increments the counter by one
+    * @param metricName name of the counter
+    * @param customTags varargs of key value pairs to add to the metric as tags
+    */
+  override def count(metricName: String, customTags: (String, String)*): Unit = {
+    count(metricName, 1, customTags: _*)
   }
 }
