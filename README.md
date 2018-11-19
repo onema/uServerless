@@ -45,33 +45,4 @@ Add the following to your SBT config:
 libraryDependencies += "io.onema" %% "userverless-core" % "<LATEST_VERSION>"
 ```
 
-## Invocation model
-The adapters have the following properties:
-
-1. Enable you to separate the lambda `Function` handler from the `Logic` of the application
-  - The `Function` is responsible for building all the dependencies and constructing the logic object and handling errors, notifications and keeping the function warm (if enabled)
-  - The `Logic` should acquire all it's dependencies via DI, hence it should be the testable part of your code
-1. Handles exceptions and exception handlers to take actions when exception occur
-1. API Gateway has a special handler that to help you deal with Lambda Proxy Request and Responses
-1. SNS Handler that unpacks and deserialize the message
-1. Provides a trait to get configuration values or secrets from SSM Parameter Store 
-1. Works with the **Overwatch** app, this is a metric and error reporting application that configures general purpose infrastructure for all µServerless applications
-
-## Keeping functions warm
-Functions can be kept warm by adding a `schedule` event to the functions with the following input:
-
-```yaml
-
-functions:
-  success:
-    handler: serverless.Function::lambdaHandler
-    events:
-      # Main trigger
-      - sns: some-tpic
-      
-      # Custom event to keep the function warm
-      - schedule:
-          rate: rate(5 minutes)
-          input:
-            warmup: true
-```
+## Documentation

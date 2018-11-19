@@ -5,4 +5,5 @@ nav:
   - Dealing with Exceptions: 03-dealing-with-exceptions.md
   - Logging and Metrics: 04-logging.md
   - Event listeners: 05-event-listeners.md
+  - Other Features: 99-other-features.md
 theme: readthedocs
