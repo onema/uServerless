@@ -11,8 +11,6 @@
 
 package io.onema.userverless.monitoring
 
-import io.onema.userverless.monitoring.Metrics.Dimension
-
 trait Metrics {
 
   //--- Fields ---
@@ -21,6 +19,7 @@ trait Metrics {
     "version" -> sys.env.getOrElse("AWS_LAMBDA_FUNCTION_VERSION", ""),
     "stage" -> sys.env.getOrElse("STAGE_NAME", "dev")
   )
+  val appName: String = sys.env.getOrElse("APP_NAME", sys.env.getOrElse("AWS_LAMBDA_FUNCTION_NAME", ""))
 
   //--- Methods ---
 

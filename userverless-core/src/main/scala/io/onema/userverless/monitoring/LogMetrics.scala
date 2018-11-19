@@ -12,7 +12,6 @@
 package io.onema.userverless.monitoring
 
 import com.typesafe.scalalogging.Logger
-import net.logstash.logback.argument.StructuredArguments._
 
 
 
@@ -54,7 +53,7 @@ object LogMetrics extends Metrics {
     val startTime = System.nanoTime()
     val result = codeBlock
     val endTime = System.nanoTime()
-    log.info(s"$blockName:" + (endTime - startTime)/1000 + "|us|@1|" + getTags(customTags), keyValue("metric_name", blockName), keyValue("metric_type", "timer"))
+    log.info(s"$blockName:" + (endTime - startTime)/1000 + "|us|@1|" + getTags(customTags))
     result
   }
 
@@ -65,7 +64,7 @@ object LogMetrics extends Metrics {
     * @param customTags varargs of key value pairs to add to the metric as tags
     */
   override def count(metricName: String, count: Int, customTags: (String, String)*): Unit = {
-    log.info(s"$metricName:$count|c|@1|" + getTags(customTags), keyValue("metric_name", metricName), keyValue("metric_type", "count"))
+    log.info(s"$metricName:$count|c|@1|" + getTags(customTags))
   }
 
   /**
