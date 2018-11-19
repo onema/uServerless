@@ -31,7 +31,7 @@ object ThrowableExtensions extends EnvLambdaConfiguration {
       sw.toString
     }
 
-    def structuredMessage: String = {
+    def structuredMessage(reportException: Boolean = true): String = {
       val stackTrace = throwable.getStackTrace.map(e => {
         StackTraceElement(e.getFileName, e.getLineNumber, e.getClassName, s"${e.getMethodName}()")
       })
@@ -40,7 +40,7 @@ object ThrowableExtensions extends EnvLambdaConfiguration {
         case Some(e) => e.getMessage
         case None => "No cause available"
       }
-      LogErrorMessage(throwable.getMessage, cause, throwable.getClass.getName, stackTrace).asJson(Rename.errorMessage)
+      LogErrorMessage(throwable.getMessage, cause, throwable.getClass.getName, stackTrace, reportException = reportException).asJson(Rename.errorMessage)
     }
   }
 }

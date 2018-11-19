@@ -10,7 +10,7 @@
             <onMismatch>ACCEPT</onMismatch>
         </filter>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <customFields>{"messageType":"log","stage":"${STAGE_NAME}","function":"${AWS_LAMBDA_FUNCTION_NAME}","lambdaVersion":"${AWS_LAMBDA_FUNCTION_VERSION}"}</customFields>
+            <customFields>{"messageType":"log","stage":"${STAGE_NAME}","appName":"${APP_NAME}","function":"${AWS_LAMBDA_FUNCTION_NAME}","lambdaVersion":"${AWS_LAMBDA_FUNCTION_VERSION}"}</customFields>
             <prefix class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
                 <layout class="ch.qos.logback.classic.PatternLayout">
                     <pattern>*** %-6level:</pattern>
@@ -22,7 +22,7 @@
     <!--Custom appender to report metrics, similar to the STDOUT, but it marks it at a METRIC.-->
     <appender name="METRIC" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <customFields>{"messageType":"metric","stage":"${STAGE_NAME}","function":"${AWS_LAMBDA_FUNCTION_NAME}","lambdaVersion":"${AWS_LAMBDA_FUNCTION_VERSION}"}</customFields>
+            <customFields>{"messageType":"metric","stage":"${STAGE_NAME}","appName":"${APP_NAME}","function":"${AWS_LAMBDA_FUNCTION_NAME}","lambdaVersion":"${AWS_LAMBDA_FUNCTION_VERSION}"}</customFields>
             <prefix class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
                 <layout class="ch.qos.logback.classic.PatternLayout">
                     <pattern>*** METRIC :</pattern>
