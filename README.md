@@ -3,40 +3,11 @@
 [![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiQnkzdWlQWXJ0cWtDTjl5M2J3OGJJYTRtK01vVXJMazBRanhidXdUbkVUejI4Y1g4WUhoK3k4cWRUV1NSOUl4RzJ0VFMvSy9Xb3BYTGN6eUUyM2ZsMlRZPSIsIml2UGFyYW1ldGVyU3BlYyI6IlFrTncvSHplNTRYUk1iRjciLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)](https://console.aws.amazon.com/codebuild/home?region=us-east-1#/projects/uServerless/view)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/634b14e124ec44429b1b81fdbcb6548f)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=onema/UServerless&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/634b14e124ec44429b1b81fdbcb6548f)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=onema/UServerless&amp;utm_campaign=Badge_Coverage)
+[![Documentation Status](https://readthedocs.org/projects/userverless/badge/?version=latest)](https://userverless.readthedocs.io/en/latest/?badge=latest)
 [![LICENSE](https://img.shields.io/badge/license-Apache--2.0-blue.svg?longCache=true&style=flat-square)](LICENSE)
 
 The µServerless package (pronounced micro-serverless) is a small collection of classes, traits and adapters to help you
 build AWS Lambda functions using scala. 
-
-## Table of Content
-<!-- TOC -->
-
-- [Table of Content](#table-of-content)
-- [Install](#install)
-- [Invocation model](#invocation-model)
-- [Lambda Configuration](#lambda-configuration)
-- [Handlers available](#handlers-available)
-    - [Lambda Handler Usage](#lambda-handler-usage)
-        - [Simple lambda function with Unit return type](#simple-lambda-function-with-unit-return-type)
-        - [Simple lambda function with a custom return type](#simple-lambda-function-with-a-custom-return-type)
-    - [SNS Handler](#sns-handler)
-    - [API Gateway Handler](#api-gateway-handler)
-        - [Handling a valid requests](#handling-a-valid-requests)
-        - [Handling unexpected errors for API Gateway](#handling-unexpected-errors-for-api-gateway)
-        - [Enable CORS](#enable-cors)
-        - [`EnvCorsConfiguration`](#envcorsconfiguration)
-        - [`DynamodbCorsConfiguration`](#dynamodbcorsconfiguration)
-        - [`SsmCorsConfiguration`](#ssmcorsconfiguration)
-        - [`NoopCorsConfiguration`](#noopcorsconfiguration)
-        - [Example](#example)
-- [Dealing with exceptions](#dealing-with-exceptions)
-    - [Enable error notifications](#enable-error-notifications)
-- [Keeping functions warm](#keeping-functions-warm)
-- [Event listeners](#event-listeners)
-    - [Validation listener](#validation-listener)
-    - [Response listener](#response-listener)
-
-<!-- /TOC -->
 
 ## Install
 Add the following to your SBT config:
@@ -45,4 +16,14 @@ Add the following to your SBT config:
 libraryDependencies += "io.onema" %% "userverless-core" % "<LATEST_VERSION>"
 ```
 
+## Overwatch
+All your lambda functions build on top of µServerless log information about errors, metrics, and different log levels. 
+The Overwatch listens for these logs and parses them reporting metrics and errors. The Overwatch is installed independently 
+from your applicaiton, and you can find more information in the GitHub repository [µServerless Overwatch](https://github.com/onema/uServerlessOverwatch)
+
+> **NOTE**:
+>
+> The Overwatch is not required to use µServerless, but it will enable you to have greater visibility into your applications
+
 ## Documentation
+For more information see the [documentation section](/docs) 
