@@ -140,7 +140,7 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
     * @return TResponse
     */
   protected def handleFailure(exception: Throwable): TResponse = {
-    val message = exception.structuredMessage
+    val message = exception.structuredMessage()
     log.error(message)
     count("uServerlessFunctionError")
     exceptionListeners.foreach(listener => listener(exception))

@@ -27,8 +27,10 @@ object Log {
     timestamp: String = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").format(Calendar.getInstance().getTime),
     messageType: String = "exception",
     stage: String = getValue("STAGE_NAME").getOrElse("STAGE_NAME_IS_UNDEFINED"),
+    appName: String = getValue("APP_NAME").getOrElse("APP_NAME_IS_UNDEFINED"),
     function: String = getValue("AWS_LAMBDA_FUNCTION_NAME").getOrElse("AWS_LAMBDA_FUNCTION_NAME_IS_UNDEFINED"),
-    lambdaVersion: String = getValue("AWS_LAMBDA_FUNCTION_VERSION").getOrElse("AWS_LAMBDA_FUNCTION_VERSION_IS_UNDEFINED")
+    lambdaVersion: String = getValue("AWS_LAMBDA_FUNCTION_VERSION").getOrElse("AWS_LAMBDA_FUNCTION_VERSION_IS_UNDEFINED"),
+    reportException: Boolean = true
   )
 
   case class StackTraceElement(fileName: String, lineNumber: Int, className: String, methodName: String)
@@ -43,6 +45,7 @@ object Log {
      levelValue: Double,
      messageType: String,
      stage: String,
+     appName: String,
      function: String,
      lambdaVersion: String
   )
