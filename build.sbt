@@ -1,5 +1,5 @@
 ThisBuild / organization := "io.onema"
-ThisBuild / version      := "0.0.3"
+ThisBuild / version      := "0.1.0"
 ThisBuild / scalaVersion := "2.12.7"
 ThisBuild / parallelExecution in Test := false
 
