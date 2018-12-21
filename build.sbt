@@ -1,9 +1,9 @@
 ThisBuild / organization := "io.onema"
-ThisBuild / version      := "0.1.0"
+ThisBuild / version      := "0.1.1"
 ThisBuild / scalaVersion := "2.12.7"
 ThisBuild / parallelExecution in Test := false
 
-val awsSdkVersion = "1.11.451"
+val awsSdkVersion = "1.11.473"
 
 lazy val uServerless = (project in file("."))
 .settings(skip in publish := true)
