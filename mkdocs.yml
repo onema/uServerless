@@ -1,9 +1,9 @@
 site_name: µServerless
 nav:
-  - Lambda Configuration: 01-lambda-configuration.md
-  - Lambda Handlers: 02-handlers.md
-  - Dealing with Exceptions: 03-dealing-with-exceptions.md
-  - Logging and Metrics: 04-logging.md
-  - Event listeners: 05-event-listeners.md
+  - Lambda Configuration: lambda-configuration.md
+  - Lambda Handlers: handlers.md
+  - Dealing with Exceptions: dealing-with-exceptions.md
+  - Logging and Metrics: logging.md
+  - Event listeners: event-listeners.md
   - Other Features: 99-other-features.md
 theme: readthedocs

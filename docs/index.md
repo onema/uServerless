@@ -6,7 +6,19 @@
 [![LICENSE](https://img.shields.io/badge/license-Apache--2.0-blue.svg?longCache=true&style=flat-square)](LICENSE)
 
 The µServerless package (pronounced micro-serverless) is a small collection of classes, traits and adapters to help you
-build AWS Lambda functions using scala. 
+build distributed applications using AWS Lambda and scala. 
+
+µServerless has the following features:
+
+1. Handles exceptions and exception handlers to take actions when exception occur
+1. API Gateway has a special handler that to help you deal with Lambda Proxy Request and Responses
+1. SNS Handler that unpacks and deserialize the message
+1. Provides a trait to get configuration values or secrets from SSM Parameter Store 
+1. Structured logging
+1. Error and Metric reporting is possible using the **[Overwatch](https://github.com/onema/uServerlessOverwatch)** app. 
+
+> [Overwatch](https://github.com/onema/uServerlessOverwatch) this is a metric and error reporting application that configures 
+general purpose infrastructure for all µServerless applications
 
 ## Install
 Add the following to your SBT config:
@@ -15,15 +27,3 @@ Add the following to your SBT config:
 libraryDependencies += "io.onema" %% "userverless-core" % "<LATEST_VERSION>"
 ```
 
-## Design Objectives
-TODO
-The adapters have the following properties:
-
-1. Enable you to separate the lambda `Function` handler from the `Logic` of the application
-  - The `Function` is responsible for building all the dependencies and constructing the logic object and handling errors, notifications and keeping the function warm (if enabled)
-  - The `Logic` should acquire all it's dependencies via DI, hence it should be the testable part of your code
-1. Handles exceptions and exception handlers to take actions when exception occur
-1. API Gateway has a special handler that to help you deal with Lambda Proxy Request and Responses
-1. SNS Handler that unpacks and deserialize the message
-1. Provides a trait to get configuration values or secrets from SSM Parameter Store 
-1. Works with the **Overwatch** app, this is a metric and error reporting application that configures general purpose infrastructure for all µServerless applications
