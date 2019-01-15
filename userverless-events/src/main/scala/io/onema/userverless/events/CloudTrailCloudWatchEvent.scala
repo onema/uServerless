@@ -11,7 +11,7 @@
 
 package io.onema.userverless.events
 
-object LogRegistration {
+object CloudTrailCloudWatchEvent {
   case class Attributes(mfaAuthenticated: String, creationDate: String)
 
   case class SessionContext(attributes: Attributes)
@@ -50,7 +50,7 @@ object LogRegistration {
 
   case class Resources()
 
-  case class LogCreationEvent(
+  case class CloudWatchLogEvent(
     version: Option[String],
     id: Option[String],
     detailType: Option[String],
