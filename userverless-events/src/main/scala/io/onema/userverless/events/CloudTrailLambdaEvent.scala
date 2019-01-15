@@ -11,7 +11,7 @@
 
 package io.onema.userverless.events
 
-object LogRegistration {
+object CloudTrailLambdaEvent {
   case class Attributes(mfaAuthenticated: String, creationDate: String)
 
   case class SessionContext(attributes: Attributes)
@@ -27,7 +27,21 @@ object LogRegistration {
     invokedBy: Option[String]
   )
 
-  case class RequestParameters(logGroupName: String)
+  case class RequestParameters(
+    functionName: Option[String],
+    kMSKeyArn: Option[String],
+    role: Option[String],
+    memorySize: Option[Double],
+    code: Option[Code],
+    timeout: Option[Double],
+    environment: Option[Code],
+    deadLetterConfig: Option[Code],
+    tracingConfig: Option[TracingConfig],
+    publish: Option[Boolean],
+    description: Option[String],
+    handler: Option[String],
+    runtime: Option[String]
+  )
 
   case class Detail(
     eventVersion: Option[String],
@@ -41,7 +55,7 @@ object LogRegistration {
     sourceIPAddress: Option[String],
     userAgent: Option[String],
     requestParameters: Option[RequestParameters],
-    responseElements: Option[String],
+    responseElements: Option[ResponseElements],
     requestID: Option[String],
     eventID: Option[String],
     eventType: Option[String],
@@ -49,8 +63,28 @@ object LogRegistration {
   )
 
   case class Resources()
+  case class Code()
+  case class TracingConfig(mode: String)
+  case class Environment()
+  case class ResponseElements(
+    role: Option[String],
+    revisionId: Option[String],
+    handler: Option[String],
+    memorySize: Option[Double],
+    runtime: Option[String],
+    functionArn: Option[String],
+    functionName: Option[String],
+    codeSize: Option[Double],
+    version: Option[String],
+    tracingConfig: Option[TracingConfig],
+    description: Option[String],
+    lastModified: Option[String],
+    codeSha256: Option[String],
+    environment: Option[Environment],
+    timeout: Option[Double]
+  )
 
-  case class LogCreationEvent(
+  case class LambdaEvent(
     version: Option[String],
     id: Option[String],
     detailType: Option[String],
