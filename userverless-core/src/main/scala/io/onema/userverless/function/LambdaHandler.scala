@@ -20,7 +20,7 @@ import com.typesafe.scalalogging.Logger
 import io.onema.json.JavaExtensions._
 import io.onema.json.Mapper
 import io.onema.userverless.configuration.lambda.LambdaConfiguration
-import io.onema.userverless.exception.MessageDecodingException
+import io.onema.userverless.exception.{HandledException, MessageDecodingException}
 import io.onema.userverless.exception.ThrowableExtensions._
 import io.onema.userverless.model.WarmUpEvent
 import io.onema.userverless.monitoring.LogMetrics.{count, time}
@@ -36,6 +36,8 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
   protected val log: Logger = Logger(classOf[LambdaHandler[TEvent, TResponse]])
 
   protected val region: String = sys.env.getOrElse("AWS_REGION", "us-east-1")
+
+  protected val reportException: Boolean = sys.env.getOrElse("REPORT_EXCEPTION", "false").toBoolean
 
   protected val responseListeners: ArrayBuffer[TResponse => TResponse] = ArrayBuffer[TResponse => TResponse]()
 
@@ -129,7 +131,12 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
           case _ => Option(response)
         }
         returnVal
-      case Failure(e: Throwable) => Option(handleFailure(e))
+
+      // Handled exceptions will not be reported
+      case Failure(e: HandledException) => Option(handleFailure(e, reportEx = false))
+
+      // Other exception may be reported
+      case Failure(e: Throwable) => Option(handleFailure(e, reportException))
     }
   }
 
@@ -139,8 +146,8 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
     * @param exception the reported exception
     * @return TResponse
     */
-  protected def handleFailure(exception: Throwable): TResponse = {
-    val message = exception.structuredMessage()
+  protected def handleFailure(exception: Throwable, reportEx: Boolean): TResponse = {
+    val message = exception.structuredMessage(reportEx)
     log.error(message)
     count("uServerlessFunctionError")
     exceptionListeners.foreach(listener => listener(exception))

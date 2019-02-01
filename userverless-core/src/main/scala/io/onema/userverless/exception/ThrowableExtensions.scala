@@ -31,7 +31,7 @@ object ThrowableExtensions extends EnvLambdaConfiguration {
       sw.toString
     }
 
-    def structuredMessage(reportException: Boolean = true): String = {
+    def structuredMessage(reportException: Boolean): String = {
       val stackTrace = throwable.getStackTrace.map(e => {
         StackTraceElement(e.getFileName, e.getLineNumber, e.getClassName, s"${e.getMethodName}()")
       })

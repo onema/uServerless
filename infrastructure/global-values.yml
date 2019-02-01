@@ -18,11 +18,8 @@ iamRoleStatements:
   # =======================================================================
 
 environment:
-  SNS_ERROR_TOPIC:
-    Fn::ImportValue: "${self:custom.stageName}-error-topic-arn"
+  REPORT_EXCEPTION: false
 
 custom:
   stageName: ${opt:stage, self:provider.stage}
 
-deadLetterQueue:
-  Fn::ImportValue: "${self:custom.stageName}-dead-letter-queue-arn"
