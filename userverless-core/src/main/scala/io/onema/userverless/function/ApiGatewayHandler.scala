@@ -40,10 +40,11 @@ trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
     * @param exception the reported exception
     * @return TResponse
     */
-  override protected def handleFailure(exception: Throwable): AwsProxyResponse = {
+  override protected def handleFailure(exception: Throwable, reportException: Boolean): AwsProxyResponse = {
     exception match {
 
-        // Handled Exceptions generate a response with an error message. This is well suited for 4XX errors
+      // Handled Exceptions generate a response with an error message.
+      // This is well suited for 4XX errors and should not be reported
       case ex: HandleRequestException =>
         count("uServerlessApiGatewayHandledError")
         log.error(ex.structuredMessage(reportException = false))
@@ -51,7 +52,7 @@ trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
 
       // General exception, handle it gracefully
       case ex =>
-        Try(super.handleFailure(ex))
+        Try(super.handleFailure(ex, reportEx = true))
 
         // Generate response to send back to the api user
         buildError(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: check the logs for more information.")

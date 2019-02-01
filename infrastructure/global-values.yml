@@ -18,11 +18,11 @@ iamRoleStatements:
   # =======================================================================
 
 environment:
-  SNS_ERROR_TOPIC:
-    Fn::ImportValue: "${self:custom.stageName}-error-topic-arn"
+  REPORT_EXCEPTION: false
+  LOG_LEVEL: DEBUG
+  STAGE_NAME: ${self:custom.stageName}
+  APP_NAME: ${self:service}
 
 custom:
   stageName: ${opt:stage, self:provider.stage}
 
-deadLetterQueue:
-  Fn::ImportValue: "${self:custom.stageName}-dead-letter-queue-arn"

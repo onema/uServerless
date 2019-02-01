@@ -1,9 +1,10 @@
 site_name: µServerless
 nav:
   - Lambda Configuration: lambda-configuration.md
+  - Function Environment Variables: global-environment-variables.md
   - Lambda Handlers: handlers.md
   - Dealing with Exceptions: dealing-with-exceptions.md
   - Logging and Metrics: logging.md
   - Event listeners: event-listeners.md
-  - Other Features: 99-other-features.md
+  - Other Features: other-features.md
 theme: readthedocs
