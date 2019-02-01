@@ -1,7 +1,7 @@
 # Handlers available
 There are a few traits that can be used in your functions:
 * LambdaHandler: A generic handler that uses a type parameters to defined the handler event and return type. 
-* ApiGatewayHandler: An APIGateway specific handler that generates an API Proxy request. 
+* ApiGatewayHandler: An APIGateway specific handler that takes a API Proxy request and generates an API Proxy response. 
 * SnsHandler: A handler that unpacks the internal message to the specified type. 
 It has support methods to deal with java input and output streams; these are used when using apis that have a cognito custom authorizer.
 

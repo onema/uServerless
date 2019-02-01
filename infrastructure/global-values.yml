@@ -19,6 +19,9 @@ iamRoleStatements:
 
 environment:
   REPORT_EXCEPTION: false
+  LOG_LEVEL: DEBUG
+  STAGE_NAME: ${self:custom.stageName}
+  APP_NAME: ${self:service}
 
 custom:
   stageName: ${opt:stage, self:provider.stage}
