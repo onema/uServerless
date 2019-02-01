@@ -11,19 +11,12 @@
 
 package functions.error
 
-import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
 import io.onema.userverless.exception.HandledException
 import io.onema.userverless.function.LambdaHandler
 
-object Logic {
-  def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
-    throw new NotImplementedError("FooBar")
-  }
-}
-
-class Function extends LambdaHandler[String, String] with NoopLambdaConfiguration {
+class FunctionWithHandledException extends LambdaHandler[String, String] with NoopLambdaConfiguration {
 
   //--- Methods ---
   def execute(request: String, context: Context): String = {
