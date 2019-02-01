@@ -11,19 +11,6 @@ lazy val uServerless = (project in file("."))
 .aggregate(uServerlessEvents, uServerlessCore, uServerlessDynamoConfig, uServerlessSsmConfig, uServerlessTests)
 publishArtifact in uServerless := false
 
-//lazy val uServerlessAwsExtensions = (project in file("userverless-aws-extensions"))
-//.settings(
-//  name := "userverless-aws-extensions",
-//  commonPublishSettings,
-//  libraryDependencies ++= {
-//    Seq(
-//      "software.amazon.awssdk"     % "sns"                                  % awsSdkV2Version,
-//      "com.typesafe.scala-logging"  %% "scala-logging"                      % "3.9.0",
-//      "org.scala-lang.modules"     % "scala-async_2.12"                     % "0.9.7"
-//    )
-//  }
-//)
-
 lazy val uServerlessEvents = (project in file("userverless-events"))
 .settings(
   name := "userverless-events",
