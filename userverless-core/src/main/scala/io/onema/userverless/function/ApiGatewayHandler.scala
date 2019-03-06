@@ -18,8 +18,8 @@ import io.onema.userverless.configuration.cors.{CorsConfiguration, NoopCorsConfi
 import io.onema.userverless.configuration.lambda.LambdaConfiguration
 import io.onema.userverless.exception.HandleRequestException
 import io.onema.userverless.exception.ThrowableExtensions._
+import io.onema.userverless.http.HttpStatus
 import io.onema.userverless.monitoring.LogMetrics.count
-import org.apache.http.HttpStatus
 
 import scala.util.Try
 
@@ -55,7 +55,7 @@ trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
         Try(super.handleFailure(ex, reportEx = true))
 
         // Generate response to send back to the api user
-        buildError(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: check the logs for more information.")
+        buildError(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error: check the logs for more information.")
     }
   }
 }
@@ -93,7 +93,7 @@ object ApiGatewayHandler {
         case _ =>
       }
       if (!corsConfig.isOriginValid) {
-        throw new HandleRequestException(HttpStatus.SC_BAD_REQUEST, s"Origin '${origin.getOrElse("")}' is not authorized")
+        throw new HandleRequestException(HttpStatus.BAD_REQUEST, s"Origin '${origin.getOrElse("")}' is not authorized")
       }
       function.withCors(corsConfig)
     }
