@@ -309,3 +309,60 @@ class EnvFunction extends ApiGatewayHandler with Cors with NoopLambdaConfigurati
   }
 }
 ```
+
+### Custom Resource Handler
+This is a special handler to create [CloudFormation custom resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html).
+
+The handler defines three abstract methods that must be implemented `createResource`, `updateResource` and `deleteResource`.
+These methods are called whenever a create, update or delete event are triggered from AWS.
+
+#### Example
+The following example creates an S3 bucket with the given name, and will empty it's contents (up to 1000 objects) before deleting ig.
+```scala
+import com.amazonaws.services.s3.AmazonS3ClientBuilder
+import com.amazonaws.services.s3.model.ObjectListing
+import functions.customresource.S3BucketFunction.{S3Properties, S3Response}
+import io.onema.userverless.configuration.lambda.EnvLambdaConfiguration
+import io.onema.userverless.events.CloudFormation
+import io.onema.userverless.events.CloudFormation.CloudFormationResponse
+import io.onema.userverless.function.CustomResourceHandler
+import scala.collection.JavaConverters._
+
+class S3BucketFunction extends CustomResourceHandler[S3Properties, S3Response] with EnvLambdaConfiguration {
+  //--- Properties ---
+  val s3 = AmazonS3ClientBuilder.defaultClient()
+
+  //--- Methods ---
+  override def createResource(request: CloudFormation.CloudFormationRequest[S3Properties]): CloudFormation.CloudFormationResponse[S3Response] = {
+    val response = request.ResourceProperties match {
+      case Some(properties) => s3.createBucket(properties.name)
+      case None => throw new Exception("The resource name is a required parameter")
+    }
+    val data = S3Response(response.getName, s"arn:aws:s3:::${response.getName}")
+    CloudFormationResponse("SUCCESS", request.StackId, request.RequestId, response.getName, Data = Some(data))
+  }
+
+  override def updateResource(request: CloudFormation.CloudFormationRequest[S3Properties]): CloudFormation.CloudFormationResponse[S3Response] = {
+    // ignore updates for this example
+    CloudFormationResponse("SUCCESS", request.StackId, request.RequestId, request.PhysicalResourceId.get)
+  }
+
+  override def deleteResource(request: CloudFormation.CloudFormationRequest[S3Properties]): CloudFormation.CloudFormationResponse[S3Response] = {
+    val bucketName = request.ResourceProperties.get.name
+    emptyBucket(bucketName)
+    s3.deleteBucket(bucketName)
+    CloudFormationResponse("SUCCESS", request.StackId, request.RequestId, request.PhysicalResourceId.get)
+  }
+
+  def emptyBucket(bucketName: String) = {
+    val list: ObjectListing = s3.listObjects(bucketName)
+    list.getObjectSummaries.asScala.foreach(x => s3.deleteObject(bucketName, x.getKey))
+  }
+}
+
+object S3BucketFunction {
+  case class S3Properties(name: String)
+  case class S3Response(Name: String, Arn: String)
+}
+
+```
