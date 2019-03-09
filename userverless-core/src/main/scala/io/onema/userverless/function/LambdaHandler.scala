@@ -20,8 +20,8 @@ import com.typesafe.scalalogging.Logger
 import io.onema.json.JavaExtensions._
 import io.onema.json.Mapper
 import io.onema.userverless.configuration.lambda.LambdaConfiguration
-import io.onema.userverless.exception.{HandledException, MessageDecodingException}
 import io.onema.userverless.exception.ThrowableExtensions._
+import io.onema.userverless.exception.{HandledException, MessageDecodingException}
 import io.onema.userverless.model.WarmUpEvent
 import io.onema.userverless.monitoring.LogMetrics.{count, time}
 

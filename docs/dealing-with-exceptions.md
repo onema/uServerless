@@ -6,7 +6,7 @@ import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import com.typesafe.scalalogging.Logger
 import io.onema.userverless.function.LambdaHandler
 import io.onema.userverless.configuration.lambda.EnvLambdaConfiguration
-import org.apache.http.HttpStatus
+import io.onema.userverless.http.HttpStatus
 
 object Logic {
   val log = Logger("logic")

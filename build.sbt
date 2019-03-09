@@ -1,9 +1,9 @@
 ThisBuild / organization := "io.onema"
-ThisBuild / version      := "0.3.0"
+ThisBuild / version      := "0.4.0"
 ThisBuild / scalaVersion := "2.12.7"
 ThisBuild / parallelExecution in Test := false
 
-val awsSdkVersion = "1.11.473"
+val awsSdkVersion = "1.11.510"
 val awsSdkV2Version = "2.3.9"
 
 lazy val uServerless = (project in file("."))
@@ -27,18 +27,15 @@ lazy val uServerlessCore = (project in file("userverless-core"))
       "io.onema"                   % "json-extensions_2.12"                % "0.5.0",
 
       // AWS libraries
-      "com.amazonaws"               % "aws-lambda-java-events"              % "2.2.3",
+      "com.amazonaws"               % "aws-lambda-java-events"              % "2.2.5",
       "com.amazonaws"               % "aws-lambda-java-core"                % "1.2.0",
       // The serverless java-container supports request context authorizer claims that are currently not available in the lambda-java-events
       "com.amazonaws.serverless"    % "aws-serverless-java-container-core"  % "0.9.1",
 
-      // Http
-      "org.apache.httpcomponents"   % "httpcore"                            % "4.4.10",
-
       // Logging
       "com.typesafe.scala-logging"  %% "scala-logging"                      % "3.9.0",
       "ch.qos.logback"              % "logback-classic"                     % "1.2.0",
-      "net.logstash.logback"        % "logstash-logback-encoder"            % "5.2",
+      "net.logstash.logback"        % "logstash-logback-encoder"            % "5.3",
     )
   }
 ).dependsOn(uServerlessEvents)
