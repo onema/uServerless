@@ -16,7 +16,7 @@ import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import com.typesafe.scalalogging.Logger
 import io.onema.userverless.function.LambdaHandler
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
-import org.apache.http.HttpStatus
+import io.onema.userverless.http.HttpStatus
 
 object Logic {
   val log = Logger("logic")
@@ -44,7 +44,7 @@ import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import com.typesafe.scalalogging.Logger
 import io.onema.userverless.function.LambdaHandler
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
-import org.apache.http.HttpStatus
+import io.onema.userverless.http.HttpStatus
 
 object Logic {
   val log = Logger("logic")
@@ -105,11 +105,11 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import io.onema.userverless.function.ApiGatewayHandler
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
-import org.apache.http.HttpStatus
+import io.onema.userverless.http.HttpStatus
 
 object Logic {
   def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
-    val response = new AwsProxyResponse(HttpStatus.SC_OK)
+    val response = new AwsProxyResponse(HttpStatus.OK)
     response.setBody("{\"message\": \"success\"}")
     response
   }
@@ -121,7 +121,7 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
   def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     val result = Logic.handleRequest(request)
     
-    // result.getStatusCode should be (HttpStatus.SC_OK)
+    // result.getStatusCode should be (HttpStatus.OK)
     // result.getBody should be ("{\"message\": \"success\"}")
     result
   }
@@ -137,7 +137,7 @@ import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import io.onema.userverless.function.ApiGatewayHandler
-import org.apache.http.HttpStatus
+import io.onema.userverless.http.HttpStatus
 
 object Logic {
   def handleRequest(request: AwsProxyRequest): Nothing = {
@@ -153,7 +153,7 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
     
     // The generated response by the lambda handler will contain the following info
     //result.getBody should be ("{\"message\":\"Internal Server Error: check the logs for more information.\"}")
-    //result.getStatusCode should be (HttpStatus.SC_INTERNAL_SERVER_ERROR)
+    //result.getStatusCode should be (HttpStatus.INTERNAL_SERVER_ERROR)
   }
 }
 ```
@@ -170,11 +170,11 @@ To generate custom messages such as validation errors and present them to the AP
 
 ```scala
 import io.onema.userverless.exception.HandleRequestException
-import org.apache.http.HttpStatus
+import io.onema.userverless.http.HttpStatus
 // ...
 
 object Logic {
-  def handleRequest: Nothing = throw new HandleRequestException(HttpStatus.SC_BAD_REQUEST, "FooBar")
+  def handleRequest: Nothing = throw new HandleRequestException(HttpStatus.BAD_REQUEST, "FooBar")
 }
 
 class Function extends ApiGatewayHandler {
@@ -184,7 +184,7 @@ class Function extends ApiGatewayHandler {
     val result = Logic.handleRequest
     
     //result.getBody should be ("{\"message\":\"FooBar\"}")
-    //result.getStatusCode should be (HttpStatus.SC_BAD_REQUEST)
+    //result.getStatusCode should be (HttpStatus.BAD_REQUEST)
     result 
   }
 }
@@ -215,7 +215,7 @@ class foo extends ApiGatewayHandler with Cors {
         // Code...
      
         // ... and return an AwsProxyResponse
-        new AwsProxyResponse(HttpStatus.SC_OK)
+        new AwsProxyResponse(HttpStatus.OK)
       }
     }
 }
@@ -289,7 +289,7 @@ configuration to look up and validate the origin.
 ```scala
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
-import org.apache.http.HttpStatus
+import io.onema.userverless.http.HttpStatus
 
 import io.onema.userverless.configuration.cors.EnvCorsConfiguration
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
@@ -303,7 +303,7 @@ class EnvFunction extends ApiGatewayHandler with Cors with NoopLambdaConfigurati
   //--- Methods ---
   def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     cors(request) {
-      new AwsProxyResponse(HttpStatus.SC_OK)
+      new AwsProxyResponse(HttpStatus.OK)
     }
     //result.getHeaders.get("Access-Control-Allow-Origin") should be ("https://bar.com")
   }
