@@ -71,7 +71,7 @@ object Log {
         orElse renameFrom("@version", "version")
         orElse renameFrom("logger_name", "loggerName")
         orElse renameFrom("thread_name", "threadName")
-        orElse renameFrom("level_value", "levelValue"),
+        orElse renameFrom("level_value", "levelValue")
       )
     }
   }

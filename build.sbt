@@ -1,10 +1,14 @@
+lazy val scala213 = "2.13.0"
+lazy val scala212 = "2.12.8"
+lazy val scala211 = "2.11.12"
+lazy val supportedScalaVersions = List(scala213, scala212, scala211)
+
 ThisBuild / organization := "io.onema"
-ThisBuild / version      := "0.4.0"
-ThisBuild / scalaVersion := "2.12.7"
+ThisBuild / version      := "0.4.1"
+ThisBuild / scalaVersion := scala212
 ThisBuild / parallelExecution in Test := false
 
-val awsSdkVersion = "1.11.510"
-val awsSdkV2Version = "2.3.9"
+val awsSdkVersion = "1.11.578"
 
 lazy val uServerless = (project in file("."))
 .settings(skip in publish := true)
@@ -14,17 +18,19 @@ publishArtifact in uServerless := false
 lazy val uServerlessEvents = (project in file("userverless-events"))
 .settings(
   name := "userverless-events",
-  commonPublishSettings
+  commonPublishSettings,
+  crossScalaVersions := supportedScalaVersions
 )
 
 lazy val uServerlessCore = (project in file("userverless-core"))
 .settings(
   name := "userverless-core",
   commonPublishSettings,
+  crossScalaVersions := supportedScalaVersions,
   libraryDependencies ++= {
     Seq(
       // core libs
-      "io.onema"                   % "json-extensions_2.12"                % "0.5.0",
+      "io.onema"                   %% "json-extensions"                     % "0.5.1",
 
       // AWS libraries
       "com.amazonaws"               % "aws-lambda-java-events"              % "2.2.5",
@@ -33,7 +39,7 @@ lazy val uServerlessCore = (project in file("userverless-core"))
       "com.amazonaws.serverless"    % "aws-serverless-java-container-core"  % "0.9.1",
 
       // Logging
-      "com.typesafe.scala-logging"  %% "scala-logging"                      % "3.9.0",
+      "com.typesafe.scala-logging"  %% "scala-logging"                      % "3.9.2",
       "ch.qos.logback"              % "logback-classic"                     % "1.2.0",
       "net.logstash.logback"        % "logstash-logback-encoder"            % "5.3",
     )
@@ -44,6 +50,7 @@ lazy val uServerlessDynamoConfig = (project in file("userverless-dynamo-config")
 .settings(
   name := "userverless-dynamo-config",
   commonPublishSettings,
+  crossScalaVersions := supportedScalaVersions,
   libraryDependencies ++= {
     Seq(
       // AWS libraries
@@ -56,6 +63,7 @@ lazy val uServerlessSsmConfig = (project in file("userverless-ssm-config"))
 .settings(
   name := "userverless-ssm-config",
   commonPublishSettings,
+  crossScalaVersions := supportedScalaVersions,
   libraryDependencies ++= {
     Seq(
       // AWS libraries
@@ -73,11 +81,10 @@ lazy val uServerlessTests = (project in file("userverless-tests"))
   libraryDependencies ++= {
     Seq(
       // Testing
-      "org.scalatest"               % "scalatest_2.12"                      % "3.0.5"   % Test,
-      "org.scalamock"               %% "scalamock"                          % "4.1.0"   % Test
+      "org.scalatest"               %% "scalatest"                          % "3.0.8"   % Test,
+      "org.scalamock"               %% "scalamock"                          % "4.2.0"   % Test
     )
   },
-  publishArtifact := false
 ).dependsOn(uServerlessEvents, uServerlessCore, uServerlessDynamoConfig, uServerlessSsmConfig)
 
 
