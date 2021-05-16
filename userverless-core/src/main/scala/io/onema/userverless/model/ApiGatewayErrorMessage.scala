@@ -11,4 +11,4 @@
 
 package io.onema.userverless.model
 
-case class ApiGatewayErrorMessage(message: String)
+case class ApiGatewayErrorMessage(message: String, cause: String = "")

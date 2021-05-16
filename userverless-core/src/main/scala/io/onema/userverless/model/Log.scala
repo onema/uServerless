@@ -14,7 +14,7 @@ package io.onema.userverless.model
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
-import io.onema.userverless.exception.ThrowableExtensions.getValue
+import io.onema.userverless.extensions.ThrowableExtensions.getValue
 import org.json4s.FieldSerializer
 import org.json4s.FieldSerializer._
 
