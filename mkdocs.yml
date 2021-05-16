@@ -1,6 +1,6 @@
 site_name: µServerless
 nav:
-  - Lambda Configuration: lambda-configuration.md
+  - Lambda Configuration: lambda-config.md
   - Function Environment Variables: global-environment-variables.md
   - Lambda Handlers: handlers.md
   - Dealing with Exceptions: dealing-with-exceptions.md

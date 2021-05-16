@@ -9,13 +9,13 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.userverless.configuration.cors
+package io.onema.userverless.config.cors
 
 abstract class CorsConfiguration(val origin: Option[String]) {
 
   /**
-    * Check if CORS is enabled. A check must verify that the configuration has access to the
-    * data store used to keep track of the configuration.
+    * Check if CORS is enabled. A check must verify that the config has access to the
+    * data store used to keep track of the config.
     * @return
     */
   def isEnabled: Boolean

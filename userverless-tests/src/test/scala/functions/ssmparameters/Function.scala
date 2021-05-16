@@ -11,7 +11,7 @@
 
 package functions.ssmparameters
 
-import io.onema.userverless.configuration.lambda.SsmLambdaConfiguration
+import io.onema.userverless.config.lambda.SsmLambdaConfiguration
 
 
 object Function extends SsmLambdaConfiguration {

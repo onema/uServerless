@@ -14,7 +14,7 @@ import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement
 import com.amazonaws.services.simplesystemsmanagement.model._
 import handler.EnvironmentHelper
 import handler.configuration.SsmParametersTest.TestFunction
-import io.onema.userverless.configuration.lambda.SsmLambdaConfiguration
+import io.onema.userverless.config.lambda.SsmLambdaConfiguration
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
 

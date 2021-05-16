@@ -12,13 +12,13 @@ package handler.cors
 
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
 import com.amazonaws.services.simplesystemsmanagement.model._
-import io.onema.userverless.configuration.cors.SsmCorsConfiguration
+import io.onema.userverless.config.cors.SsmCorsConfiguration
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 
 class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
 
-  "Ssm CORS configuration" should "return true when cors config is enabled" in {
+  "Ssm CORS config" should "return true when cors config is enabled" in {
 
     // Arrange
     val originSite = Option("https://foo.com")
@@ -35,7 +35,7 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
     isEnabled should be (true)
   }
 
-  "Ssm CORS configuration with no stage name" should "return true when cors config is enabled" in {
+  "Ssm CORS config with no stage name" should "return true when cors config is enabled" in {
 
     // Arrange
     val originSite = Option("https://foo.com")
@@ -52,7 +52,7 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
     isEnabled should be (true)
   }
 
-  "Ssm CORS configuration" should "return false when cors config is NOT enabled" in {
+  "Ssm CORS config" should "return false when cors config is NOT enabled" in {
 
     // Arrange
     val originSite = Option("https://foo.com")
@@ -70,7 +70,7 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
     isOriginValid should be (false)
   }
 
-  "Ssm CORS configuration" should "return true when origin is valid" in {
+  "Ssm CORS config" should "return true when origin is valid" in {
 
     // Arrange
     val originSite = Option("https://foo.com")
@@ -87,7 +87,7 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
     isOriginValid should be (true)
   }
 
-  "Ssm CORS configuration" should "return true when configured origin is *" in {
+  "Ssm CORS config" should "return true when configured origin is *" in {
 
     // Arrange
     val originSite = Option("https://foo.com")
@@ -104,7 +104,7 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
     isOriginValid should be (true)
   }
 
-  "Ssm CORS configuration with multiple values" should "return true when origin is in configured values" in {
+  "Ssm CORS config with multiple values" should "return true when origin is in configured values" in {
 
     // Arrange
     val configuredOriginValues = "https://foo.com,https://bar.com,http://baz.com"
@@ -124,7 +124,7 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
     isOriginValid should be (true)
   }
 
-  "Ssm CORS configuration with multiple values" should "return false when origin is not in configured values" in {
+  "Ssm CORS config with multiple values" should "return false when origin is not in configured values" in {
 
     // Arrange
     val configuredOriginValues = "https://foo.com,https://bar.com,http://baz.com"
@@ -142,7 +142,7 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
     isOriginValid should be (false)
   }
 
-  "Ssm CORS configuration with no values" should "return false for an origin" in {
+  "Ssm CORS config with no values" should "return false for an origin" in {
 
     // Arrange
     val configuredOriginValues = ""
@@ -160,7 +160,7 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
     isOriginValid should be (false)
   }
 
-  "Ssm CORS configuration with no values" should "return false for no origin" in {
+  "Ssm CORS config with no values" should "return false for no origin" in {
 
     // Arrange
     val configuredOriginValues = ""

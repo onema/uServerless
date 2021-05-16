@@ -1,14 +1,14 @@
-lazy val scala213 = "2.13.0"
-lazy val scala212 = "2.12.8"
+lazy val scala213 = "2.13.5"
+lazy val scala212 = "2.12.10"
 lazy val scala211 = "2.11.12"
 lazy val supportedScalaVersions = List(scala213, scala212, scala211)
 
 ThisBuild / organization := "io.onema"
-ThisBuild / version      := "0.4.1"
+ThisBuild / version      := "0.5.0"
 ThisBuild / scalaVersion := scala212
 ThisBuild / parallelExecution in Test := false
 
-val awsSdkVersion = "1.11.578"
+val awsSdkVersion = "1.11.1004"
 
 lazy val uServerless = (project in file("."))
 .settings(skip in publish := true)
@@ -33,10 +33,10 @@ lazy val uServerlessCore = (project in file("userverless-core"))
       "io.onema"                   %% "json-extensions"                     % "0.5.1",
 
       // AWS libraries
-      "com.amazonaws"               % "aws-lambda-java-events"              % "2.2.5",
-      "com.amazonaws"               % "aws-lambda-java-core"                % "1.2.0",
+      "com.amazonaws"               % "aws-lambda-java-events"              % "3.8.0",
+      "com.amazonaws"               % "aws-lambda-java-core"                % "1.2.1",
       // The serverless java-container supports request context authorizer claims that are currently not available in the lambda-java-events
-      "com.amazonaws.serverless"    % "aws-serverless-java-container-core"  % "0.9.1",
+      "com.amazonaws.serverless"    % "aws-serverless-java-container-core"  % "1.5.2",
 
       // Logging
       "com.typesafe.scala-logging"  %% "scala-logging"                      % "3.9.2",
@@ -81,14 +81,14 @@ lazy val uServerlessTests = (project in file("userverless-tests"))
   libraryDependencies ++= {
     Seq(
       // Testing
-      "org.scalatest"               %% "scalatest"                          % "3.0.8"   % Test,
-      "org.scalamock"               %% "scalamock"                          % "4.2.0"   % Test
+      "org.scalatest"             %% "scalatest"                 % "3.1.2"   % Test,
+      "org.scalamock"             %% "scalamock"                 % "4.4.0"   % Test
     )
   },
 ).dependsOn(uServerlessEvents, uServerlessCore, uServerlessDynamoConfig, uServerlessSsmConfig)
 
 
-// Maven Central Repo boilerplate configuration
+// Maven Central Repo boilerplate config
 lazy val commonPublishSettings = Seq(
 //  publishTo := Some("Onema Snapshots" at "s3://s3-us-east-1.amazonaws.com/ones-deployment-bucket/snapshots"),
   publishTo := {

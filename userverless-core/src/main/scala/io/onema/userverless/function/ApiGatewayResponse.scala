@@ -12,8 +12,9 @@
 package io.onema.userverless.function
 
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse
-import io.onema.userverless.model.ApiGatewayErrorMessage
 import io.onema.json.Extensions._
+import io.onema.userverless.domain.ApiGatewayErrorMessage
+
 import scala.collection.JavaConverters._
 
 
@@ -25,37 +26,14 @@ trait ApiGatewayResponse {
     * Helper methods to build the AWS Proxy Response
     *
     * @param code HTTP Code
-    * @param headers Map of headers
-    * @return AwsProxyResponse
-    */
-  protected def buildResponse(code: Int, headers: Map[String, String] = Map()): AwsProxyResponse = {
-    addHeaders(new AwsProxyResponse(code), headers)
-  }
-
-  /**
-    * Helper methods to build the AWS Proxy Response
-    *
-    * @param code HTTP Code
     * @param payload The payload that will be in the body of the response
     * @param headers Map of headers
     * @return AwsProxyResponse
     */
-  protected def buildResponse(code: Int, payload: AnyRef, headers: Map[String, String]): AwsProxyResponse = {
-    val response = buildResponse(code, payload)
-    response.setHeaders(headers.asJava)
-    response
-  }
-
-  /**
-    * Helper methods to build the AWS Proxy Response
-    *
-    * @param code HTTP Code
-    * @param payload The payload that will be in the body of the response
-    * @return AwsProxyResponse
-    */
-  protected def buildResponse(code: Int, payload: AnyRef): AwsProxyResponse = {
+  protected def buildResponse(code: Int, payload: AnyRef = null, headers: Map[String, String] = Map()): AwsProxyResponse = {
     val response = new AwsProxyResponse(code)
-    response.setBody(payload.asJson)
+    response.setHeaders(headers.asJava)
+    Option(payload).map(_.asJson).foreach(response.setBody)
     response
   }
 
@@ -65,21 +43,7 @@ trait ApiGatewayResponse {
     * @param message The error message
     * @return AwsProxyResponse
     */
-  protected def buildError(code: Int, message: String): AwsProxyResponse = {
-    buildResponse(code, ApiGatewayErrorMessage(message))
-  }
-
-  /**
-    * Add headers to an existing response
-    * @param response AwsProxyResponse
-    * @param headers Map of headers
-    * @return AwsProxyResponse
-    */
-  private def addHeaders(response: AwsProxyResponse, headers: Map[String, String]): AwsProxyResponse = {
-    if(headers.nonEmpty) {
-      new AwsProxyResponse(response.getStatusCode, headers.asJava)
-    } else {
-      response
-    }
+  protected def buildError(code: Int, message: String, cause: String = ""): AwsProxyResponse = {
+    buildResponse(code, payload = ApiGatewayErrorMessage(message, cause))
   }
 }

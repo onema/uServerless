@@ -13,8 +13,8 @@ package functions.cors
 
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
-import io.onema.userverless.configuration.cors.{CorsConfiguration, NoopCorsConfiguration}
-import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.config.cors.{CorsConfiguration, NoopCorsConfiguration}
+import io.onema.userverless.config.lambda.NoopLambdaConfiguration
 import io.onema.userverless.function.ApiGatewayHandler
 import io.onema.userverless.function.ApiGatewayHandler.Cors
 import org.apache.http.HttpStatus
@@ -30,7 +30,7 @@ class NoopFunction extends ApiGatewayHandler with NoopLambdaConfiguration with C
   }
 
   /**
-    * This method should construct and return the the cors configuration
+    * This method should construct and return the the cors config
     *
     * @param origin option containing a string or None with the request origin.
     * @return

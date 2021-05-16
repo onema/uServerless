@@ -9,12 +9,12 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.userverless.model
+package io.onema.userverless.domain
 
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
-import io.onema.userverless.exception.ThrowableExtensions.getValue
+import io.onema.userverless.extensions.ThrowableExtensions.getValue
 import org.json4s.FieldSerializer
 import org.json4s.FieldSerializer._
 

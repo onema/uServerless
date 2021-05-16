@@ -13,7 +13,7 @@ package io.onema.userverless.test
 
 import java.io.{ByteArrayInputStream, InputStream, OutputStream}
 
-import io.onema.userverless.model.ApiGatewayErrorMessage
+import io.onema.userverless.domain.ApiGatewayErrorMessage
 
 import scala.reflect.ClassTag
 
@@ -23,7 +23,7 @@ object TestJavaObjectExtensions {
       new ByteArrayInputStream(str.getBytes())
     }
 
-    def toErrorMessage: ApiGatewayErrorMessage ={
+    def toErrorMessage: ApiGatewayErrorMessage = {
       import io.onema.json.Extensions._
       str.jsonDecode[ApiGatewayErrorMessage]
     }

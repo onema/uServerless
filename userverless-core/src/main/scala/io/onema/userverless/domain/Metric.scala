@@ -9,7 +9,7 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.userverless.model
+package io.onema.userverless.domain
 
 case class Metric(name: String, value: Double, metricType: String, sampleRate: String, tagMap: Map[String, String], appName: String) {
   def unit: String = metricType match {

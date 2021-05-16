@@ -9,7 +9,7 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.userverless.configuration.cors
+package io.onema.userverless.config.cors
 
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse
 import scala.collection.JavaConverters._
@@ -21,7 +21,7 @@ object Extensions {
 
     /**
       * Extension method for the AwsProxyResponse to add the required access control headers to the response
-      * @param corsConfiguration the cors configuration required to validate the domain
+      * @param corsConfiguration the cors config required to validate the domain
       */
     def withCors(corsConfiguration: CorsConfiguration): AwsProxyResponse = {
       if(corsConfiguration.isOriginValid) {

@@ -11,7 +11,7 @@
 package handler.cors
 
 import handler.EnvironmentHelper
-import io.onema.userverless.configuration.cors.EnvCorsConfiguration
+import io.onema.userverless.config.cors.EnvCorsConfiguration
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -22,7 +22,7 @@ class TestEnvCorsConfiguration(sites: Option[String], origin: Option[String]) ex
 class EnvCorsConfigurationTest extends FlatSpec with Matchers with MockFactory with EnvironmentHelper {
 
 
-  "Env CORS configuration" should "return true when cors config is enabled" in {
+  "Env CORS config" should "return true when cors config is enabled" in {
 
     // Arrange
     val originSite = Some("https://foo.com")
@@ -35,7 +35,7 @@ class EnvCorsConfigurationTest extends FlatSpec with Matchers with MockFactory w
     isEnabled should be (true)
   }
 
-  "Env CORS configuration" should "return false when cors config is NOT enabled" in {
+  "Env CORS config" should "return false when cors config is NOT enabled" in {
 
     // Arrange
     val originSite = Some("https://foo.com")
@@ -50,7 +50,7 @@ class EnvCorsConfigurationTest extends FlatSpec with Matchers with MockFactory w
     isValidOrigin should be (false)
   }
 
-  "Env CORS configuration" should "return true when origin is valid" in {
+  "Env CORS config" should "return true when origin is valid" in {
 
     // Arrange
     val originSite = Some("https://foo.com")
@@ -63,7 +63,7 @@ class EnvCorsConfigurationTest extends FlatSpec with Matchers with MockFactory w
     isOriginValid should be (true)
   }
 
-  "Env CORS configuration" should "return true when configured origin is *" in {
+  "Env CORS config" should "return true when configured origin is *" in {
 
     // Arrange
     val originSite = Option("https://foo.com")
@@ -76,7 +76,7 @@ class EnvCorsConfigurationTest extends FlatSpec with Matchers with MockFactory w
     isOriginValid should be (true)
   }
 
-  "Env CORS configuration with multiple values" should "return true when origin is in configured values" in {
+  "Env CORS config with multiple values" should "return true when origin is in configured values" in {
 
     // Arrange
     val configuredOriginValues = Some("https://foo.com,https://bar.com,http://baz.com")
@@ -92,7 +92,7 @@ class EnvCorsConfigurationTest extends FlatSpec with Matchers with MockFactory w
     isOriginValid should be (true)
   }
 
-  "Env CORS configuration with multiple values" should "return false when origin is not in configured values" in {
+  "Env CORS config with multiple values" should "return false when origin is not in configured values" in {
 
     // Arrange
     val configuredOriginValues = Some("https://foo.com,https://bar.com,http://baz.com")
@@ -106,7 +106,7 @@ class EnvCorsConfigurationTest extends FlatSpec with Matchers with MockFactory w
     isOriginValid should be (false)
   }
 
-  "Env CORS configuration with no values" should "return false for an origin" in {
+  "Env CORS config with no values" should "return false for an origin" in {
 
     // Arrange
     val configuredOriginValues = Some("")
@@ -120,7 +120,7 @@ class EnvCorsConfigurationTest extends FlatSpec with Matchers with MockFactory w
     isOriginValid should be (false)
   }
 
-  "Env CORS configuration with no values" should "return false for no origin" in {
+  "Env CORS config with no values" should "return false for no origin" in {
 
     // Arrange
     val configuredOriginValues = Some("")

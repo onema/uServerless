@@ -14,8 +14,8 @@ package functions.cors
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync
 import com.amazonaws.services.lambda.runtime.Context
-import io.onema.userverless.configuration.cors.{CorsConfiguration, DynamodbCorsConfiguration}
-import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.config.cors.{CorsConfiguration, DynamodbCorsConfiguration}
+import io.onema.userverless.config.lambda.NoopLambdaConfiguration
 import io.onema.userverless.function.ApiGatewayHandler
 import io.onema.userverless.function.ApiGatewayHandler.Cors
 import org.apache.http.HttpStatus

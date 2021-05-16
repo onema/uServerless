@@ -9,11 +9,11 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.userverless.configuration.lambda
+package io.onema.userverless.config.lambda
 
 import com.amazonaws.services.simplesystemsmanagement.{AWSSimpleSystemsManagementAsync, AWSSimpleSystemsManagementAsyncClientBuilder}
 import com.amazonaws.services.simplesystemsmanagement.model.{GetParameterRequest, GetParametersByPathRequest, ParameterNotFoundException}
-import io.onema.userverless.configuration.lambda.SsmLambdaConfiguration.StringExtensions
+import io.onema.userverless.config.lambda.SsmLambdaConfiguration.StringExtensions
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
@@ -46,7 +46,7 @@ trait SsmLambdaConfiguration extends LambdaConfiguration {
     */
   def getValue(path: String): Option[String] = {
     val name = s"/$stageName/$path".stripDoubleSlashes
-    tryParameter(name)
+    getParameter(name)
   }
 
   /**
@@ -65,7 +65,9 @@ trait SsmLambdaConfiguration extends LambdaConfiguration {
         .withPath(name)
         .withRecursive(true)
         .withWithDecryption(true)
-      if (nextToken.isDefined) request.withNextToken(nextToken.get)
+      if (nextToken.isDefined) {
+        request.withNextToken(nextToken.get)
+      }
       val response = ssmClient.getParametersByPath(request)
       val current = response.getParameters.asScala.map(x => x.getName.replaceAll(s"/$stageName", "") -> x.getValue).toMap
 
@@ -84,13 +86,13 @@ trait SsmLambdaConfiguration extends LambdaConfiguration {
     * @param name The full path to the parameter you are trying to find
     * @return
     */
-  private def tryParameter(name: String): Option[String] = {
-    val response = Try(ssmClient.getParameter(
-      new GetParameterRequest()
+  private def getParameter(name: String): Option[String] = {
+    Try {
+      val request = new GetParameterRequest()
         .withName(name)
         .withWithDecryption(true)
-    ))
-    response match {
+      ssmClient.getParameter(request)
+    } match {
       case Success(r) => Some(r.getParameter.getValue)
       case Failure(_: ParameterNotFoundException) => None
       case Failure(e) => throw e
