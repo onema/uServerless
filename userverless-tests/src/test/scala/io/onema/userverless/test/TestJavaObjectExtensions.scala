@@ -23,7 +23,7 @@ object TestJavaObjectExtensions {
       new ByteArrayInputStream(str.getBytes())
     }
 
-    def toErrorMessage: ApiGatewayErrorMessage ={
+    def toErrorMessage: ApiGatewayErrorMessage = {
       import io.onema.json.Extensions._
       str.jsonDecode[ApiGatewayErrorMessage]
     }

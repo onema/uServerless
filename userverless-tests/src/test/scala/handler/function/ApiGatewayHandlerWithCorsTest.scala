@@ -11,7 +11,6 @@
 package handler.function
 
 import java.io.ByteArrayOutputStream
-
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync
@@ -22,6 +21,7 @@ import functions.cors.{DynamodbFunction, EnvFunction, NoopFunction, SsmFunction}
 import handler.EnvironmentHelper
 import io.onema.userverless.configuration.cors.DynamodbCorsConfiguration
 import io.onema.userverless.configuration.cors.Extensions._
+import io.onema.userverless.extensions.CollectionsExtensions.MapExtensions
 import io.onema.userverless.test.TestJavaObjectExtensions._
 import org.apache.http.HttpStatus
 import org.scalamock.scalatest.MockFactory
@@ -37,7 +37,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     setEnv("CORS_SITES", originSite)
     val lambdaFunction = new EnvFunction()
     val request = new AwsProxyRequest()
-    request.setHeaders(Map("origin" -> originSite).asJava)
+    request.setMultiValueHeaders(Map("origin" -> originSite).asHeaders)
     val context = new MockLambdaContext
     val output = new ByteArrayOutputStream()
 
@@ -58,7 +58,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     setEnv("CORS_SITES", originSite)
     val lambdaFunction = new EnvFunction()
     val request = new AwsProxyRequest()
-    request.setHeaders(Map("origin" -> site).asJava)
+    request.setMultiValueHeaders(Map("origin" -> site).asHeaders)
     val output = new ByteArrayOutputStream()
     val context = new MockLambdaContext
 
@@ -78,7 +78,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     setEnv("CORS_SITES", originSite)
     val lambdaFunction = new EnvFunction()
     val request = new AwsProxyRequest()
-    request.setHeaders(Map("origin" -> site).asJava)
+    request.setMultiValueHeaders(Map("origin" -> site).asHeaders)
     val output = new ByteArrayOutputStream()
     val context = new MockLambdaContext
 
@@ -87,7 +87,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     val response = output.toObject[AwsProxyResponse]
 
     // Assert
-    Option(response.getHeaders) should be (None)
+    response.getHeaders should be (empty)
   }
 
   "A function with CORS enabled using empty env vars " should "NOT return response with access-control-allow-origin header if site is not set" in {
@@ -104,7 +104,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     val response = output.toObject[AwsProxyResponse]
 
     // Assert
-    Option(response.getHeaders) should be (None)
+    response.getHeaders should be (empty)
   }
 
   "A function with CORS enabled using empty env vars " should "NOT return response with access-control-allow-origin header if site is an empty string" in {
@@ -114,7 +114,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     setEnv("CORS_SITES", originSite)
     val lambdaFunction = new EnvFunction()
     val request = new AwsProxyRequest()
-    //    request.setHeaders(Map("origin" -> site).asJava)
+    request.setMultiValueHeaders(Map("origin" -> site).asHeaders)
     val output = new ByteArrayOutputStream()
     val context = new MockLambdaContext
 
@@ -123,7 +123,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     val response = output.toObject[AwsProxyResponse]
 
     // Assert
-    Option(response.getHeaders) should be (None)
+    response.getHeaders should be (empty)
   }
 
   "A function with CORS enabled using env vars and CORS_SITE set to '*' " should "return response with access-control-allow-origin:* header" in {
@@ -132,7 +132,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     setEnv("CORS_SITES", "*")
     val lambdaFunction = new EnvFunction()
     val request = new AwsProxyRequest()
-    request.setHeaders(Map("origin" -> originSite).asJava)
+    request.setMultiValueHeaders(Map("origin" -> originSite).asHeaders)
     val output = new ByteArrayOutputStream()
     val context = new MockLambdaContext
 
@@ -156,7 +156,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     val clientMock = mock[AmazonDynamoDBAsync]
     (clientMock.getItem(_: GetItemRequest)).expects(*).returning(getItemResult)
     (clientMock.describeTable(_: String)).expects(tableName).returning(tableResults)
-    request.setHeaders(Map("origin" -> originSite).asJava)
+    request.setMultiValueHeaders(Map("origin" -> originSite).asHeaders)
     val output = new ByteArrayOutputStream()
     val context = new MockLambdaContext
     val corsConfiguration = new DynamodbCorsConfiguration(Some("bar.com"), tableName, clientMock)
@@ -180,7 +180,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     val clientMock = mock[AmazonDynamoDBAsync]
     (clientMock.getItem(_: GetItemRequest)).expects(*).returning(getItemResult)
     val lambdaFunction = new DynamodbFunction("foo", clientMock)
-    request.setHeaders(Map("origin" -> originSite).asJava)
+    request.setMultiValueHeaders(Map("origin" -> originSite).asHeaders)
     val output = new ByteArrayOutputStream()
     val context = new MockLambdaContext
 
@@ -189,7 +189,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     val response = output.toObject[AwsProxyResponse]
 
     // Assert
-    Option(response.getHeaders).isDefined should be (false)
+    response.getHeaders should be (empty)
   }
 
   "A function with CORS enabled using DynamoDB" should "not return response with access-control-allow-origin header if origin is None" in {
@@ -222,7 +222,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     val originSite = "https://baz.com"
     val lambdaFunction = new NoopFunction()
     val request = new AwsProxyRequest()
-    request.setHeaders(Map("origin" -> originSite).asJava)
+    request.setMultiValueHeaders(Map("origin" -> originSite).asHeaders)
     val output = new ByteArrayOutputStream()
     val context = new MockLambdaContext
 
@@ -231,7 +231,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     val response = output.toObject[AwsProxyResponse]
 
     // Assert
-    Option(response.getHeaders) should be (None)
+    response.getHeaders should be (empty)
     response.getStatusCode should be (HttpStatus.SC_INTERNAL_SERVER_ERROR)
   }
 
@@ -241,7 +241,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     deleteEnv("STAGE_NAME")
     val originSite = "https://foo.com"
     val request = new AwsProxyRequest()
-    request.setHeaders(Map("origin" -> originSite).asJava)
+    request.setMultiValueHeaders(Map("origin" -> originSite).asHeaders)
     val context = new MockLambdaContext
     val paramRequest = new GetParameterRequest().withName("/cors/sites").withWithDecryption(true)
     val result = new GetParameterResult().withParameter(new Parameter().withName("/cors/sites").withValue(originSite))

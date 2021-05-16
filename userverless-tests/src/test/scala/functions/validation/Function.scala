@@ -38,7 +38,7 @@ class ValidationLogic() extends ApiGatewayResponse {
   }
 
   def containsOriginHeader(request: AwsProxyRequest): Unit = {
-    if(Option(request.getHeaders.get("Origin")).isEmpty) {
+    if(Option(request.getMultiValueHeaders.getFirst("Origin")).isEmpty) {
       throw new HandleRequestException(HttpStatus.SC_UNAUTHORIZED, "The Origin header is required")
     }
   }
@@ -55,7 +55,7 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
   //--- Methods ---
   def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
     log.info("Submit your validated message to a background processing function")
-    buildResponse(HttpStatus.SC_ACCEPTED, Message("validation succeeded"))
+    buildResponse(HttpStatus.SC_ACCEPTED, payload = Message("validation succeeded"))
   }
 }
 

@@ -16,6 +16,7 @@ import com.amazonaws.services.lambda.runtime.Context
 import io.onema.userverless.configuration.cors.EnvCorsConfiguration
 import io.onema.userverless.configuration.cors.Extensions._
 import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.extensions.AwsProxyExtensions.AwsProxyRequestExtensions
 import io.onema.userverless.function.ApiGatewayHandler
 
 object Logic {
@@ -28,6 +29,8 @@ class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
 
   //--- Methods ---
   def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    Logic.handleRequest(request).withCors(new EnvCorsConfiguration(Option(request.getHeaders.get("origin"))))
+    Logic
+      .handleRequest(request)
+      .withCors(new EnvCorsConfiguration(request.origin))
   }
 }

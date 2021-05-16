@@ -74,13 +74,13 @@ object ApiGatewayHandlerTest {
 
   class ValidResponseFunction extends ApiGatewayResponse {
     def test(): AwsProxyResponse = {
-      buildResponse(HttpStatus.SC_OK, payload = Body("test"), Map("foo" -> "bar"))
+      buildResponse(HttpStatus.SC_OK, payload = Body("test"), headers = Map("foo" -> "bar"))
     }
   }
 
   class ValidResponseHeadersOnlyFunction extends ApiGatewayResponse {
     def test(): AwsProxyResponse = {
-      buildResponse(HttpStatus.SC_OK, Map("foo" -> "bar"))
+      buildResponse(HttpStatus.SC_OK, headers = Map("foo" -> "bar"))
     }
   }
 
@@ -127,11 +127,10 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
 
     // Arrange
     import io.onema.json.JavaExtensions._
-    val expectedValue = "{\"statusCode\":507,\"headers\":null,\"body\":\"{\\\"message\\\":\\\"test\\\"}\",\"base64Encoded\":false}"
+    val expectedValue = """{"statusCode":507,"headers":{},"body":"{\"message\":\"test\",\"cause\":\"\"}","isBase64Encoded":false}"""
 
     // Act
-    val foo = new ErrorResponseFunction().test()
-    val response = foo.asJson
+    val response = new ErrorResponseFunction().test().asJson
 
     // Assert
     response should be (expectedValue)
@@ -141,11 +140,10 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
 
     // Arrange
     import io.onema.json.JavaExtensions._
-    val expectedValue = "{\"statusCode\":200,\"headers\":{\"foo\":\"bar\"},\"body\":\"{\\\"response\\\":\\\"test\\\"}\",\"base64Encoded\":false}"
+    val expectedValue = """{"statusCode":200,"headers":{"foo":"bar"},"body":"{\"response\":\"test\"}","isBase64Encoded":false}"""
 
     // Act
-    val foo = new ValidResponseFunction().test()
-    val response = foo.asJson
+    val response = new ValidResponseFunction().test().asJson
 
     // Assert
     response should be(expectedValue)
@@ -155,11 +153,10 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
 
     // Arrange
     import io.onema.json.JavaExtensions._
-    val expectedValue = "{\"statusCode\":200,\"headers\":{\"foo\":\"bar\"},\"body\":null,\"base64Encoded\":false}"
+    val expectedValue = """{"statusCode":200,"headers":{"foo":"bar"},"isBase64Encoded":false}"""
 
     // Act
-    val foo = new ValidResponseHeadersOnlyFunction().test()
-    val response = foo.asJson
+    val response = new ValidResponseHeadersOnlyFunction().test().asJson
 
     // Assert
     response should be(expectedValue)
@@ -178,7 +175,7 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
     val result = output.toObject[AwsProxyResponse]
 
     // Assert
-    result.getBody should be ("{\"message\":\"Internal Server Error: check the logs for more information.\"}")
+    result.getBody should be ("""{"message":"Internal Server Error: check the logs for more information.","cause":""}""")
     result.getStatusCode should be (HttpStatus.SC_INTERNAL_SERVER_ERROR)
   }
 
@@ -207,7 +204,7 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
     val result = output.toObject[AwsProxyResponse]
 
     // Assert
-    result.getBody should be ("{\"message\":\"Bad request exception\"}")
+    result.getBody should be ("""{"message":"Bad request exception","cause":""}""")
     result.getStatusCode should be (HttpStatus.SC_BAD_REQUEST)
   }
 
@@ -224,7 +221,7 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
     val result = output.toObject[AwsProxyResponse]
 
     // Assert
-    result.getBody should be ("{\"message\":\"Runtime exception\"}")
+    result.getBody should be ("""{"message":"Runtime exception","cause":""}""")
     result.getStatusCode should be (HttpStatus.SC_INTERNAL_SERVER_ERROR)
   }
 

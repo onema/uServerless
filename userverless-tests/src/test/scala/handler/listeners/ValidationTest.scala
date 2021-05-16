@@ -12,10 +12,10 @@
 package handler.listeners
 
 import java.io.ByteArrayOutputStream
-
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import functions.validation.Function
+import io.onema.userverless.extensions.CollectionsExtensions.MapExtensions
 import io.onema.userverless.test.TestJavaObjectExtensions._
 import org.apache.http.HttpStatus
 import org.scalamock.scalatest.MockFactory
@@ -32,7 +32,7 @@ class ValidationTest extends FlatSpec with Matchers with MockFactory {
     val context = new MockLambdaContext
     val lambdaFunction = new Function
     val output = new ByteArrayOutputStream()
-    request.setHeaders(Map("Origin" -> "Foo.co").asJava)
+    request.setMultiValueHeaders(Map("Origin" -> "Foo.co").asHeaders)
 
     // Act
     lambdaFunction.lambdaHandler(request.toInputStream, output, context)
@@ -71,7 +71,7 @@ class ValidationTest extends FlatSpec with Matchers with MockFactory {
     val lambdaFunction = new Function
     val output = new ByteArrayOutputStream()
     request.setBody("""{"message":"foobar"}""")
-    request.setHeaders(Map("Origin" -> "Foo.co").asJava)
+    request.setMultiValueHeaders(Map("Origin" -> "Foo.co").asHeaders)
 
     // Act
     lambdaFunction.lambdaHandler(request.toInputStream, output, context)
