@@ -14,9 +14,6 @@ package io.onema.userverless.extensions
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 
 object AwsProxyExtensions {
-  implicit class AwsProxyResponseExtensions(response: AwsProxyResponse) {
-  }
-
   implicit class AwsProxyRequestExtensions(request: AwsProxyRequest) {
     def origin: Option[String] = Option(request.getMultiValueHeaders.getFirst("origin"))
   }
