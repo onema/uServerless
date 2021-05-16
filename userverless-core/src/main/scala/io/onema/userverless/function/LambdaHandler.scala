@@ -20,7 +20,7 @@ import com.typesafe.scalalogging.Logger
 import io.onema.json.JavaExtensions._
 import io.onema.json.Mapper
 import io.onema.userverless.configuration.lambda.LambdaConfiguration
-import io.onema.userverless.exception.ThrowableExtensions._
+import io.onema.userverless.extensions.LogExtensions.LoggerExtensions
 import io.onema.userverless.exception.{HandledException, MessageDecodingException}
 import io.onema.userverless.model.WarmUpEvent
 import io.onema.userverless.monitoring.LogMetrics.{count, time}
@@ -123,14 +123,12 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
     */
   protected def handle(codeBlock: => TResponse): Option[TResponse] = {
     Try(codeBlock) match {
-      case Success(response) =>
 
-        // If the Type is Unit, return None, else wrap the response in an option
-        val returnVal = response match {
-          case _: Unit => None
-          case _ => Option(response)
-        }
-        returnVal
+      // If the Type is Unit, return None
+      case Success(_: Unit) => None
+
+      // Wrap a successful response in an Option
+      case Success(response) => Option(response)
 
       // Handled exceptions will not be reported
       case Failure(e: HandledException) => Option(handleFailure(e, reportEx = false))
@@ -147,8 +145,7 @@ abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaCo
     * @return TResponse
     */
   protected def handleFailure(exception: Throwable, reportEx: Boolean): TResponse = {
-    val message = exception.structuredMessage(reportEx)
-    log.error(message)
+    log.error(exception, reportEx)
     count("uServerlessFunctionError")
     exceptionListeners.foreach(listener => listener(exception))
     throw exception

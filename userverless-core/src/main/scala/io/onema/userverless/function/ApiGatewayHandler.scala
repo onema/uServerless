@@ -17,7 +17,8 @@ import io.onema.userverless.configuration.cors.Extensions.AwsProxyResponseExtens
 import io.onema.userverless.configuration.cors.{CorsConfiguration, NoopCorsConfiguration}
 import io.onema.userverless.configuration.lambda.LambdaConfiguration
 import io.onema.userverless.exception.HandleRequestException
-import io.onema.userverless.exception.ThrowableExtensions._
+import io.onema.userverless.extensions.AwsProxyExtensions.AwsProxyRequestExtensions
+import io.onema.userverless.extensions.LogExtensions.LoggerExtensions
 import io.onema.userverless.http.HttpStatus
 import io.onema.userverless.monitoring.LogMetrics.count
 
@@ -29,7 +30,7 @@ trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
   with LambdaConfiguration {
 
   //--- Fields ---
-  override protected val log = Logger(classOf[ApiGatewayHandler])
+  override protected val log: Logger = Logger(classOf[ApiGatewayHandler])
 
   //--- Methods ---
 
@@ -41,13 +42,13 @@ trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
     * @return TResponse
     */
   override protected def handleFailure(exception: Throwable, reportException: Boolean): AwsProxyResponse = {
+    log.error(exception)
     exception match {
 
       // Handled Exceptions generate a response with an error message.
       // This is well suited for 4XX errors and should not be reported
       case ex: HandleRequestException =>
         count("uServerlessApiGatewayHandledError")
-        log.error(ex.structuredMessage(reportException = false))
         buildError(ex.code, ex.getMessage)
 
       // General exception, handle it gracefully
@@ -82,7 +83,7 @@ object ApiGatewayHandler {
       * @return AwsProxyResponse
       */
     protected def cors(request: AwsProxyRequest)(function: => AwsProxyResponse): AwsProxyResponse = {
-      val origin = Option(request.getHeaders.get("origin"))
+      val origin = request.origin
       val corsConfig = corsConfiguration(origin)
       corsConfig match {
         case _:NoopCorsConfiguration =>
@@ -93,7 +94,7 @@ object ApiGatewayHandler {
         case _ =>
       }
       if (!corsConfig.isOriginValid) {
-        throw new HandleRequestException(HttpStatus.BAD_REQUEST, s"Origin '${origin.getOrElse("")}' is not authorized")
+        throw new HandleRequestException(HttpStatus.FORBIDDEN, s"Origin '${origin.getOrElse("")}' is not authorized")
       }
       function.withCors(corsConfig)
     }

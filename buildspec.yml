@@ -15,7 +15,7 @@ phases:
   build:
     commands:
     - echo Testing JsonExtensions on `date`
-    - sbt clean coverage test
+    - sbt clean coverage test -no-colors
 
     - echo Submit coverage report to Codacy
     - ./submit_coverage.sh

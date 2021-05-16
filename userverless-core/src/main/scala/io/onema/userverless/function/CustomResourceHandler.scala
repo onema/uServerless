@@ -18,7 +18,7 @@ import io.onema.json.Extensions._
 import io.onema.userverless.events.CloudFormation.{CloudFormationRequest, CloudFormationResponse}
 import io.onema.userverless.events.Sns.SnsEvent
 import io.onema.userverless.exception.MessageDecodingException
-import io.onema.userverless.exception.ThrowableExtensions._
+import io.onema.userverless.extensions.ThrowableExtensions._
 
 import scala.util.{Failure, Success, Try}
 
