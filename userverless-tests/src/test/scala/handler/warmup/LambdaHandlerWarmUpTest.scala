@@ -19,7 +19,7 @@ import functions.process._
 import handler.EnvironmentHelper
 import io.onema.userverless.events.Sns.{SnsEvent, SnsRecord, SnsRecords}
 import io.onema.json.Extensions._
-import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.config.lambda.NoopLambdaConfiguration
 import io.onema.userverless.exception.MessageDecodingException
 import io.onema.userverless.function.SnsHandler
 import org.scalamock.scalatest.MockFactory

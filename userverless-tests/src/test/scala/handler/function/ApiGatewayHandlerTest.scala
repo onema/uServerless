@@ -18,11 +18,11 @@ import com.amazonaws.services.lambda.runtime.Context
 import functions.success.Function
 import handler.EnvironmentHelper
 import handler.function.ApiGatewayHandlerTest._
-import io.onema.userverless.configuration.lambda.{EnvLambdaConfiguration, MemoryLambdaConfiguration}
+import io.onema.userverless.config.lambda.{EnvLambdaConfiguration, MemoryLambdaConfiguration}
 import io.onema.userverless.exception.{HandleRequestException, RuntimeException}
 import io.onema.userverless.function.Extensions._
 import io.onema.userverless.function.{ApiGatewayHandler, ApiGatewayResponse}
-import io.onema.userverless.model.ApiGatewayErrorMessage
+import io.onema.userverless.domain.ApiGatewayErrorMessage
 import io.onema.userverless.test.TestJavaObjectExtensions._
 import org.apache.http.HttpStatus
 import org.scalamock.scalatest.MockFactory

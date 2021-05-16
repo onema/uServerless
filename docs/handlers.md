@@ -15,7 +15,7 @@ import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import com.typesafe.scalalogging.Logger
 import io.onema.userverless.function.LambdaHandler
-import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.config.lambda.NoopLambdaConfiguration
 import io.onema.userverless.http.HttpStatus
 
 object Logic {
@@ -43,7 +43,7 @@ import com.amazonaws.services.lambda.runtime.events.SNSEvent
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import com.typesafe.scalalogging.Logger
 import io.onema.userverless.function.LambdaHandler
-import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.config.lambda.NoopLambdaConfiguration
 import io.onema.userverless.http.HttpStatus
 
 object Logic {
@@ -71,7 +71,7 @@ For convenience, there is an `SnsHandler`, this handler automatically decodes th
 
 ```scala
 import com.amazonaws.services.lambda.runtime.Context
-import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.config.lambda.NoopLambdaConfiguration
 import io.onema.userverless.function.SnsHandler
 
 case class Foo(bar: String)
@@ -104,7 +104,7 @@ import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.sns.{AmazonSNSAsync, AmazonSNSAsyncClientBuilder}
 import io.onema.userverless.function.ApiGatewayHandler
-import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.config.lambda.NoopLambdaConfiguration
 import io.onema.userverless.http.HttpStatus
 
 object Logic {
@@ -291,8 +291,8 @@ import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import io.onema.userverless.http.HttpStatus
 
-import io.onema.userverless.configuration.cors.EnvCorsConfiguration
-import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.config.cors.EnvCorsConfiguration
+import io.onema.userverless.config.lambda.NoopLambdaConfiguration
 import io.onema.userverless.function.ApiGatewayHandler
 
 class EnvFunction extends ApiGatewayHandler with Cors with NoopLambdaConfiguration {
@@ -322,7 +322,7 @@ The following example creates an S3 bucket with the given name, and will empty i
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import com.amazonaws.services.s3.model.ObjectListing
 import functions.customresource.S3BucketFunction.{S3Properties, S3Response}
-import io.onema.userverless.configuration.lambda.EnvLambdaConfiguration
+import io.onema.userverless.config.lambda.EnvLambdaConfiguration
 import io.onema.userverless.events.CloudFormation
 import io.onema.userverless.events.CloudFormation.CloudFormationResponse
 import io.onema.userverless.function.CustomResourceHandler

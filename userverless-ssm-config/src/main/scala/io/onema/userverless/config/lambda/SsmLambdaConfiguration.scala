@@ -9,11 +9,11 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.userverless.configuration.lambda
+package io.onema.userverless.config.lambda
 
 import com.amazonaws.services.simplesystemsmanagement.{AWSSimpleSystemsManagementAsync, AWSSimpleSystemsManagementAsyncClientBuilder}
 import com.amazonaws.services.simplesystemsmanagement.model.{GetParameterRequest, GetParametersByPathRequest, ParameterNotFoundException}
-import io.onema.userverless.configuration.lambda.SsmLambdaConfiguration.StringExtensions
+import io.onema.userverless.config.lambda.SsmLambdaConfiguration.StringExtensions
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._

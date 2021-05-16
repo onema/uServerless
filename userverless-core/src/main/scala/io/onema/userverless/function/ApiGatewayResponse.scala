@@ -13,7 +13,7 @@ package io.onema.userverless.function
 
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse
 import io.onema.json.Extensions._
-import io.onema.userverless.model.ApiGatewayErrorMessage
+import io.onema.userverless.domain.ApiGatewayErrorMessage
 
 import scala.collection.JavaConverters._
 

@@ -12,8 +12,8 @@
 package io.onema.userverless.extensions
 
 import io.onema.json.Extensions._
-import io.onema.userverless.configuration.lambda.EnvLambdaConfiguration
-import io.onema.userverless.model.Log.{LogErrorMessage, Rename, StackTraceElement}
+import io.onema.userverless.config.lambda.EnvLambdaConfiguration
+import io.onema.userverless.domain.Log.{LogErrorMessage, Rename, StackTraceElement}
 
 import java.io.{PrintWriter, StringWriter}
 

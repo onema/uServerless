@@ -9,6 +9,6 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.userverless.model
+package io.onema.userverless.domain
 
 case class ApiGatewayErrorMessage(message: String, cause: String = "")

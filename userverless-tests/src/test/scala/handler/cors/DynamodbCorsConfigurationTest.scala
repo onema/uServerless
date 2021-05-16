@@ -12,7 +12,7 @@ package handler.cors
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync
 import com.amazonaws.services.dynamodbv2.model.{AttributeValue, DescribeTableResult, GetItemRequest, GetItemResult}
-import io.onema.userverless.configuration.cors.DynamodbCorsConfiguration
+import io.onema.userverless.config.cors.DynamodbCorsConfiguration
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -20,7 +20,7 @@ import scala.collection.JavaConverters._
 
 class DynamodbCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
 
-  "DynamoDB CORS configuration" should "return true when cors config is enabled" in {
+  "DynamoDB CORS config" should "return true when cors config is enabled" in {
 
     // Arrange
     val originSite = Option("https://foo.com")
@@ -36,7 +36,7 @@ class DynamodbCorsConfigurationTest extends FlatSpec with Matchers with MockFact
     isEnabled should be (true)
   }
 
-  "DynamoDB CORS configuration" should "return true when origin is valid" in {
+  "DynamoDB CORS config" should "return true when origin is valid" in {
 
     // Arrange
     val originSite = Option("https://foo.com")
@@ -55,7 +55,7 @@ class DynamodbCorsConfigurationTest extends FlatSpec with Matchers with MockFact
   /**
     * Dynamo db is not designed to be used as a generic * strategy.  Use EnvCorsConfiguration instead.
     */
-  "DynamoDB CORS configuration" should "return FALSE when configured origin is *" in {
+  "DynamoDB CORS config" should "return FALSE when configured origin is *" in {
 
     // Arrange
     val originSite = Option("https://foo.com")
@@ -71,7 +71,7 @@ class DynamodbCorsConfigurationTest extends FlatSpec with Matchers with MockFact
     isOriginValid should be (false)
   }
 
-  "DynamoDB CORS configuration that generates an exception" should "re-throw exception" in {
+  "DynamoDB CORS config that generates an exception" should "re-throw exception" in {
 
     // Arrange
     val originSite = Option("http://blah.com")
@@ -83,7 +83,7 @@ class DynamodbCorsConfigurationTest extends FlatSpec with Matchers with MockFact
     intercept[RuntimeException] { dynamoConfig.isOriginValid }
   }
 
-  "DynamoDB CORS configuration with no values" should "return false for no origin" in {
+  "DynamoDB CORS config with no values" should "return false for no origin" in {
 
     // Arrange
     val originSite = Option("http://blah.com")

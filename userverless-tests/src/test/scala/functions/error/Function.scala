@@ -13,9 +13,9 @@ package functions.error
 
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
-import io.onema.userverless.configuration.cors.EnvCorsConfiguration
-import io.onema.userverless.configuration.cors.Extensions._
-import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.config.cors.EnvCorsConfiguration
+import io.onema.userverless.config.cors.Extensions._
+import io.onema.userverless.config.lambda.NoopLambdaConfiguration
 import io.onema.userverless.extensions.AwsProxyExtensions.AwsProxyRequestExtensions
 import io.onema.userverless.function.ApiGatewayHandler
 

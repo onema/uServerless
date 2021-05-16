@@ -19,8 +19,8 @@ import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement
 import com.amazonaws.services.simplesystemsmanagement.model.{GetParameterRequest, GetParameterResult, Parameter}
 import functions.cors.{DynamodbFunction, EnvFunction, NoopFunction, SsmFunction}
 import handler.EnvironmentHelper
-import io.onema.userverless.configuration.cors.DynamodbCorsConfiguration
-import io.onema.userverless.configuration.cors.Extensions._
+import io.onema.userverless.config.cors.DynamodbCorsConfiguration
+import io.onema.userverless.config.cors.Extensions._
 import io.onema.userverless.extensions.CollectionsExtensions.MapExtensions
 import io.onema.userverless.test.TestJavaObjectExtensions._
 import org.apache.http.HttpStatus
@@ -217,7 +217,7 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     originOption.getOrElse("") should be (originSite)
   }
 
-  "A function with Noop CORS configuration" should "not return an internal server error response without access-control-allow-origin header" in {
+  "A function with Noop CORS config" should "not return an internal server error response without access-control-allow-origin header" in {
     // Arrange
     val originSite = "https://baz.com"
     val lambdaFunction = new NoopFunction()

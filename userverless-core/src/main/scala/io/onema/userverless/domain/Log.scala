@@ -9,7 +9,7 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.userverless.model
+package io.onema.userverless.domain
 
 import java.text.SimpleDateFormat
 import java.util.Calendar

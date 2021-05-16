@@ -9,13 +9,13 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.userverless.configuration.lambda
+package io.onema.userverless.config.lambda
 
 trait NoopLambdaConfiguration extends LambdaConfiguration {
   /**
     * Always return None
     *
-    * @param path name of the configuration value
+    * @param path name of the config value
     * @return
     */
   def getValue(path: String): Option[String] = None

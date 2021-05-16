@@ -88,7 +88,7 @@ lazy val uServerlessTests = (project in file("userverless-tests"))
 ).dependsOn(uServerlessEvents, uServerlessCore, uServerlessDynamoConfig, uServerlessSsmConfig)
 
 
-// Maven Central Repo boilerplate configuration
+// Maven Central Repo boilerplate config
 lazy val commonPublishSettings = Seq(
 //  publishTo := Some("Onema Snapshots" at "s3://s3-us-east-1.amazonaws.com/ones-deployment-bucket/snapshots"),
   publishTo := {

@@ -9,7 +9,7 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.userverless.configuration.cors
+package io.onema.userverless.config.cors
 
 object EnvCorsConfiguration {
   def apply(origin: Option[String]): EnvCorsConfiguration = new EnvCorsConfiguration(origin)

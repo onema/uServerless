@@ -19,10 +19,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.typesafe.scalalogging.Logger
 import io.onema.json.JavaExtensions._
 import io.onema.json.Mapper
-import io.onema.userverless.configuration.lambda.LambdaConfiguration
+import io.onema.userverless.config.lambda.LambdaConfiguration
 import io.onema.userverless.extensions.LogExtensions.LoggerExtensions
 import io.onema.userverless.exception.{HandledException, MessageDecodingException}
-import io.onema.userverless.model.WarmUpEvent
+import io.onema.userverless.domain.WarmUpEvent
 import io.onema.userverless.monitoring.LogMetrics.{count, time}
 
 import scala.collection.mutable.ArrayBuffer

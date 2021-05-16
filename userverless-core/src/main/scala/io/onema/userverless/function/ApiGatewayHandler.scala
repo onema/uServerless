@@ -13,9 +13,9 @@ package io.onema.userverless.function
 
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.typesafe.scalalogging.Logger
-import io.onema.userverless.configuration.cors.Extensions.AwsProxyResponseExtension
-import io.onema.userverless.configuration.cors.{CorsConfiguration, NoopCorsConfiguration}
-import io.onema.userverless.configuration.lambda.LambdaConfiguration
+import io.onema.userverless.config.cors.Extensions.AwsProxyResponseExtension
+import io.onema.userverless.config.cors.{CorsConfiguration, NoopCorsConfiguration}
+import io.onema.userverless.config.lambda.LambdaConfiguration
 import io.onema.userverless.exception.HandleRequestException
 import io.onema.userverless.extensions.AwsProxyExtensions.AwsProxyRequestExtensions
 import io.onema.userverless.extensions.LogExtensions.LoggerExtensions
@@ -70,7 +70,7 @@ object ApiGatewayHandler {
 
     //--- Methods ---
     /**
-      * This method should construct and return the the cors configuration
+      * This method should construct and return the the cors config
       * @param origin option containing a string or None with the request origin.
       * @return CorsConfiguration
       */
@@ -78,7 +78,7 @@ object ApiGatewayHandler {
 
     /**
       * Curried method that takes the API Gateway AwsProxyRequest as it's first parameter. Before
-      * executing the codeBlock passed to it, it check if the configuration and the origin are valid.
+      * executing the codeBlock passed to it, it check if the config and the origin are valid.
       * @param request the AWS proxy request
       * @return AwsProxyResponse
       */
@@ -87,7 +87,7 @@ object ApiGatewayHandler {
       val corsConfig = corsConfiguration(origin)
       corsConfig match {
         case _:NoopCorsConfiguration =>
-          throw new RuntimeException(s"The CORS configuration ${NoopCorsConfiguration.getClass} is only a placeholder and " +
+          throw new RuntimeException(s"The CORS config ${NoopCorsConfiguration.getClass} is only a placeholder and " +
             s"should not be used. Consider using one of the available CORS Configuration strategies. " +
             s"For more information see the documentation."
           )

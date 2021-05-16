@@ -13,7 +13,7 @@ package functions.handle.error
 
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
-import io.onema.userverless.configuration.lambda.NoopLambdaConfiguration
+import io.onema.userverless.config.lambda.NoopLambdaConfiguration
 import io.onema.userverless.exception.HandleRequestException
 import io.onema.userverless.function.ApiGatewayHandler
 import org.apache.http.HttpStatus

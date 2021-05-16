@@ -14,7 +14,7 @@ package functions.customresource
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import com.amazonaws.services.s3.model.ObjectListing
 import functions.customresource.S3BucketFunction.{S3Properties, S3Response}
-import io.onema.userverless.configuration.lambda.EnvLambdaConfiguration
+import io.onema.userverless.config.lambda.EnvLambdaConfiguration
 import io.onema.userverless.events.CloudFormation
 import io.onema.userverless.events.CloudFormation.CloudFormationResponse
 import io.onema.userverless.function.CustomResourceHandler
