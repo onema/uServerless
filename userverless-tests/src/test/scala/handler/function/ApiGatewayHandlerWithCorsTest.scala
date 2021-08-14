@@ -15,8 +15,6 @@ import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync
 import com.amazonaws.services.dynamodbv2.model.{AttributeValue, DescribeTableResult, GetItemRequest, GetItemResult}
-import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
-import com.amazonaws.services.simplesystemsmanagement.model.{GetParameterRequest, GetParameterResult, Parameter}
 import functions.cors.{DynamodbFunction, EnvFunction, NoopFunction, SsmFunction}
 import handler.EnvironmentHelper
 import io.onema.userverless.config.cors.DynamodbCorsConfiguration
@@ -25,11 +23,15 @@ import io.onema.userverless.extensions.CollectionsExtensions.MapExtensions
 import io.onema.userverless.test.TestJavaObjectExtensions._
 import org.apache.http.HttpStatus
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import software.amazon.awssdk.services.ssm.SsmClient
+import software.amazon.awssdk.services.ssm.model.{GetParameterRequest, GetParameterResponse, Parameter}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.MapHasAsJava
 
-class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFactory with EnvironmentHelper {
+
+class ApiGatewayHandlerWithCorsTest extends AnyFlatSpec with Matchers with MockFactory with EnvironmentHelper {
 
   "A function with CORS enabled using env vars" should "return response with access-control-allow-origin header" in {
     // Arrange
@@ -243,10 +245,11 @@ class ApiGatewayHandlerWithCorsTest extends FlatSpec with Matchers with MockFact
     val request = new AwsProxyRequest()
     request.setMultiValueHeaders(Map("origin" -> originSite).asHeaders)
     val context = new MockLambdaContext
-    val paramRequest = new GetParameterRequest().withName("/cors/sites").withWithDecryption(true)
-    val result = new GetParameterResult().withParameter(new Parameter().withName("/cors/sites").withValue(originSite))
-    val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
-    (ssmClientMock.getParameter _).expects(paramRequest).returning(result).atLeastTwice()
+    val paramRequest = GetParameterRequest.builder().name("/cors/sites").withDecryption(true).build()
+    val parameter = Parameter.builder().name("/cors/sites").value(originSite).build()
+    val result = GetParameterResponse.builder().parameter(parameter).build()
+    val ssmClientMock = mock[SsmClient]
+    (ssmClientMock.getParameter(_: GetParameterRequest)).expects(paramRequest).returning(result).atLeastTwice()
     val output = new ByteArrayOutputStream()
     val lambdaFunction = new SsmFunction(ssmClientMock)
 

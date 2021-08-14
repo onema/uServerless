@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.typesafe.scalalogging.Logger
 import io.onema.json.JavaExtensions._
 import io.onema.json.Mapper
-import io.onema.userverless.config.lambda.LambdaConfiguration
+import io.onema.userverless.config.lambda.Configuration
 import io.onema.userverless.extensions.LogExtensions.LoggerExtensions
 import io.onema.userverless.exception.{HandledException, MessageDecodingException}
 import io.onema.userverless.domain.WarmUpEvent
@@ -30,7 +30,7 @@ import scala.io.Source
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
 
-abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends LambdaConfiguration {
+abstract class LambdaHandler[TEvent: ClassTag, TResponse<: Any] extends Configuration {
 
   //--- Fields ---
   protected val log: Logger = Logger(classOf[LambdaHandler[TEvent, TResponse]])

@@ -10,22 +10,24 @@
   */
 package handler.cors
 
-import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementAsync
-import com.amazonaws.services.simplesystemsmanagement.model._
 import io.onema.userverless.config.cors.SsmCorsConfiguration
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import software.amazon.awssdk.services.ssm.SsmClient
+import software.amazon.awssdk.services.ssm.model.{GetParameterRequest, GetParameterResponse, Parameter, ParameterNotFoundException}
 
-class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
+class SsmCorsConfigurationTest extends AnyFlatSpec with Matchers with MockFactory {
 
   "Ssm CORS config" should "return true when cors config is enabled" in {
 
     // Arrange
     val originSite = Option("https://foo.com")
-    val request = new GetParameterRequest().withName("/test/cors/sites").withWithDecryption(true)
-    val result = new GetParameterResult().withParameter(new Parameter().withName("/test/cors/sites").withValue("test.com"))
-    val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
-    (ssmClientMock.getParameter _).expects(request).returning(result)
+    val request = GetParameterRequest.builder().name("/test/cors/sites").withDecryption(true).build()
+    val parameter = Parameter.builder().name("/test/cors/sites").value("test.com").build()
+    val result = GetParameterResponse.builder().parameter(parameter).build()
+    val ssmClientMock = mock[SsmClient]
+    (ssmClientMock.getParameter(_: GetParameterRequest)).expects(request).returning(result)
     val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "test")
 
     // Act
@@ -39,10 +41,11 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
 
     // Arrange
     val originSite = Option("https://foo.com")
-    val request = new GetParameterRequest().withName("/cors/sites").withWithDecryption(true)
-    val result = new GetParameterResult().withParameter(new Parameter().withName("/cors/sites").withValue("https://foo.com"))
-    val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
-    (ssmClientMock.getParameter _).expects(request).returning(result)
+    val request = GetParameterRequest.builder().name("/cors/sites").withDecryption(true).build()
+    val parameter = Parameter.builder().name("/cors/sites").value("https://foo.com").build()
+    val result = GetParameterResponse.builder().parameter(parameter).build()
+    val ssmClientMock = mock[SsmClient]
+    (ssmClientMock.getParameter(_: GetParameterRequest)).expects(request).returning(result)
     val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "")
 
     // Act
@@ -56,9 +59,9 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
 
     // Arrange
     val originSite = Option("https://foo.com")
-    val request = new GetParameterRequest().withName("/test/cors/sites").withWithDecryption(true)
-    val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
-    (ssmClientMock.getParameter _).expects(request).throws(new ParameterNotFoundException("Parameter does not exist")).anyNumberOfTimes()
+    val request = GetParameterRequest.builder().name("/test/cors/sites").withDecryption(true).build()
+    val ssmClientMock = mock[SsmClient]
+    (ssmClientMock.getParameter(_: GetParameterRequest)).expects(request).throws(ParameterNotFoundException.builder().build()).anyNumberOfTimes()
     val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "test")
 
     // Act
@@ -74,10 +77,11 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
 
     // Arrange
     val originSite = Option("https://foo.com")
-    val request = new GetParameterRequest().withName("/test/cors/sites").withWithDecryption(true)
-    val result = new GetParameterResult().withParameter(new Parameter().withName("/test/cors/sites").withValue(originSite.get))
-    val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
-    (ssmClientMock.getParameter _).expects(request).returning(result).noMoreThanTwice()
+    val request = GetParameterRequest.builder().name("/test/cors/sites").withDecryption(true).build()
+    val parameter = Parameter.builder().name("/test/cors/sites").value(originSite.get).build()
+    val result = GetParameterResponse.builder().parameter(parameter).build()
+    val ssmClientMock = mock[SsmClient]
+    (ssmClientMock.getParameter(_: GetParameterRequest)).expects(request).returning(result).noMoreThanTwice()
     val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "test")
 
     // Act
@@ -91,10 +95,11 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
 
     // Arrange
     val originSite = Option("https://foo.com")
-    val request = new GetParameterRequest().withName("/test/cors/sites").withWithDecryption(true)
-    val result = new GetParameterResult().withParameter(new Parameter().withName("/test/cors/sites").withValue("*"))
-    val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
-    (ssmClientMock.getParameter _).expects(request).returning(result).noMoreThanTwice()
+    val request = GetParameterRequest.builder().name("/test/cors/sites").withDecryption(true).build()
+    val parameter = Parameter.builder().name("/test/cors/sites").value("*").build()
+    val result = GetParameterResponse.builder().parameter(parameter).build()
+    val ssmClientMock = mock[SsmClient]
+    (ssmClientMock.getParameter(_: GetParameterRequest)).expects(request).returning(result).noMoreThanTwice()
     val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "test")
 
     // Act
@@ -109,10 +114,11 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
     // Arrange
     val configuredOriginValues = "https://foo.com,https://bar.com,http://baz.com"
     val originSite = Option("https://foo.com")
-    val request = new GetParameterRequest().withName("/test/cors/sites").withWithDecryption(true)
-    val result = new GetParameterResult().withParameter(new Parameter().withName("/test/cors/sites").withValue(configuredOriginValues))
-    val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
-    (ssmClientMock.getParameter _).expects(request).returning(result).anyNumberOfTimes()
+    val request = GetParameterRequest.builder().name("/test/cors/sites").withDecryption(true).build()
+    val parameter = Parameter.builder().name("/test/cors/sites").value(configuredOriginValues).build()
+    val result = GetParameterResponse.builder().parameter(parameter).build()
+    val ssmClientMock = mock[SsmClient]
+    (ssmClientMock.getParameter(_: GetParameterRequest)).expects(request).returning(result).anyNumberOfTimes()
     val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "test")
 
     // Act
@@ -129,10 +135,11 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
     // Arrange
     val configuredOriginValues = "https://foo.com,https://bar.com,http://baz.com"
     val originSite = Option("http://blah.com")
-    val request = new GetParameterRequest().withName("/test/cors/sites").withWithDecryption(true)
-    val result = new GetParameterResult().withParameter(new Parameter().withName("/test/cors/sites").withValue(configuredOriginValues))
-    val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
-    (ssmClientMock.getParameter _).expects(request).returning(result).atLeastTwice()
+    val request = GetParameterRequest.builder().name("/test/cors/sites").withDecryption(true).build()
+    val parameter = Parameter.builder().name("/test/cors/sites").value(configuredOriginValues).build()
+    val result = GetParameterResponse.builder().parameter(parameter).build()
+    val ssmClientMock = mock[SsmClient]
+    (ssmClientMock.getParameter(_: GetParameterRequest)).expects(request).returning(result).atLeastTwice()
     val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "test")
 
     // Act
@@ -147,10 +154,11 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
     // Arrange
     val configuredOriginValues = ""
     val originSite = Option("http://blah.com")
-    val request = new GetParameterRequest().withName("/test/cors/sites").withWithDecryption(true)
-    val result = new GetParameterResult().withParameter(new Parameter().withName("/test/cors/sites").withValue(configuredOriginValues))
-    val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
-    (ssmClientMock.getParameter _).expects(request).returning(result).atLeastTwice()
+    val request = GetParameterRequest.builder().name("/test/cors/sites").withDecryption(true).build()
+    val parameter = Parameter.builder().name("/test/cors/sites").value(configuredOriginValues).build()
+    val result = GetParameterResponse.builder().parameter(parameter).build()
+    val ssmClientMock = mock[SsmClient]
+    (ssmClientMock.getParameter(_: GetParameterRequest)).expects(request).returning(result).atLeastTwice()
     val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "test")
 
     // Act
@@ -165,10 +173,11 @@ class SsmCorsConfigurationTest extends FlatSpec with Matchers with MockFactory {
     // Arrange
     val configuredOriginValues = ""
     val originSite = Option("")
-    val request = new GetParameterRequest().withName("/test/cors/sites").withWithDecryption(true)
-    val result = new GetParameterResult().withParameter(new Parameter().withName("/test/cors/sites").withValue(configuredOriginValues))
-    val ssmClientMock = mock[AWSSimpleSystemsManagementAsync]
-    (ssmClientMock.getParameter _).expects(request).returning(result).atLeastTwice()
+    val request = GetParameterRequest.builder().name("/test/cors/sites").withDecryption(true).build()
+    val parameter = Parameter.builder().name("/test/cors/sites").value(configuredOriginValues).build()
+    val result = GetParameterResponse.builder().parameter(parameter).build()
+    val ssmClientMock = mock[SsmClient]
+    (ssmClientMock.getParameter(_: GetParameterRequest)).expects(request).returning(result).atLeastTwice()
     val ssmConfig = SsmCorsConfiguration(originSite, ssmClientMock, "test")
 
     // Act

@@ -11,10 +11,10 @@
 
 package io.onema.userverless.config.lambda
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.MapHasAsScala
 
 
-trait EnvLambdaConfiguration extends LambdaConfiguration {
+trait EnvLambdaConfiguration extends Configuration {
 
   //--- Fields ---
   protected val stageName: String = sys.env.getOrElse("STAGE_NAME", "")

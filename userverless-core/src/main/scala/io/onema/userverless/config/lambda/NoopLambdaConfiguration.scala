@@ -11,7 +11,7 @@
 
 package io.onema.userverless.config.lambda
 
-trait NoopLambdaConfiguration extends LambdaConfiguration {
+trait NoopLambdaConfiguration extends Configuration {
   /**
     * Always return None
     *

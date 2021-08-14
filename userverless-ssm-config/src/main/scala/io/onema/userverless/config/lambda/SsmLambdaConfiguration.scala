@@ -11,12 +11,12 @@
 
 package io.onema.userverless.config.lambda
 
-import com.amazonaws.services.simplesystemsmanagement.{AWSSimpleSystemsManagementAsync, AWSSimpleSystemsManagementAsyncClientBuilder}
-import com.amazonaws.services.simplesystemsmanagement.model.{GetParameterRequest, GetParametersByPathRequest, ParameterNotFoundException}
 import io.onema.userverless.config.lambda.SsmLambdaConfiguration.StringExtensions
+import software.amazon.awssdk.services.ssm.SsmClient
+import software.amazon.awssdk.services.ssm.model.{GetParameterRequest, GetParametersByPathRequest, ParameterNotFoundException}
 
 import scala.annotation.tailrec
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
 
 object SsmLambdaConfiguration {
@@ -29,10 +29,10 @@ object SsmLambdaConfiguration {
   }
 }
 
-trait SsmLambdaConfiguration extends LambdaConfiguration {
+trait SsmLambdaConfiguration extends Configuration {
 
   //--- Fields ---
-  protected val ssmClient: AWSSimpleSystemsManagementAsync = AWSSimpleSystemsManagementAsyncClientBuilder.defaultClient()
+  protected val ssmClient: SsmClient =  SsmClient.builder().build()
 
   protected val stageName: String = sys.env.getOrElse("STAGE_NAME", "")
 
@@ -61,21 +61,22 @@ trait SsmLambdaConfiguration extends LambdaConfiguration {
     @tailrec
     def getParameters(path: String, params: Map[String, String] = Map(), nextToken: Option[String] = None): Map[String, String]  = {
       val name = s"/$stageName/$path".stripDoubleSlashes
-      val request = new GetParametersByPathRequest()
-        .withPath(name)
-        .withRecursive(true)
-        .withWithDecryption(true)
+
+      val requestBuilder = GetParametersByPathRequest.builder()
+        .path(name)
+        .recursive(true)
+        .withDecryption(true)
       if (nextToken.isDefined) {
-        request.withNextToken(nextToken.get)
+        requestBuilder.nextToken(nextToken.get)
       }
-      val response = ssmClient.getParametersByPath(request)
-      val current = response.getParameters.asScala.map(x => x.getName.replaceAll(s"/$stageName", "") -> x.getValue).toMap
+      val response = ssmClient.getParametersByPath(requestBuilder.build())
+      val current = response.parameters().asScala
+        .map(x => x.name().replaceAll("/" + stageName, "") -> x.value()).toMap
 
       // Return params, otherwise continue with the recursion
-      if (Option(response.getNextToken).isEmpty) {
-        params ++ current
-      } else {
-        getParameters(path, params ++ current, Option(response.getNextToken))
+      Option(response.nextToken()) match {
+        case nextToken: Some[String] => getParameters(path, params ++ current, nextToken)
+        case None => params ++ current
       }
     }
     getParameters(path)
@@ -88,12 +89,13 @@ trait SsmLambdaConfiguration extends LambdaConfiguration {
     */
   private def getParameter(name: String): Option[String] = {
     Try {
-      val request = new GetParameterRequest()
-        .withName(name)
-        .withWithDecryption(true)
+      val request = GetParameterRequest.builder()
+        .name(name)
+        .withDecryption(true)
+        .build()
       ssmClient.getParameter(request)
     } match {
-      case Success(r) => Some(r.getParameter.getValue)
+      case Success(r) => Some(r.parameter().value())
       case Failure(_: ParameterNotFoundException) => None
       case Failure(e) => throw e
     }

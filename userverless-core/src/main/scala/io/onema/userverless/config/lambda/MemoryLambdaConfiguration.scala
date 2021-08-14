@@ -11,10 +11,8 @@
 
 package io.onema.userverless.config.lambda
 
-import scala.collection.JavaConverters._
 
-
-trait MemoryLambdaConfiguration extends LambdaConfiguration {
+trait MemoryLambdaConfiguration extends Configuration {
 
   //--- Fields ---
   protected def map: Map[String, String]

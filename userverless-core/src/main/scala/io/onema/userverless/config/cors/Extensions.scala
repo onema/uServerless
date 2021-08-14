@@ -12,7 +12,8 @@
 package io.onema.userverless.config.cors
 
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse
-import scala.collection.JavaConverters._
+
+import scala.jdk.CollectionConverters.{MapHasAsJava, MapHasAsScala}
 
 
 object Extensions {

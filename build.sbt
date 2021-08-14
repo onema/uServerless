@@ -1,14 +1,15 @@
-lazy val scala213 = "2.13.5"
-lazy val scala212 = "2.12.10"
+lazy val scala213 = "2.13.6"
+lazy val scala212 = "2.12.14"
 lazy val scala211 = "2.11.12"
 lazy val supportedScalaVersions = List(scala213, scala212, scala211)
 
 ThisBuild / organization := "io.onema"
 ThisBuild / version      := "0.5.0"
-ThisBuild / scalaVersion := scala212
+ThisBuild / scalaVersion := scala213
 ThisBuild / parallelExecution in Test := false
 
 val awsSdkVersion = "1.11.1004"
+val awsSdkV2Version = "2.17.19"
 
 lazy val uServerless = (project in file("."))
 .settings(skip in publish := true)
@@ -37,6 +38,9 @@ lazy val uServerlessCore = (project in file("userverless-core"))
       "com.amazonaws"               % "aws-lambda-java-core"                % "1.2.1",
       // The serverless java-container supports request context authorizer claims that are currently not available in the lambda-java-events
       "com.amazonaws.serverless"    % "aws-serverless-java-container-core"  % "1.5.2",
+
+      // Cats effect libraries
+      "org.typelevel"               %% "cats-effect"                        % "3.2.2",
 
       // Logging
       "com.typesafe.scala-logging"  %% "scala-logging"                      % "3.9.2",
@@ -67,7 +71,7 @@ lazy val uServerlessSsmConfig = (project in file("userverless-ssm-config"))
   libraryDependencies ++= {
     Seq(
       // AWS libraries
-      "com.amazonaws"               % "aws-java-sdk-ssm"                    % awsSdkVersion,
+      "software.amazon.awssdk"               % "ssm"                    % awsSdkV2Version,
     )
   }
 ).dependsOn(uServerlessCore)
@@ -82,7 +86,7 @@ lazy val uServerlessTests = (project in file("userverless-tests"))
     Seq(
       // Testing
       "org.scalatest"             %% "scalatest"                 % "3.1.2"   % Test,
-      "org.scalamock"             %% "scalamock"                 % "4.4.0"   % Test
+      "org.scalamock"             %% "scalamock"                 % "5.1.0"   % Test
     )
   },
 ).dependsOn(uServerlessEvents, uServerlessCore, uServerlessDynamoConfig, uServerlessSsmConfig)

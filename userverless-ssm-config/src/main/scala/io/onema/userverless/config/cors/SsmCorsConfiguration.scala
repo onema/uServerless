@@ -11,28 +11,28 @@
 
 package io.onema.userverless.config.cors
 
-import com.amazonaws.services.simplesystemsmanagement.{AWSSimpleSystemsManagementAsync, AWSSimpleSystemsManagementAsyncClientBuilder}
 import io.onema.userverless.config.lambda.SsmLambdaConfiguration
+import software.amazon.awssdk.services.ssm.SsmClient
 
 object SsmCorsConfiguration {
   def apply(origin: Option[String]): SsmCorsConfiguration = {
-    SsmCorsConfiguration(origin, AWSSimpleSystemsManagementAsyncClientBuilder.defaultClient())
+    SsmCorsConfiguration(origin, SsmClient.builder().build())
   }
 
   def apply(origin: Option[String], stageName: String): SsmCorsConfiguration = {
-    SsmCorsConfiguration(origin, AWSSimpleSystemsManagementAsyncClientBuilder.defaultClient(), stageName)
+    SsmCorsConfiguration(origin, SsmClient.builder().build(), stageName)
   }
 
-  def apply(origin: Option[String], ssmClient: AWSSimpleSystemsManagementAsync): SsmCorsConfiguration = {
+  def apply(origin: Option[String], ssmClient: SsmClient): SsmCorsConfiguration = {
     SsmCorsConfiguration(origin, ssmClient, sys.env.getOrElse("STAGE_NAME", ""))
   }
 
-  def apply(origin: Option[String], ssmClient: AWSSimpleSystemsManagementAsync, stageName: String): SsmCorsConfiguration = {
+  def apply(origin: Option[String], ssmClient: SsmClient, stageName: String): SsmCorsConfiguration = {
     new SsmCorsConfiguration(origin, ssmClient, stageName)
   }
 }
 
-class SsmCorsConfiguration(origin: Option[String], override val ssmClient: AWSSimpleSystemsManagementAsync, override val stageName: String)
+class SsmCorsConfiguration(origin: Option[String], override val ssmClient: SsmClient, override val stageName: String)
   extends CorsConfiguration(origin) with SsmLambdaConfiguration {
 
   //--- Methods ---

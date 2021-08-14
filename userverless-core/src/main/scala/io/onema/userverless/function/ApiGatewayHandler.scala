@@ -15,7 +15,7 @@ import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.typesafe.scalalogging.Logger
 import io.onema.userverless.config.cors.Extensions.AwsProxyResponseExtension
 import io.onema.userverless.config.cors.{CorsConfiguration, NoopCorsConfiguration}
-import io.onema.userverless.config.lambda.LambdaConfiguration
+import io.onema.userverless.config.lambda.Configuration
 import io.onema.userverless.exception.HandleRequestException
 import io.onema.userverless.extensions.AwsProxyExtensions.AwsProxyRequestExtensions
 import io.onema.userverless.extensions.LogExtensions.LoggerExtensions
@@ -27,7 +27,7 @@ import scala.util.Try
 
 trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
   with ApiGatewayResponse
-  with LambdaConfiguration {
+  with Configuration {
 
   //--- Fields ---
   override protected val log: Logger = Logger(classOf[ApiGatewayHandler])
