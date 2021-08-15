@@ -68,6 +68,7 @@ trait Configuration {
   def validateInt(path: String): ValidationResult[Int] = validateToType(path) { stringVal => stringVal.toInt }
   def validateFloat(path: String): ValidationResult[Float] = validateToType(path) { stringVal => stringVal.toFloat }
   def validateDouble(path: String): ValidationResult[Double] = validateToType(path) { stringVal => stringVal.toDouble }
+  def validateBoolean(path: String): ValidationResult[Boolean] = validateToType(path) { stringVal => stringVal.toBoolean }
 
   /**
     * This method uses the getValue to retrieve the value from the path. Additionally, it takes a conversion function
