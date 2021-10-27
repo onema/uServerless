@@ -1,18 +1,18 @@
-/**
-  * This file is part of the ONEMA uServerless Package.
-  * For the full copyright and license information,
-  * please view the LICENSE file that was distributed
-  * with this source code.
-  *
-  * copyright (c) 2021, Juan Manuel Torres (http://onema.io)
-  *
-  * @author Juan Manuel Torres <software@onema.io>
-  */
+/*
+ * This file is part of the ONEMA userverless-core Package.
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed
+ * with this source code.
+ *
+ * copyright (c) 2021-2021, Juan Manuel Torres (http://onema.dev)
+ *
+ * @author Juan Manuel Torres <software@onema.io>
+ */
 
-package io.onema.userverless.extensions
+package io.onema.userverless.common
 
 import io.onema.json.Extensions._
-import io.onema.userverless.config.lambda.EnvLambdaConfiguration
+import io.onema.userverless.config.EnvLambdaConfiguration
 import io.onema.userverless.domain.Log.{LogErrorMessage, Rename, StackTraceElement}
 
 import java.io.{PrintWriter, StringWriter}

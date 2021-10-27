@@ -9,7 +9,7 @@
   * @author Juan Manuel Torres <software@onema.io>
   */
 
-package io.onema.userverless.function
+package io.onema.userverless.service
 import java.io.OutputStreamWriter
 import java.net.{HttpURLConnection, URL}
 
@@ -18,7 +18,7 @@ import io.onema.json.Extensions._
 import io.onema.userverless.events.CloudFormation.{CloudFormationRequest, CloudFormationResponse}
 import io.onema.userverless.events.Sns.SnsEvent
 import io.onema.userverless.exception.MessageDecodingException
-import io.onema.userverless.extensions.ThrowableExtensions._
+import io.onema.userverless.common.ThrowableExtensions._
 
 import scala.util.{Failure, Success, Try}
 

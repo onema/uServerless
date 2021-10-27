@@ -1,32 +1,30 @@
-/**
-  * This file is part of the ONEMA onema.userverless Package.
-  * For the full copyright and license information,
-  * please view the LICENSE file that was distributed
-  * with this source code.
-  *
-  * copyright (c) 2018, Juan Manuel Torres (http://onema.io)
-  *
-  * @author Juan Manuel Torres <software@onema.io>
-  */
+/*
+ * This file is part of the ONEMA userverless-core Package.
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed
+ * with this source code.
+ *
+ * copyright (c) 2018-2021, Juan Manuel Torres (http://onema.dev)
+ *
+ * @author Juan Manuel Torres <software@onema.io>
+ */
 
-package io.onema.userverless.function
+package io.onema.userverless.service
 
+import cats.effect.IO
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.typesafe.scalalogging.Logger
-import io.onema.userverless.config.cors.Extensions.AwsProxyResponseExtension
-import io.onema.userverless.config.cors.{CorsConfiguration, NoopCorsConfiguration}
-import io.onema.userverless.config.lambda.Configuration
+import io.onema.userverless.common.ConfigExtensions.AwsProxyResponseExtension
 import io.onema.userverless.exception.HandleRequestException
-import io.onema.userverless.extensions.AwsProxyExtensions.AwsProxyRequestExtensions
-import io.onema.userverless.extensions.LogExtensions.LoggerExtensions
-import io.onema.userverless.http.HttpStatus
+import io.onema.userverless.common.AwsProxyExtensions.AwsProxyRequestExtensions
+import io.onema.userverless.common.HttpStatus
+import io.onema.userverless.common.LogExtensions.LoggerExtensions
+import io.onema.userverless.config.{Configuration, CorsConfiguration, NoopCorsConfiguration}
 import io.onema.userverless.monitoring.LogMetrics.count
-
-import scala.util.Try
 
 
 trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
-  with ApiGatewayResponse
+  with ApiGatewayResponseBuilder
   with Configuration {
 
   //--- Fields ---
@@ -41,22 +39,25 @@ trait ApiGatewayHandler extends LambdaHandler[AwsProxyRequest, AwsProxyResponse]
     * @param exception the reported exception
     * @return TResponse
     */
-  override protected def handleFailure(exception: Throwable, reportException: Boolean): AwsProxyResponse = {
+  override protected def handleFailure(exception: Throwable, reportException: Boolean): IO[AwsProxyResponse] = {
     log.error(exception)
     exception match {
 
       // Handled Exceptions generate a response with an error message.
       // This is well suited for 4XX errors and should not be reported
-      case ex: HandleRequestException =>
-        count("uServerlessApiGatewayHandledError")
-        buildError(ex.code, ex.getMessage)
+      case ex: HandleRequestException => for {
+        _ <- IO { count("uServerlessApiGatewayHandledError") }
+        response <- IO { buildError(ex.code, ex.getMessage) }
+      } yield response
 
       // General exception, handle it gracefully
-      case ex =>
-        Try(super.handleFailure(ex, reportEx = true))
-
-        // Generate response to send back to the api user
-        buildError(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error: check the logs for more information.")
+      case ex => for {
+        _ <- IO { log.error(ex, reportException) }
+        _ <- IO { count("uServerless.functionError") }
+        response <- IO {
+          buildError(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error: check the logs for more information.")
+        }
+      } yield response
     }
   }
 }

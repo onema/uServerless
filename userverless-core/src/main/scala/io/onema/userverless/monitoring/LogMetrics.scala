@@ -1,17 +1,21 @@
-/**
-  * This file is part of the ONEMA uServerless Package.
-  * For the full copyright and license information,
-  * please view the LICENSE file that was distributed
-  * with this source code.
-  *
-  * copyright (c) 2018, Juan Manuel Torres (http://onema.io)
-  *
-  * @author Juan Manuel Torres <software@onema.io>
-  */
+/*
+ * This file is part of the ONEMA userverless-core Package.
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed
+ * with this source code.
+ *
+ * copyright (c) 2018-2021, Juan Manuel Torres (http://onema.dev)
+ *
+ * @author Juan Manuel Torres <software@onema.io>
+ */
 
 package io.onema.userverless.monitoring
 
+import cats.effect.{Deferred, IO}
 import com.typesafe.scalalogging.Logger
+
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 
 
@@ -41,38 +45,55 @@ object LogMetrics extends Metrics {
     }
   }
 
-  /**
-    * Time the execution of a code block
-    *
-    * @param blockName The name of the code block that will be timed
-    * @param codeBlock function that will be timed
-    * @tparam T return type of the block
-    * @return T
-    */
   override def time[T](blockName: String, customTags: (String, String)*)(codeBlock: => T): T = {
-    val startTime = System.nanoTime()
+    val startTime = Instant.now()
     val result = codeBlock
-    val endTime = System.nanoTime()
-    log.info(s"$blockName:" + (endTime - startTime)/1000 + "|us|@1|" + getTags(customTags))
+    reportTime(blockName, customTags, startTime)
     result
   }
 
-  /**
-    * Record counts, count value should default to one
-    * @param metricName name of the counter
-    * @param count increment of the counter
-    * @param customTags varargs of key value pairs to add to the metric as tags
-    */
-  override def count(metricName: String, count: Int, customTags: (String, String)*): Unit = {
-    log.info(s"$metricName:$count|c|@1|" + getTags(customTags))
+  override def timeSignal[T](blockName: String, customTags: (String, String)*)(signal: Deferred[IO, Unit]): IO[Unit] = {
+    for {
+      startTime <- IO.realTimeInstant
+      _ <- signal.get
+      _ <- IO { reportTime(blockName, customTags, startTime) }
+    } yield ()
   }
 
-  /**
-    * Record counts, this is used as a default that increments the counter by one
-    * @param metricName name of the counter
-    * @param customTags varargs of key value pairs to add to the metric as tags
-    */
+  override def timeIO[T](blockName: String, customTags: (String, String)*)(codeBlock: => T): IO[T] = {
+    for {
+      startTime <- IO.realTimeInstant
+      result <- IO { codeBlock }
+      _ <- IO { reportTime(blockName, customTags, startTime) }
+    } yield result
+  }
+
+  override def count(metricName: String, value: Int, rate: Float, customTags: (String, String)*): Unit = {
+    log.info(s"$metricName:$value|c|@$rate|" + getTags(customTags))
+  }
+
+  override def countIO(metricName: String, value: Int, rate: Float, customTags: (String, String)*): IO[Unit] = IO {
+    count(metricName, value, rate, customTags: _*)
+  }
+
   override def count(metricName: String, customTags: (String, String)*): Unit = {
-    count(metricName, 1, customTags: _*)
+    count(metricName, 1, 1F, customTags: _*)
+  }
+
+  override def countIO(metricName: String, customTags: (String, String)*): IO[Unit] = IO {
+    count(metricName, customTags: _*)
+  }
+
+  private def reportTime[T](blockName: String, customTags: Seq[(String, String)], startTime: Instant): Unit =  {
+    val micros: Long = startTime.until(Instant.now(), ChronoUnit.MICROS)
+    log.info(s"$blockName:" + micros + "|us|@1|" + getTags(customTags))
+  }
+
+  override def gauge(gaugeName: String, value: Long, customTags: (String, String)*): Unit = {
+    log.info(s"$gaugeName:$value|g|" + getTags(customTags))
+  }
+
+  override def gaugeIO(gaugeName: String, value: Long, customTags: (String, String)*): IO[Unit] = IO {
+    gauge(gaugeName, value, customTags: _*)
   }
 }

@@ -1,15 +1,15 @@
-/**
-  * This file is part of the ONEMA Default (Template) Project Package.
-  * For the full copyright and license information,
-  * please view the LICENSE file that was distributed
-  * with this source code.
-  *
-  * copyright (c) 2018, Juan Manuel Torres (http://onema.io)
-  *
-  * @author Juan Manuel Torres <software@onema.io>
-  */
+/*
+ * This file is part of the ONEMA userverless-core Package.
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed
+ * with this source code.
+ *
+ * copyright (c) 2018-2021, Juan Manuel Torres (http://onema.dev)
+ *
+ * @author Juan Manuel Torres <software@onema.io>
+ */
 
-package io.onema.userverless.config.cors
+package io.onema.userverless.config
 
 class NoopCorsConfiguration extends CorsConfiguration(None) {
 

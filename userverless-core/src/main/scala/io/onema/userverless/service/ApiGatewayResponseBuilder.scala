@@ -1,24 +1,24 @@
-/**
-  * This file is part of the ONEMA Default (Template) Project Package.
-  * For the full copyright and license information,
-  * please view the LICENSE file that was distributed
-  * with this source code.
-  *
-  * copyright (c) 2018, Juan Manuel Torres (http://onema.io)
-  *
-  * @author Juan Manuel Torres <software@onema.io>
-  */
+/*
+ * This file is part of the ONEMA userverless-core Package.
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed
+ * with this source code.
+ *
+ * copyright (c) 2018-2021, Juan Manuel Torres (http://onema.dev)
+ *
+ * @author Juan Manuel Torres <software@onema.io>
+ */
 
-package io.onema.userverless.function
+package io.onema.userverless.service
 
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse
 import io.onema.json.Extensions._
 import io.onema.userverless.domain.ApiGatewayErrorMessage
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 
-trait ApiGatewayResponse {
+trait ApiGatewayResponseBuilder {
 
   //--- Methods ---
 

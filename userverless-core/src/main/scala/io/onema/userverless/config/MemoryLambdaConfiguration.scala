@@ -1,16 +1,15 @@
-/**
-  * This file is part of the ONEMA onema.userverless Package.
-  * For the full copyright and license information,
-  * please view the LICENSE file that was distributed
-  * with this source code.
-  *
-  * copyright (c) 2018, Juan Manuel Torres (http://onema.io)
-  *
-  * @author Juan Manuel Torres <software@onema.io>
-  */
+/*
+ * This file is part of the ONEMA userverless-core Package.
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed
+ * with this source code.
+ *
+ * copyright (c) 2021-2021, Juan Manuel Torres (http://onema.dev)
+ *
+ * @author Juan Manuel Torres <software@onema.io>
+ */
 
-package io.onema.userverless.config.lambda
-
+package io.onema.userverless.config
 
 trait MemoryLambdaConfiguration extends Configuration {
 
@@ -18,6 +17,7 @@ trait MemoryLambdaConfiguration extends Configuration {
   protected def map: Map[String, String]
 
   //--- Methods ---
+
   /**
     * Get environment variables values by name. This assumes that the name uses a path notation
     * e.g. the path "/database/username" would look for the DATABASE_USERNAME environment variable.
@@ -26,7 +26,7 @@ trait MemoryLambdaConfiguration extends Configuration {
     * @return
     */
   def getValue(path: String): Option[String] = {
-    if(map.contains(path)) {
+    if (map.contains(path)) {
       Some(map(path))
     } else {
       None

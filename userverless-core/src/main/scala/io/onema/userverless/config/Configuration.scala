@@ -1,15 +1,15 @@
-/**
-  * This file is part of the ONEMA uServerless Package.
-  * For the full copyright and license information,
-  * please view the LICENSE file that was distributed
-  * with this source code.
-  *
-  * copyright (c) 2021, Juan Manuel Torres (http://onema.io)
-  *
-  * @author Juan Manuel Torres <software@onema.io>
-  */
+/*
+ * This file is part of the ONEMA userverless-core Package.
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed
+ * with this source code.
+ *
+ * copyright (c) 2021-2021, Juan Manuel Torres (http://onema.dev)
+ *
+ * @author Juan Manuel Torres <software@onema.io>
+ */
 
-package io.onema.userverless.config.lambda
+package io.onema.userverless.config
 
 import cats.data.ValidatedNec
 import cats.implicits.catsSyntaxValidatedIdBinCompat0
@@ -64,16 +64,16 @@ trait Configuration {
     * @param path name of the path to search for
     * @return ValidationResult
     */
-  def validate(path: String): ValidationResult[String] = validateToType(path) { s => s }
+  def validateString(path: String): ValidationResult[String] = validateToType(path) { s => s }
   def validateInt(path: String): ValidationResult[Int] = validateToType(path) { stringVal => stringVal.toInt }
   def validateFloat(path: String): ValidationResult[Float] = validateToType(path) { stringVal => stringVal.toFloat }
   def validateDouble(path: String): ValidationResult[Double] = validateToType(path) { stringVal => stringVal.toDouble }
   def validateBoolean(path: String): ValidationResult[Boolean] = validateToType(path) { stringVal => stringVal.toBoolean }
 
   /**
-    * This method uses the getValue to retrieve the value from the path. Additionally, it takes a conversion function
+    * This method uses the getValue to retrieve the value from the path. Additionally, it takes a conversion service
     * @param path name of the path to search for
-    * @param conversion conversion function to transform value to a new type
+    * @param conversion conversion service to transform value to a new type
     * @tparam A Type that the parameter value will be converted to
     * @return ValidationResult
     */
