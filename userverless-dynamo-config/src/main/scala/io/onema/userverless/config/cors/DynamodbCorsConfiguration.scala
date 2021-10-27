@@ -13,6 +13,7 @@ package io.onema.userverless.config.cors
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB
 import com.amazonaws.services.dynamodbv2.{AmazonDynamoDBAsync, AmazonDynamoDBAsyncClientBuilder}
+import io.onema.userverless.config.CorsConfiguration
 
 import scala.util.{Failure, Success, Try}
 

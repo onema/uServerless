@@ -8,7 +8,7 @@ ThisBuild / version      := "0.5.0"
 ThisBuild / scalaVersion := scala213
 ThisBuild / parallelExecution in Test := false
 
-val awsSdkVersion = "1.11.1004"
+val awsSdkVersion = "1.12.84"
 val awsSdkV2Version = "2.17.19"
 
 lazy val uServerless = (project in file("."))

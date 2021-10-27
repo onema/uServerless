@@ -11,6 +11,7 @@
 
 package io.onema.userverless.config.cors
 
+import io.onema.userverless.config.CorsConfiguration
 import io.onema.userverless.config.lambda.SsmLambdaConfiguration
 import software.amazon.awssdk.services.ssm.SsmClient
 

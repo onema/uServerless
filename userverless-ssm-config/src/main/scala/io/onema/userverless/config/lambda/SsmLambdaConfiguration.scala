@@ -11,6 +11,7 @@
 
 package io.onema.userverless.config.lambda
 
+import io.onema.userverless.config.Configuration
 import io.onema.userverless.config.lambda.SsmLambdaConfiguration.StringExtensions
 import software.amazon.awssdk.services.ssm.SsmClient
 import software.amazon.awssdk.services.ssm.model.{GetParameterRequest, GetParametersByPathRequest, ParameterNotFoundException}
