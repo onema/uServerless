@@ -18,8 +18,8 @@ import com.amazonaws.services.dynamodbv2.model.{AttributeValue, DescribeTableRes
 import functions.cors.{DynamodbFunction, EnvFunction, NoopFunction, SsmFunction}
 import handler.EnvironmentHelper
 import io.onema.userverless.config.cors.DynamodbCorsConfiguration
-import io.onema.userverless.config.cors.Extensions._
-import io.onema.userverless.extensions.CollectionsExtensions.MapExtensions
+import io.onema.userverless.common.ConfigExtensions._
+import io.onema.userverless.common.CollectionsExtensions.MapExtensions
 import io.onema.userverless.test.TestJavaObjectExtensions._
 import org.apache.http.HttpStatus
 import org.scalamock.scalatest.MockFactory
@@ -33,7 +33,7 @@ import scala.jdk.CollectionConverters.MapHasAsJava
 
 class ApiGatewayHandlerWithCorsTest extends AnyFlatSpec with Matchers with MockFactory with EnvironmentHelper {
 
-  "A function with CORS enabled using env vars" should "return response with access-control-allow-origin header" in {
+  "A service with CORS enabled using env vars" should "return response with access-control-allow-origin header" in {
     // Arrange
     val originSite = "https://foo.com"
     setEnv("CORS_SITES", originSite)
@@ -53,7 +53,7 @@ class ApiGatewayHandlerWithCorsTest extends AnyFlatSpec with Matchers with MockF
     headers.get("Access-Control-Allow-Credentials") should  be ("true")
   }
 
-  "A function with CORS enabled using env vars with multiple values" should "return response with access-control-allow-origin header" in {
+  "A service with CORS enabled using env vars with multiple values" should "return response with access-control-allow-origin header" in {
     // Arrange
     val originSite = "https://foo.com,https://bar.com,http://baz.com"
     val site = "http://baz.com"
@@ -73,7 +73,7 @@ class ApiGatewayHandlerWithCorsTest extends AnyFlatSpec with Matchers with MockF
     response.getHeaders.get("Access-Control-Allow-Origin") should be (site)
   }
 
-  "A function with CORS enabled using empty env vars " should "NOT return response with access-control-allow-origin header" in {
+  "A service with CORS enabled using empty env vars " should "NOT return response with access-control-allow-origin header" in {
     // Arrange
     val originSite = ""
     val site = "http://baz.com"
@@ -92,7 +92,7 @@ class ApiGatewayHandlerWithCorsTest extends AnyFlatSpec with Matchers with MockF
     response.getHeaders should be (empty)
   }
 
-  "A function with CORS enabled using empty env vars " should "NOT return response with access-control-allow-origin header if site is not set" in {
+  "A service with CORS enabled using empty env vars " should "NOT return response with access-control-allow-origin header if site is not set" in {
     // Arrange
     val originSite = ""
     setEnv("CORS_SITES", originSite)
@@ -109,7 +109,7 @@ class ApiGatewayHandlerWithCorsTest extends AnyFlatSpec with Matchers with MockF
     response.getHeaders should be (empty)
   }
 
-  "A function with CORS enabled using empty env vars " should "NOT return response with access-control-allow-origin header if site is an empty string" in {
+  "A service with CORS enabled using empty env vars " should "NOT return response with access-control-allow-origin header if site is an empty string" in {
     // Arrange
     val originSite = ""
     val site = ""
@@ -128,7 +128,7 @@ class ApiGatewayHandlerWithCorsTest extends AnyFlatSpec with Matchers with MockF
     response.getHeaders should be (empty)
   }
 
-  "A function with CORS enabled using env vars and CORS_SITE set to '*' " should "return response with access-control-allow-origin:* header" in {
+  "A service with CORS enabled using env vars and CORS_SITE set to '*' " should "return response with access-control-allow-origin:* header" in {
     // Arrange
     val originSite = "bar.com"
     setEnv("CORS_SITES", "*")
@@ -147,7 +147,7 @@ class ApiGatewayHandlerWithCorsTest extends AnyFlatSpec with Matchers with MockF
     response.getHeaders.get("Access-Control-Allow-Origin") should be ("bar.com")
   }
 
-  "A function with CORS enabled using DynamoDB" should "return response with access-control-allow-origin header" in {
+  "A service with CORS enabled using DynamoDB" should "return response with access-control-allow-origin header" in {
     // Arrange
     val originSite = "bar.com"
     val tableName = "Origins"
@@ -174,7 +174,7 @@ class ApiGatewayHandlerWithCorsTest extends AnyFlatSpec with Matchers with MockF
     response.getHeaders.get("Access-Control-Allow-Origin") should be ("bar.com")
   }
 
-  "A function with CORS enabled using DynamoDB" should "not return response with access-control-allow-origin header if origin is *" in {
+  "A service with CORS enabled using DynamoDB" should "not return response with access-control-allow-origin header if origin is *" in {
     // Arrange
     val originSite = "*"
     val request = new AwsProxyRequest()
@@ -194,7 +194,7 @@ class ApiGatewayHandlerWithCorsTest extends AnyFlatSpec with Matchers with MockF
     response.getHeaders should be (empty)
   }
 
-  "A function with CORS enabled using DynamoDB" should "not return response with access-control-allow-origin header if origin is None" in {
+  "A service with CORS enabled using DynamoDB" should "not return response with access-control-allow-origin header if origin is None" in {
     // Arrange
     val originSite: String = null
     val dynamoConfig = DynamodbCorsConfiguration(originSite)
@@ -219,7 +219,7 @@ class ApiGatewayHandlerWithCorsTest extends AnyFlatSpec with Matchers with MockF
     originOption.getOrElse("") should be (originSite)
   }
 
-  "A function with Noop CORS config" should "not return an internal server error response without access-control-allow-origin header" in {
+  "A service with Noop CORS config" should "not return an internal server error response without access-control-allow-origin header" in {
     // Arrange
     val originSite = "https://baz.com"
     val lambdaFunction = new NoopFunction()
@@ -237,7 +237,7 @@ class ApiGatewayHandlerWithCorsTest extends AnyFlatSpec with Matchers with MockF
     response.getStatusCode should be (HttpStatus.SC_INTERNAL_SERVER_ERROR)
   }
 
-  "A function with CORS enabled using ssm parameter store" should "return response with access-control-allow-origin header" in {
+  "A service with CORS enabled using ssm parameter store" should "return response with access-control-allow-origin header" in {
 
     // Arrange
     deleteEnv("STAGE_NAME")

@@ -14,8 +14,8 @@ package functions.process
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.ScheduledEvent
 import com.typesafe.scalalogging.Logger
-import io.onema.userverless.config.lambda.NoopLambdaConfiguration
-import io.onema.userverless.function.LambdaHandler
+import io.onema.userverless.config.NoopLambdaConfiguration
+import io.onema.userverless.service.LambdaHandler
 
 object ScheduledLogic {
   def handleEvent(event: ScheduledEvent, log: Logger): Boolean = {

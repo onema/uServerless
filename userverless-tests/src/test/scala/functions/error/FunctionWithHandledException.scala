@@ -12,9 +12,9 @@
 package functions.error
 
 import com.amazonaws.services.lambda.runtime.Context
-import io.onema.userverless.config.lambda.NoopLambdaConfiguration
+import io.onema.userverless.config.NoopLambdaConfiguration
 import io.onema.userverless.exception.HandledException
-import io.onema.userverless.function.LambdaHandler
+import io.onema.userverless.service.LambdaHandler
 
 class FunctionWithHandledException extends LambdaHandler[String, String] with NoopLambdaConfiguration {
 

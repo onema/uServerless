@@ -1,20 +1,21 @@
-/**
-  * This file is part of the ONEMA io.onema.userverless Package.
-  * For the full copyright and license information,
-  * please view the LICENSE file that was distributed
-  * with this source code.
-  *
-  * copyright (c) 2018, Juan Manuel Torres (http://onema.io)
-  *
-  * @author Juan Manuel Torres <software@onema.io>
-  */
+/*
+ * This file is part of the ONEMA userverless-tests Package.
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed
+ * with this source code.
+ *
+ * copyright (c) 2018-2021, Juan Manuel Torres (http://onema.dev)
+ *
+ * @author Juan Manuel Torres <software@onema.io>
+ */
 package handler.configuration
 
 import cats.data.Validated.{Invalid, Valid}
 import cats.implicits.catsSyntaxTuple3Semigroupal
 import handler.EnvironmentHelper
 import handler.configuration.SsmParametersTest.TestFunction
-import io.onema.userverless.config.lambda.{SsmLambdaConfiguration, ValueIsNotANumber, ValueNotFound}
+import io.onema.userverless.config.{ValueIsNotANumber, ValueNotFound}
+import io.onema.userverless.config.lambda.SsmLambdaConfiguration
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.BeforeAndAfter
@@ -34,7 +35,7 @@ class SsmParametersTest extends AnyFlatSpec with BeforeAndAfter with Matchers wi
     deleteEnv("STAGE_NAME")
   }
 
-  "A function with ssm parameter store value and stage name" should "return single parameter" in {
+  "A service with ssm parameter store value and stage name" should "return single parameter" in {
 
     // Arrange
     deleteEnv("STAGE_NAME")
@@ -53,7 +54,7 @@ class SsmParametersTest extends AnyFlatSpec with BeforeAndAfter with Matchers wi
     response.get should be ("test value")
   }
 
-  "A function with ssm parameter store value and stage name" should "validate and return a single parameter" in {
+  "A service with ssm parameter store value and stage name" should "validateString and return a single parameter" in {
 
     // Arrange
     deleteEnv("STAGE_NAME")
@@ -66,14 +67,14 @@ class SsmParametersTest extends AnyFlatSpec with BeforeAndAfter with Matchers wi
     val lambdaFunction = TestFunction(ssmClientMock)
 
     // Act
-    val response = lambdaFunction.validate("/foo")
+    val response = lambdaFunction.validateString("/foo")
 
     // Assert
     response shouldBe a [Valid[_]]
     response.getOrElse("") should be ("test value")
   }
 
-  "A function with mixed ssm parameters types, validation" should "return all values" in {
+  "A service with mixed ssm parameters types, validation" should "return all values" in {
 
     // Arrange
     deleteEnv("STAGE_NAME")
@@ -95,10 +96,10 @@ class SsmParametersTest extends AnyFlatSpec with BeforeAndAfter with Matchers wi
 
     // Act
     val response = (
-      lambdaFunction.validate("/foo"),
+      lambdaFunction.validateString("/foo"),
       lambdaFunction.validateInt("/bar"),
       lambdaFunction.validateFloat("/baz")
-      ).mapN(Tuple3[String, Int, Float])
+    ).mapN(Tuple3[String, Int, Float])
 
     // Assert
     response shouldBe a [Valid[_]]
@@ -111,7 +112,7 @@ class SsmParametersTest extends AnyFlatSpec with BeforeAndAfter with Matchers wi
     }
   }
 
-  "A function with ssm parameter store value and stage name" should "return multiple parameters" in {
+  "A service with ssm parameter store value and stage name" should "return multiple parameters" in {
 
     // Arrange
     deleteEnv("STAGE_NAME")
@@ -133,7 +134,7 @@ class SsmParametersTest extends AnyFlatSpec with BeforeAndAfter with Matchers wi
     response("/foo/bar") should be ("test bar value")
   }
 
-  "A function with ssm parameter store and no stage name" should "return single parameters" in {
+  "A service with ssm parameter store and no stage name" should "return single parameters" in {
 
     // Arrange
 
@@ -151,7 +152,7 @@ class SsmParametersTest extends AnyFlatSpec with BeforeAndAfter with Matchers wi
     response.get should be ("test value")
   }
 
-  "A function with ssm parameter store that does not exist" should "return None" in {
+  "A service with ssm parameter store that does not exist" should "return None" in {
 
     // Arrange
     val request = GetParameterRequest.builder().name("/foo").withDecryption(true).build()
@@ -166,7 +167,7 @@ class SsmParametersTest extends AnyFlatSpec with BeforeAndAfter with Matchers wi
     response should be (None)
   }
 
-  "A function with ssm parameter store that does not exist, validation" should "return ValueNotFound" in {
+  "A service with ssm parameter store that does not exist, validation" should "return ValueNotFound" in {
 
     // Arrange
     val request = GetParameterRequest.builder().name("/foo").withDecryption(true).build()
@@ -175,13 +176,13 @@ class SsmParametersTest extends AnyFlatSpec with BeforeAndAfter with Matchers wi
     val lambdaFunction = TestFunction(ssmClientMock)
 
     // Act
-    val response = lambdaFunction.validate("/foo")
+    val response = lambdaFunction.validateString("/foo")
 
     // Assert
     response shouldBe a [Invalid[_]]
   }
 
-  "A function with multiple ssm parameters that do not exist, validation" should "return ValueNotFound" in {
+  "A service with multiple ssm parameters that do not exist, validation" should "return ValueNotFound" in {
 
     // Arrange
     val ssmClientMock = mock[SsmClient]
@@ -190,9 +191,9 @@ class SsmParametersTest extends AnyFlatSpec with BeforeAndAfter with Matchers wi
 
     // Act
     val response: lambdaFunction.ValidationResult[(String, String, String)] = (
-      lambdaFunction.validate("/foo"),
-      lambdaFunction.validate("/bar"),
-      lambdaFunction.validate("/baz")
+      lambdaFunction.validateString("/foo"),
+      lambdaFunction.validateString("/bar"),
+      lambdaFunction.validateString("/baz")
     ).mapN(Tuple3[String, String, String])
 
     // Assert
@@ -200,7 +201,7 @@ class SsmParametersTest extends AnyFlatSpec with BeforeAndAfter with Matchers wi
     response.map(e => e should be (ValueNotFound))
   }
 
-  "A function with mixed ssm parameters that do and do not exist, validation" should "return ValueNotFound" in {
+  "A service with mixed ssm parameters that do and do not exist, validation" should "return ValueNotFound" in {
 
     // Arrang
     deleteEnv("STAGE_NAME")
@@ -215,17 +216,17 @@ class SsmParametersTest extends AnyFlatSpec with BeforeAndAfter with Matchers wi
 
     // Act
     val response: lambdaFunction.ValidationResult[(String, String, String)] = (
-      lambdaFunction.validate("/foo"),
-      lambdaFunction.validate("/bar"),
-      lambdaFunction.validate("/baz")
-      ).mapN(Tuple3[String, String, String])
+      lambdaFunction.validateString("/foo"),
+      lambdaFunction.validateString("/bar"),
+      lambdaFunction.validateString("/baz")
+    ).mapN(Tuple3[String, String, String])
 
     // Assert
     response shouldBe a [Invalid[_]]
     response.map(e => e should be (ValueNotFound))
   }
 
-  "A function with mixed invalid ssm parameters, validation with invalid types" should "return invalid values" in {
+  "A service with mixed invalid ssm parameters, validation with invalid types" should "return invalid values" in {
 
     // Arrange
     deleteEnv("STAGE_NAME")
@@ -260,7 +261,7 @@ class SsmParametersTest extends AnyFlatSpec with BeforeAndAfter with Matchers wi
     }
   }
 
-  "A function that throws an exception when getting a parameter value" should "throw re-throw the exception" in {
+  "A service that throws an exception when getting a parameter value" should "throw re-throw the exception" in {
 
     // Arrange
     val ssmClientMock = mock[SsmClient]
@@ -271,7 +272,7 @@ class SsmParametersTest extends AnyFlatSpec with BeforeAndAfter with Matchers wi
     intercept[RuntimeException] { lambdaFunction.getValue("/bad") }
   }
 
-  "A function with ssm parameter store" should "return multiple parameters using recursion" in {
+  "A service with ssm parameter store" should "return multiple parameters using recursion" in {
 
     // Arrange
     setEnv("STAGE_NAME", "test")

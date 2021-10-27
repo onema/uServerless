@@ -1,7 +1,7 @@
 <configuration>
 
     <!--Appender for every log message except errors, uses the logstash encoder to report logs as json, custom properties
-    are added to each log request including the stage name, lambda version and function name.-->
+    are added to each log request including the stage name, lambda version and service name.-->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <Target>System.out</Target>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">

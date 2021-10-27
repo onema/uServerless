@@ -12,35 +12,34 @@
 package handler.warmup
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
-
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
 import com.amazonaws.services.lambda.runtime.Context
 import functions.process._
 import handler.EnvironmentHelper
 import io.onema.userverless.events.Sns.{SnsEvent, SnsRecord, SnsRecords}
 import io.onema.json.Extensions._
-import io.onema.userverless.config.lambda.NoopLambdaConfiguration
+import io.onema.userverless.config.NoopLambdaConfiguration
 import io.onema.userverless.exception.MessageDecodingException
-import io.onema.userverless.function.SnsHandler
+import io.onema.userverless.service.SnsHandler
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 
 class LambdaHandlerWarmUpTest extends FlatSpec with Matchers with MockFactory with EnvironmentHelper {
 
-  "A schedule event with an valid warmup event" should "return true" in {
-    // Arrange
-    val message = "{\"warmup\":true}"
-    val inputStream = new ByteArrayInputStream(message.getBytes())
-    val outputStream = new ByteArrayOutputStream()
-    val context = new MockLambdaContext
-    val function = new Function()
-
-    // Act
-    function.lambdaHandler(inputStream, outputStream, context)
-
-    // Assert
-    outputStream.toString() should be ("")
-  }
+//  "A schedule event with an valid warmup event" should "return true" in {
+//    // Arrange
+//    val message = "{\"warmup\":true}"
+//    val inputStream = new ByteArrayInputStream(message.getBytes())
+//    val outputStream = new ByteArrayOutputStream()
+//    val context = new MockLambdaContext
+//    val service = new Function()
+//
+//    // Act
+//    service.lambdaHandler(inputStream, outputStream, context)
+//
+//    // Assert
+//    outputStream.toString() should be ("")
+//  }
 
   "An SNS event " should "deserialize correctly" in {
     // Arrange

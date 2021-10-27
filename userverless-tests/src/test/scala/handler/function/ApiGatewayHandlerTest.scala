@@ -1,32 +1,31 @@
-/**
-  * This file is part of the ONEMA io.onema.userverless Package.
-  * For the full copyright and license information,
-  * please view the LICENSE file that was distributed
-  * with this source code.
-  *
-  * copyright (c) 2018, Juan Manuel Torres (http://onema.io)
-  *
-  * @author Juan Manuel Torres <software@onema.io>
-  */
+/*
+ * This file is part of the ONEMA userverless-tests Package.
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed
+ * with this source code.
+ *
+ * copyright (c) 2018-2021, Juan Manuel Torres (http://onema.dev)
+ *
+ * @author Juan Manuel Torres <software@onema.io>
+ */
 package handler.function
-
-import java.io._
 
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
-import functions.success.Function
+import functions.success.{Function, FunctionIO}
 import handler.EnvironmentHelper
 import handler.function.ApiGatewayHandlerTest._
-import io.onema.userverless.config.lambda.{EnvLambdaConfiguration, MemoryLambdaConfiguration}
-import io.onema.userverless.exception.{HandleRequestException, RuntimeException}
-import io.onema.userverless.function.Extensions._
-import io.onema.userverless.function.{ApiGatewayHandler, ApiGatewayResponse}
+import io.onema.userverless.config.{EnvLambdaConfiguration, MemoryLambdaConfiguration}
 import io.onema.userverless.domain.ApiGatewayErrorMessage
+import io.onema.userverless.exception.{HandleRequestException, RuntimeException}
+import io.onema.userverless.service.{ApiGatewayHandler, ApiGatewayResponseBuilder}
 import io.onema.userverless.test.TestJavaObjectExtensions._
 import org.apache.http.HttpStatus
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
+
+import java.io._
 
 object ApiGatewayHandlerTest {
 
@@ -72,19 +71,19 @@ object ApiGatewayHandlerTest {
     }
   }
 
-  class ValidResponseFunction extends ApiGatewayResponse {
+  class ValidResponseFunction extends ApiGatewayResponseBuilder {
     def test(): AwsProxyResponse = {
       buildResponse(HttpStatus.SC_OK, payload = Body("test"), headers = Map("foo" -> "bar"))
     }
   }
 
-  class ValidResponseHeadersOnlyFunction extends ApiGatewayResponse {
+  class ValidResponseHeadersOnlyFunction extends ApiGatewayResponseBuilder {
     def test(): AwsProxyResponse = {
       buildResponse(HttpStatus.SC_OK, headers = Map("foo" -> "bar"))
     }
   }
 
-  class ErrorResponseFunction extends ApiGatewayResponse {
+  class ErrorResponseFunction extends ApiGatewayResponseBuilder {
     def test(): AwsProxyResponse = {
       buildError(HttpStatus.SC_INSUFFICIENT_STORAGE, "test")
     }
@@ -108,6 +107,23 @@ class ApiGatewayHandlerTest extends FlatSpec with Matchers with MockFactory with
 
     // Assert
     body.message should be ("success")
+  }
+
+  "A concrete implementation that returns an IO" should "not throw any exceptions" in {
+
+    // Arrange
+    val request = new AwsProxyRequest
+    val context = new MockLambdaContext
+    val lambdaFunction = new FunctionIO
+    val output = new ByteArrayOutputStream()
+
+    // Act
+    lambdaFunction.lambdaHandler(request.toInputStream, output, context)
+    val response: AwsProxyResponse = output.toObject[AwsProxyResponse]
+    val body = response.getBody.toErrorMessage
+
+    // Assert
+     body.message should be ("success")
   }
 
   "An Exception" should "generate a valid response" in {

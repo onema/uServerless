@@ -13,7 +13,7 @@ package handler.function
 
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext
 import handler.function.ExtensionsTest.MockContext
-import io.onema.userverless.function.Extensions._
+import io.onema.userverless.service.Extensions._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -62,6 +62,6 @@ class ExtensionsTest extends FlatSpec with Matchers with MockFactory {
 
 object ExtensionsTest {
   class MockContext() extends MockLambdaContext {
-    override def getInvokedFunctionArn: String = "arn:aws:lambda:us-east-1:123456789012:function:function-name"
+    override def getInvokedFunctionArn: String = "arn:aws:lambda:us-east-1:123456789012:service:service-name"
   }
 }

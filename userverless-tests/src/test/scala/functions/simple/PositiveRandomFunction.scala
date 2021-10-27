@@ -12,8 +12,8 @@
 package functions.simple
 
 import com.amazonaws.services.lambda.runtime.Context
-import io.onema.userverless.config.lambda.NoopLambdaConfiguration
-import io.onema.userverless.function.LambdaHandler
+import io.onema.userverless.config.NoopLambdaConfiguration
+import io.onema.userverless.service.LambdaHandler
 
 import scala.util.Random
 

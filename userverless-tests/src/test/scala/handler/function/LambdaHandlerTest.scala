@@ -39,7 +39,7 @@ class LambdaHandlerTest extends FlatSpec with Matchers with MockFactory with Env
     response should be ("true")
   }
 
-  "A simple function that takes an Int" should "Throw an exception on wrong value value" in {
+  "A simple service that takes an Int" should "Throw an exception on wrong value value" in {
     // Arrange
     val function = new simple.EchoFunction
     val number = ""
@@ -53,7 +53,7 @@ class LambdaHandlerTest extends FlatSpec with Matchers with MockFactory with Env
     }
   }
 
-  "A simple function returning a String" should "properly write the value to the output stream" in {
+  "A simple service returning a String" should "properly write the value to the output stream" in {
     // Arrange
     val function = new simple.EchoFunction
     val number = "123"
@@ -69,7 +69,7 @@ class LambdaHandlerTest extends FlatSpec with Matchers with MockFactory with Env
     response.foreach(x => x.isDigit should be(true))
   }
 
-  "A simple function returning an integer" should "properly write the integer to the output stream" in {
+  "A simple service returning an integer" should "properly write the integer to the output stream" in {
     // Arrange
     val function = new simple.PositiveRandomFunction
     val inputStream = new ByteArrayInputStream("0".getBytes)
@@ -101,7 +101,7 @@ class LambdaHandlerTest extends FlatSpec with Matchers with MockFactory with Env
 
   // @TODO: This is a misleading test. The serialization needs to be tuned to properly handle all cases.
   // Currently it is too lose and serialization would not fail in most instances
-//  "A function with an invalid event type" should "throw an exception" in {
+//  "A service with an invalid event type" should "throw an exception" in {
 //    // Arrange
 //    val lambdaFunction = new ScheduledFunction()
 //    val output = new ByteArrayOutputStream()

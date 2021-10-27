@@ -11,7 +11,7 @@
 package handler.cors
 
 import handler.EnvironmentHelper
-import io.onema.userverless.config.cors.EnvCorsConfiguration
+import io.onema.userverless.config.EnvCorsConfiguration
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 

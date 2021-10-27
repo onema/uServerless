@@ -1,24 +1,25 @@
-/**
-  * This file is part of the ONEMA uServerless Package.
-  * For the full copyright and license information,
-  * please view the LICENSE file that was distributed
-  * with this source code.
-  *
-  * copyright (c) 2019, Juan Manuel Torres (http://onema.io)
-  *
-  * @author Juan Manuel Torres <software@onema.io>
-  */
+/*
+ * This file is part of the ONEMA userverless-tests Package.
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed
+ * with this source code.
+ *
+ * copyright (c) 2019-2021, Juan Manuel Torres (http://onema.dev)
+ *
+ * @author Juan Manuel Torres <software@onema.io>
+ */
 
 package functions.customresource
 
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import com.amazonaws.services.s3.model.ObjectListing
 import functions.customresource.S3BucketFunction.{S3Properties, S3Response}
-import io.onema.userverless.config.lambda.EnvLambdaConfiguration
+import io.onema.userverless.config.EnvLambdaConfiguration
 import io.onema.userverless.events.CloudFormation
 import io.onema.userverless.events.CloudFormation.CloudFormationResponse
-import io.onema.userverless.function.CustomResourceHandler
-import scala.collection.JavaConverters._
+import io.onema.userverless.service.CustomResourceHandler
+
+import scala.jdk.CollectionConverters._
 
 class S3BucketFunction extends CustomResourceHandler[S3Properties, S3Response] with EnvLambdaConfiguration {
   //--- Properties ---

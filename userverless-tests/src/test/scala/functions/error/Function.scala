@@ -13,11 +13,10 @@ package functions.error
 
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
-import io.onema.userverless.config.cors.EnvCorsConfiguration
-import io.onema.userverless.config.cors.Extensions._
-import io.onema.userverless.config.lambda.NoopLambdaConfiguration
-import io.onema.userverless.extensions.AwsProxyExtensions.AwsProxyRequestExtensions
-import io.onema.userverless.function.ApiGatewayHandler
+import io.onema.userverless.common.ConfigExtensions._
+import io.onema.userverless.common.AwsProxyExtensions.AwsProxyRequestExtensions
+import io.onema.userverless.config.{EnvCorsConfiguration, NoopLambdaConfiguration}
+import io.onema.userverless.service.ApiGatewayHandler
 
 object Logic {
   def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {

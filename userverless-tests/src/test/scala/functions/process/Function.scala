@@ -13,8 +13,8 @@ package functions.process
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.typesafe.scalalogging.Logger
-import io.onema.userverless.config.lambda.NoopLambdaConfiguration
-import io.onema.userverless.function.SnsHandler
+import io.onema.userverless.config.NoopLambdaConfiguration
+import io.onema.userverless.service.SnsHandler
 
 object Logic {
   def handleEvent(eventMessage: String, log: Logger): Unit = {

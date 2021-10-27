@@ -11,23 +11,26 @@
 
 package functions.success
 
+import cats.effect.IO
 import com.amazonaws.serverless.proxy.model.{AwsProxyRequest, AwsProxyResponse}
 import com.amazonaws.services.lambda.runtime.Context
 import io.onema.userverless.config.NoopLambdaConfiguration
-import io.onema.userverless.service.ApiGatewayHandler
+import io.onema.userverless.service.LambdaHandler
 
-object Logic {
-  def handleRequest(request: AwsProxyRequest): AwsProxyResponse = {
+case class MOL(mol: Int)
+
+object LogicIO {
+  def handleRequest(request: AwsProxyRequest): IO[AwsProxyResponse] = {
     val response = new AwsProxyResponse(200)
     response.setBody("{\"message\": \"success\"}")
-    response
+    IO(response)
   }
 }
 
-class Function extends ApiGatewayHandler with NoopLambdaConfiguration {
+class FunctionIO extends LambdaHandler[AwsProxyRequest, IO[AwsProxyResponse]] with NoopLambdaConfiguration {
 
   //--- Methods ---
-  def execute(request: AwsProxyRequest, context: Context): AwsProxyResponse = {
-    Logic.handleRequest(request)
+  def execute(request: AwsProxyRequest, context: Context): IO[AwsProxyResponse] = {
+    LogicIO.handleRequest(request)
   }
 }
